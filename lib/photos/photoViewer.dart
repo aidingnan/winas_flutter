@@ -492,7 +492,8 @@ class _GridPhotoState extends State<GridPhoto>
       return;
     }
     // is video
-    if (videoTypes.split('.').contains(widget.photo.metadata.type)) {
+    final ext = widget.photo.metadata.type;
+    if (videoTypes.split('.').contains(ext)) {
       final apis = state.apis;
       // preview video
       if (apis.isCloud) return;
@@ -500,7 +501,7 @@ class _GridPhotoState extends State<GridPhoto>
       final key = await cm.getRandomKey(widget.photo, state);
       if (key == null) return;
 
-      final String url = 'http://${apis.lanIp}:3000/media/$key';
+      final String url = 'http://${apis.lanIp}:3000/media/$key.${ext.toLowerCase()}';
       print('${widget.photo.name}');
       print('url: $url, $mounted');
 
