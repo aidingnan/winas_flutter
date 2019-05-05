@@ -199,7 +199,15 @@ class TransferManager {
 
       // reload transferItem
       for (TransferItem item in transferList) {
-        item.reload(() => _instance._cleanDir(item.filePath).catchError(print));
+        if (item.transType ==TransType.download) {
+          item.reload(() => _instance._cleanDir(item.filePath).catchError(print));
+        } else {
+          // update to the correct filePath
+          final pathList = item.filePath.split('/');
+          final truePath = _instance._transDir() + pathList[pathList.length - 2] + '/' + pathList.last;
+          item.filePath = truePath;
+          item.reload(() => {});
+        }
       }
     } catch (error) {
       print('load TransferItem error: $error');
