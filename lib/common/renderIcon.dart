@@ -31,8 +31,13 @@ Widget renderIcon(String name, Metadata metadata, {double size: 24}) {
       return aIcon(Winas.mp4, Color(0xfff44336));
     case 'mpeg':
     case 'mkv':
+    case 'avi':
+    case 'wmv':
+    case 'rmvb':
+    case 'rm':
+    case 'flv':
+    case '3gp':
       return aIcon(Winas.video, Color(0xfff44336));
-
     case 'pdf':
       return aIcon(Winas.pdf, Color(0xFFdb4437));
     case 'docx':
@@ -48,6 +53,9 @@ Widget renderIcon(String name, Metadata metadata, {double size: 24}) {
       return aIcon(Winas.excel, Color(0xFF0f9d58));
     case 'mp3':
     case 'flac':
+    case 'ape':
+    case 'wma':
+    case 'wav':
       return aIcon(Winas.audio, Color(0xFF00bcd4));
     default:
       return aIcon(Icons.insert_drive_file, Colors.black38);

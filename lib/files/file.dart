@@ -819,7 +819,7 @@ class _FilesState extends State<Files> {
             (BuildContext context, int index) {
               return Column(
                 children: <Widget>[
-                  Expanded(flex: 1, child: Container()),
+                  Expanded(flex: 3, child: Container()),
                   Container(
                     padding: EdgeInsets.all(16),
                     child: Container(
@@ -833,8 +833,11 @@ class _FilesState extends State<Files> {
                           Icon(Winas.logo, color: Colors.grey[200], size: 84),
                     ),
                   ),
-                  Text(isHome ? '您还未上传任何文件' : '空文件夹'),
-                  Expanded(flex: isHome ? 2 : 0, child: Container()),
+                  Text(
+                    isHome ? '您还未上传任何文件' : '空文件夹',
+                    style: TextStyle(color: Colors.black38),
+                  ),
+                  Expanded(flex: isHome ? 4 : 1, child: Container()),
                 ],
               );
             },

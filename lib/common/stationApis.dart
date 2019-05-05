@@ -75,12 +75,15 @@ class Apis {
   }
 
   /// post with token
-  tpost(String ep, dynamic args, {CancelToken cancelToken}) {
+  tpost(String ep, dynamic args,
+      {CancelToken cancelToken, Function onProgress}) {
     assert(token != null);
     if (isCloud ?? true)
-      return command('POST', ep, args, cancelToken: cancelToken);
+      return command('POST', ep, args,
+          cancelToken: cancelToken, onProgress: onProgress);
     dio.options.headers['Authorization'] = 'JWT $lanToken';
-    return dio.post('$lanAdrress/$ep', data: args, cancelToken: cancelToken);
+    return dio.post('$lanAdrress/$ep',
+        data: args, cancelToken: cancelToken, onSendProgress: onProgress);
   }
 
   /// delete with token
@@ -94,7 +97,8 @@ class Apis {
 
   /// request via cloud
   command(String verb, String ep, dynamic data, // qs, body or formdata
-      {CancelToken cancelToken}) {
+      {CancelToken cancelToken,
+      Function onProgress}) {
     assert(token != null);
     assert(cookie != null);
     bool isFormData = data is FormData;
@@ -113,27 +117,29 @@ class Apis {
       };
       final qsData = Uri.encodeQueryComponent(jsonEncode(qs));
       final newUrl = '$url2?data=$qsData';
-      return dio.post(newUrl, data: data, cancelToken: cancelToken);
+      return dio.post(newUrl,
+          data: data, cancelToken: cancelToken, onSendProgress: onProgress);
     }
 
     // normal pipe-json
-    return dio.post(
-      url,
-      data: {
-        'verb': verb,
-        'urlPath': '/$ep',
-        'body': isGet ? null : data,
-        'params': isGet ? data : null,
-      },
-      cancelToken: cancelToken,
-    );
+    return dio.post(url,
+        data: {
+          'verb': verb,
+          'urlPath': '/$ep',
+          'body': isGet ? null : data,
+          'params': isGet ? data : null,
+        },
+        cancelToken: cancelToken,
+        onSendProgress: onProgress);
   }
 
   ///  handle formdata
-  writeDir(String ep, FormData formData, {CancelToken cancelToken}) {
+  writeDir(String ep, FormData formData,
+      {CancelToken cancelToken, Function onProgress}) {
     return (isCloud ?? true)
-        ? command('POST', ep, formData, cancelToken: cancelToken)
-        : tpost(ep, formData, cancelToken: cancelToken);
+        ? command('POST', ep, formData,
+            cancelToken: cancelToken, onProgress: onProgress)
+        : tpost(ep, formData, cancelToken: cancelToken, onProgress: onProgress);
   }
 
   Future<bool> isMobile() async {
@@ -324,12 +330,12 @@ class Apis {
   Future uploadAsync(Map<String, dynamic> args,
       {Function onProgress, CancelToken cancelToken}) async {
     return writeDir(
-      'drives/${args['driveUUID']}/dirs/${args['dirUUID']}/entries',
-      FormData.from({
-        args['fileName']: args['file'],
-      }),
-      cancelToken: cancelToken,
-    );
+        'drives/${args['driveUUID']}/dirs/${args['dirUUID']}/entries',
+        FormData.from({
+          args['fileName']: args['file'],
+        }),
+        cancelToken: cancelToken,
+        onProgress: onProgress);
   }
 
   upload(Map<String, dynamic> args, callback,

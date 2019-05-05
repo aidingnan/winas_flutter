@@ -58,6 +58,9 @@ class _TransferState extends State<Transfer> {
     if (item.transType == TransType.download) {
       final cm = TransferManager.getInstance();
       cm.newDownload(item.entry, state);
+    } else if (item.transType == TransType.shared) {
+      final cm = TransferManager.getInstance();
+      cm.newUploadSharedFile(item.filePath, state);
     }
   }
 
@@ -67,14 +70,6 @@ class _TransferState extends State<Transfer> {
       case 'finished':
         return Center(child: Icon(Icons.check_circle_outline));
       case 'working':
-        if (item.isShare) {
-          return Center(
-            child: CircularProgressIndicator(
-              strokeWidth: 3.0,
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.teal),
-            ),
-          );
-        }
         return Stack(
           children: <Widget>[
             Positioned.fill(
@@ -135,7 +130,6 @@ class _TransferState extends State<Transfer> {
                             child: Text('重试'),
                             onPressed: () {
                               Navigator.pop(context);
-
                               resumeTask(items, index, state);
                             })
                       ],
@@ -175,10 +169,8 @@ class _TransferState extends State<Transfer> {
               // resume task
               resumeTask(items, index, state);
             } else if (item.status == 'failed') {
-              // retry
-              items.removeAt(index);
-              final cm = TransferManager.getInstance();
-              cm.newDownload(entry, state);
+              // resume task
+              resumeTask(items, index, state);
             }
           },
           child: Row(
@@ -227,7 +219,7 @@ class _TransferState extends State<Transfer> {
                                 Expanded(
                                   flex: 1,
                                   child: Text(
-                                    item.status == 'finished' || item.isShare
+                                    item.status == 'finished'
                                         ? prettySize(item.entry.size)
                                         : '${prettySize(item.finishedSize)} / ${prettySize(item.entry.size)}',
                                     style: TextStyle(fontSize: 10),

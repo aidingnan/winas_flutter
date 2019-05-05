@@ -55,6 +55,15 @@ class TransferItem {
     this.startTime = m['startTime'];
     this.finishedSize = m['finishedSize'] ?? 0;
     this.filePath = m['filePath'];
+    switch (m['transType']) {
+      case 'TransType.shared':
+        this.transType = TransType.shared;
+        break;
+      case 'TransType.download':
+        this.transType = TransType.download;
+        break;
+      default:
+    }
   }
 
   @override
@@ -68,6 +77,7 @@ class TransferItem {
       'finishedSize': finishedSize,
       'filePath': filePath,
       'error': error,
+      'transType': transType.toString()
     };
     return jsonEncode(m);
   }
@@ -101,7 +111,10 @@ class TransferItem {
   }
 
   void pause() {
-    this.cancelToken?.cancel("cancelled");
+    if (this.cancelToken != null && this.cancelToken?.isCancelled != true) {
+      this.cancelToken.cancel("cancelled");
+    }
+
     this.speed = '';
     this.status = 'paused';
   }
@@ -304,7 +317,7 @@ class TransferManager {
 
   /// upload file in Isolate
   Future<void> uploadAsync(AppState state, Entry targetDir, String filePath,
-      String hash, CancelToken cancelToken) async {
+      String hash, CancelToken cancelToken, Function onProgress) async {
     final fileName = filePath.split('/').last;
     File file = File(filePath);
     final FileStat stat = await file.stat();
@@ -325,7 +338,8 @@ class TransferManager {
       'file': UploadFileInfo(file, jsonEncode(formDataOptions)),
     };
 
-    await state.apis.uploadAsync(args, cancelToken: cancelToken);
+    await state.apis
+        .uploadAsync(args, cancelToken: cancelToken, onProgress: onProgress);
   }
 
   Future<void> uploadSharedFile(TransferItem item, AppState state) async {
@@ -361,7 +375,8 @@ class TransferManager {
       // await uploadViaIsolate(state.apis, targetDir, filePath, hash);
 
       // upload async
-      await uploadAsync(state, targetDir, filePath, hash, cancelToken);
+      await uploadAsync(state, targetDir, filePath, hash, cancelToken,
+          (int a, int b) => item.update(a));
 
       item.finish();
 

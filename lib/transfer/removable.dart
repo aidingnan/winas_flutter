@@ -75,11 +75,12 @@ class _RemovableState extends State<Removable>
 
     // only right to left drag
     if (dragExtent >= 0 && details.delta.dx >= 0) return;
-
-    setState(() {
-      dragExtent =
-          (dragExtent + details.delta.dx).clamp(double.negativeInfinity, 0);
-    });
+    if (this.mounted && details.delta.dx is double) {
+      setState(() {
+        dragExtent =
+            (dragExtent + details.delta.dx).clamp(double.negativeInfinity, 0.0);
+      });
+    }
   }
 
   Future<void> _handleDragEnd(DragEndDetails details) async {
