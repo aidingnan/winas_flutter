@@ -252,6 +252,19 @@ String prettyDate(int time, {bool showDay: false, bool showMonth: false}) {
 /// get DateTime.now().millisecondsSinceEpoch
 int getNow() => DateTime.now().millisecondsSinceEpoch;
 
+const weekDays = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'];
+
+/// get weekday: 7 => '星期日'
+String getWeekday(DateTime dt) => weekDays[dt.weekday - 1];
+
+/// get Pixel: 10000 => '1 万像素'
+String getPixel(int p) {
+  if (p == null || p < 0) return '';
+  if (p < 10000) return '$p 像素';
+  if (p < 10000 * 10000) return '${(p / 10000).toStringAsFixed(2)} 万像素';
+  return '${(p / 100000000).toStringAsFixed(2)} 亿像素';
+}
+
 /// Ellipsis Text
 Widget ellipsisText(String text, {TextStyle style}) {
   return Expanded(

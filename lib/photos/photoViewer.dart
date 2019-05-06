@@ -101,8 +101,6 @@ class _PhotoViewerState extends State<PhotoViewer> {
     );
 
     if (success == true) {
-      print(pageController);
-
       showSnackBar(ctx, '删除成功');
       final isFirstPage = pageController.offset == 0.0;
 
@@ -247,6 +245,8 @@ class _GridPhotoState extends State<GridPhoto>
   VideoPlayerController videoPlayerController;
   ChewieController chewieController;
   Widget playerWidget;
+  bool showDetails = false;
+  double detailTop = double.negativeInfinity;
   @override
   void initState() {
     super.initState();
@@ -278,6 +278,13 @@ class _GridPhotoState extends State<GridPhoto>
     } else {
       return Size(clientW, clientH);
     }
+  }
+
+  double getDetailTop() {
+    final Size size = getTrueSize();
+    final bottomHeight = (context.size.height - size.height) / 2;
+    final top = bottomHeight - _offset.dy;
+    return top;
   }
 
   // keep value in maximum and minimum offset value
@@ -334,7 +341,7 @@ class _GridPhotoState extends State<GridPhoto>
 
     // toggle title
     canceled = true;
-    widget.toggleTitle(show: false);
+    // widget.toggleTitle(show: false);
 
     // update opacity
     updateOpacity();
@@ -353,8 +360,18 @@ class _GridPhotoState extends State<GridPhoto>
 
       Offset delta = details.focalPoint - prevPosition;
       prevPosition = details.focalPoint;
+      if (delta.dy < 0 && _offset.dy == 0) {
+        setState(() {
+          showDetails = true;
+        });
+      }
 
       _offset += delta;
+
+      // prevent move vertically when drag up
+      if (_offset.dy < 0 && showDetails) {
+        _offset = Offset(0.0, _offset.dy);
+      }
 
       opacity = (1 - _offset.dy / rate).clamp(0.0, 1.0);
 
@@ -365,23 +382,51 @@ class _GridPhotoState extends State<GridPhoto>
         _scale = (_previousScale * details.scale).clamp(1.0, 4.0);
         // Ensure that image location under the focal point stays in the same place despite scaling.
         _offset = _clampOffset(details.focalPoint - _normalizedOffset * _scale);
+        showDetails = false;
       });
     }
   }
 
   void _handleOnScaleEnd(ScaleEndDetails details) {
-    if (opacity <= 0.8) {
+    /// dy > 0: drag down
+    /// dy < 0: drag up
+    final dy = details.velocity.pixelsPerSecond.dy;
+
+    // drag image down, discard image view
+    if (opacity <= 0.8 && dy > 0) {
       Navigator.pop(context);
       return;
     }
+
     _scaleAnimation =
         _controller.drive(Tween<double>(begin: _scale, end: _scale));
     final double magnitude = details.velocity.pixelsPerSecond.distance;
 
-    if (_scale == 1.0) {
+    // drag image up, show image detail
+    if (_offset.dy < 0.0 && _scale == 1.0 && dy < 0) {
+      final Size size = getTrueSize();
+      final bottomHeight = (context.size.height - size.height) / 2;
+      final deltaH = (context.size.height - 240.0 - bottomHeight) * -1;
+      _flingAnimation = _controller
+          .drive(Tween<Offset>(begin: _offset, end: Offset(0, deltaH)));
+
+      // show title
+      widget.toggleTitle(show: true);
+
+      // TODO
+      setState(() {
+        detailTop = deltaH;
+        showDetails = true;
+      });
+    } else if (_scale == 1.0) {
       // return to center
       _flingAnimation =
           _controller.drive(Tween<Offset>(begin: _offset, end: Offset(0, 0)));
+
+      setState(() {
+        detailTop = double.infinity;
+        showDetails = false;
+      });
     } else {
       // fling after move
       if (magnitude < _kMinFlingVelocity) return;
@@ -501,7 +546,8 @@ class _GridPhotoState extends State<GridPhoto>
       final key = await cm.getRandomKey(widget.photo, state);
       if (key == null) return;
 
-      final String url = 'http://${apis.lanIp}:3000/media/$key.${ext.toLowerCase()}';
+      final String url =
+          'http://${apis.lanIp}:3000/media/$key.${ext.toLowerCase()}';
       print('${widget.photo.name}');
       print('url: $url, $mounted');
 
@@ -589,6 +635,74 @@ class _GridPhotoState extends State<GridPhoto>
     lastTapTime = tapTime;
   }
 
+  Widget detailRow(Widget icon, String mainText, String subText) {
+    return Container(
+      padding: EdgeInsets.all(16),
+      child: Row(
+        children: <Widget>[
+          icon,
+          Container(width: 24),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Container(child: Text(mainText)),
+              Container(height: 8),
+              Container(
+                child: Text(subText, style: TextStyle(color: Colors.black38)),
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget renderDetail() {
+    final photo = widget.photo;
+    final metadata = photo.metadata;
+
+    // fullDate
+    final date = metadata.fullDate ?? prettyDate(photo.bctime ?? photo.mtime);
+    final List<int> list = List.from(date
+        .replaceAll(' ', '-')
+        .replaceAll(':', '-')
+        .split('-')
+        .map((s) => int.parse(s)));
+
+    // week day
+    final weekday =
+        getWeekday(DateTime(list[0], list[1], list[2], list[3], list[4]));
+
+    // image pixel
+    final pixel = getPixel(metadata.width * metadata.height);
+    // image resolution
+    final resolution = '${metadata.width} x ${metadata.height}';
+
+    // image size
+    final size = prettySize(photo.size);
+
+    final rowList = [
+      Container(
+        margin: EdgeInsets.all(16),
+        child: Text('详情', style: TextStyle(fontSize: 18)),
+      ),
+      detailRow(Icon(Icons.insert_drive_file), photo.name, size),
+      detailRow(Icon(Icons.calendar_today), date, weekday),
+      detailRow(Icon(Icons.image), pixel, resolution),
+    ];
+    if (metadata.model != null && metadata.make != null) {
+      rowList.add(detailRow(Icon(Icons.camera), metadata.model, metadata.make));
+    }
+
+    return Container(
+      color: Colors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: rowList,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
@@ -658,6 +772,13 @@ class _GridPhotoState extends State<GridPhoto>
                               ),
                             ),
                           ),
+              ),
+              Positioned(
+                left: 0,
+                right: 0,
+                top: showDetails ? 240 + (1 - _offset.dy / detailTop) * 480 : 0,
+                height: showDetails ? 480 : 0,
+                child: showDetails ? renderDetail() : Container(),
               ),
               imageData == null && playerWidget == null
                   ? Center(child: CircularProgressIndicator())

@@ -240,6 +240,9 @@ class Metadata {
   String type;
   String datetime;
   String hdate;
+  String fullDate;
+  String make;
+  String model;
   int height;
   int width;
   int rot;
@@ -250,13 +253,20 @@ class Metadata {
     this.height = m['h'];
     this.width = m['w'];
     this.rot = m['rot'];
-
+    this.make = m['make'];
+    this.model = m['model'];
+    // print('Metadata>>>>>>> $m');
     try {
-      // only allow format: "2017:06:17 17:31:18", Res: 2017-06-17
+      // only allow format: "2017:06:17 17:31:18"
+      // hdate: 2017-06-17
+      // fullDate: 2017-06-17 17:31
+      final list = this.datetime?.split(':');
       if (this.datetime != null &&
           !this.datetime.startsWith('0') &&
-          this.datetime.split(':').length == 5) {
+          list.length == 5) {
         this.hdate = this.datetime.split(' ')[0].replaceAll(':', '-');
+        this.fullDate =
+            this.hdate + ' ' + list[2].split(' ').last + ':' + list[3];
       }
     } catch (err) {
       this.hdate = null;
@@ -268,6 +278,14 @@ class Metadata {
   String toString() {
     Map<String, dynamic> m = {
       'type': type,
+      'datetime': datetime,
+      'hdate': hdate,
+      'fullDate': fullDate,
+      'height': height,
+      'width': width,
+      'rot': rot,
+      'make': make,
+      'model': model,
     };
     return jsonEncode(m);
   }
