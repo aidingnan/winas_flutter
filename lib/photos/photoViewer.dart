@@ -280,11 +280,21 @@ class _GridPhotoState extends State<GridPhoto>
     }
   }
 
+  /// top of detail widget
   double getDetailTop() {
-    final Size size = getTrueSize();
-    final bottomHeight = (context.size.height - size.height) / 2;
-    final top = bottomHeight - _offset.dy;
-    return top;
+    // hidden detail widget
+    if (!showDetails && detailTop != double.negativeInfinity) {
+      return double.infinity;
+    }
+    // move detail widget up
+    if (_offset.dy >= detailTop) {
+      // speed of detail widget appear
+      final speed = 480;
+      return 240 + speed * (1 - _offset.dy / detailTop);
+    } else {
+      // move detail widget over maxtop
+      return 480 - (_offset.dy / detailTop) * 240;
+    }
   }
 
   // keep value in maximum and minimum offset value
@@ -413,7 +423,6 @@ class _GridPhotoState extends State<GridPhoto>
       // show title
       widget.toggleTitle(show: true);
 
-      // TODO
       setState(() {
         detailTop = deltaH;
         showDetails = true;
@@ -424,7 +433,7 @@ class _GridPhotoState extends State<GridPhoto>
           _controller.drive(Tween<Offset>(begin: _offset, end: Offset(0, 0)));
 
       setState(() {
-        detailTop = double.infinity;
+        detailTop = double.negativeInfinity;
         showDetails = false;
       });
     } else {
@@ -504,6 +513,76 @@ class _GridPhotoState extends State<GridPhoto>
       ..fling(velocity: magnitude / 1000.0);
   }
 
+  /// on Detail Vertical Drag Start
+  void onDetailVerticalDragStart(DragStartDetails detail) {
+    opacity = 1;
+
+    // toggle title
+    canceled = true;
+
+    // update opacity
+    updateOpacity();
+    setState(() {
+      _previousScale = _scale;
+      prevPosition = detail.globalPosition;
+      _controller.stop();
+    });
+  }
+
+  /// on Detail Vertical Drag Update
+  void onDetailVerticalDragUpdate(DragUpdateDetails details) {
+    Offset delta = details.globalPosition - prevPosition;
+
+    // quick fix bug of Twofingers drag which not recognized as scale
+    if (delta.distance > 32) delta = Offset(0, 0);
+    prevPosition = details.globalPosition;
+    print('onDetailVerticalDragUpdate $details $delta');
+    setState(() {
+      // Ensure that image location under the focal point stays in the same place despite scaling.
+      _offset = _offset + Offset(0, delta.dy);
+    });
+  }
+
+  /// on Detail Vertical Drag End
+  void onDetailVerticalDragEnd(DragEndDetails details) {
+    /// dy > 0: drag down
+    /// dy < 0: drag up
+    final dy = details.velocity.pixelsPerSecond.dy;
+
+    final double magnitude = details.velocity.pixelsPerSecond.distance;
+
+    // drag image up, show image detail
+    if (_offset.dy < 0.0 && dy < 0) {
+      final Size size = getTrueSize();
+      final bottomHeight = (context.size.height - size.height) / 2;
+      final deltaH = (context.size.height - 240.0 - bottomHeight) * -1;
+      _flingAnimation = _controller
+          .drive(Tween<Offset>(begin: _offset, end: Offset(0, deltaH)));
+
+      // show title
+      widget.toggleTitle(show: true);
+      setState(() {
+        detailTop = deltaH;
+        showDetails = true;
+      });
+    } else {
+      // return to center
+      _flingAnimation =
+          _controller.drive(Tween<Offset>(begin: _offset, end: Offset(0, 0)));
+
+      setState(() {
+        detailTop = double.negativeInfinity;
+        showDetails = false;
+      });
+    }
+    opacity = 1.0;
+    updateOpacity();
+
+    _controller
+      ..value = 0.0
+      ..fling(velocity: magnitude / 1000.0);
+  }
+
   Future<ImageInfo> _getImage(imageProvider) {
     final Completer completer = Completer<ImageInfo>();
     final ImageStream stream =
@@ -530,6 +609,9 @@ class _GridPhotoState extends State<GridPhoto>
     if (thumbData == null) {
       thumbData = await cm.getThumbData(widget.photo, state);
     }
+
+    info = await _getImage(MemoryImage(thumbData));
+
     if (this.mounted) {
       print('thumbData updated');
       setState(() {});
@@ -694,11 +776,16 @@ class _GridPhotoState extends State<GridPhoto>
       rowList.add(detailRow(Icon(Icons.camera), metadata.model, metadata.make));
     }
 
-    return Container(
-      color: Colors.white,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: rowList,
+    return GestureDetector(
+      onVerticalDragStart: onDetailVerticalDragStart,
+      onVerticalDragUpdate: onDetailVerticalDragUpdate,
+      onVerticalDragEnd: onDetailVerticalDragEnd,
+      child: Container(
+        color: Colors.white,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: rowList,
+        ),
       ),
     );
   }
@@ -776,9 +863,10 @@ class _GridPhotoState extends State<GridPhoto>
               Positioned(
                 left: 0,
                 right: 0,
-                top: showDetails ? 240 + (1 - _offset.dy / detailTop) * 480 : 0,
+                top: getDetailTop(),
                 height: showDetails ? 480 : 0,
-                child: showDetails ? renderDetail() : Container(),
+                child:
+                    showDetails && _scale == 1 ? renderDetail() : Container(),
               ),
               imageData == null && playerWidget == null
                   ? Center(child: CircularProgressIndicator())
