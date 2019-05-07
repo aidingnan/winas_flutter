@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:amap_base_map/amap_base_map.dart' as AMap;
-import 'package:amap_base_search/amap_base_search.dart' as ASearch;
 
 import '../redux/redux.dart';
 import '../common/utils.dart';
@@ -237,7 +235,6 @@ class GridPhoto extends StatefulWidget {
 class _GridPhotoState extends State<GridPhoto>
     with SingleTickerProviderStateMixin {
   AnimationController _controller;
-
   Animation<Offset> _flingAnimation;
   Animation<double> _scaleAnimation;
   Offset _offset = Offset.zero;
@@ -250,14 +247,6 @@ class _GridPhotoState extends State<GridPhoto>
   Widget playerWidget;
   bool showDetails = false;
   double detailTop = double.negativeInfinity;
-
-  /// amap
-  AMap.AMapController _aMapController;
-
-  /// detail height
-  /// with location: 160.0
-  /// without location: 96
-  double detailHeight = 96;
   @override
   void initState() {
     super.initState();
@@ -273,7 +262,6 @@ class _GridPhotoState extends State<GridPhoto>
     videoPlayerController?.dispose();
     chewieController?.pause();
     chewieController?.dispose();
-    _aMapController?.dispose();
     super.dispose();
   }
 
@@ -425,7 +413,7 @@ class _GridPhotoState extends State<GridPhoto>
     final double magnitude = details.velocity.pixelsPerSecond.distance;
 
     // drag image up, show image detail
-    if (_offset.dy < 0.0 && _scale == 1.0 && dy <= 0.0) {
+    if (_offset.dy < 0.0 && _scale == 1.0 && dy < 0) {
       final Size size = getTrueSize();
       final bottomHeight = (context.size.height - size.height) / 2;
       final deltaH = (context.size.height - 240.0 - bottomHeight) * -1;
@@ -548,6 +536,7 @@ class _GridPhotoState extends State<GridPhoto>
     // quick fix bug of Twofingers drag which not recognized as scale
     if (delta.distance > 32) delta = Offset(0, 0);
     prevPosition = details.globalPosition;
+    print('onDetailVerticalDragUpdate $details $delta');
     setState(() {
       // Ensure that image location under the focal point stays in the same place despite scaling.
       _offset = _offset + Offset(0, delta.dy);
@@ -558,11 +547,25 @@ class _GridPhotoState extends State<GridPhoto>
   void onDetailVerticalDragEnd(DragEndDetails details) {
     /// dy > 0: drag down
     /// dy < 0: drag up
-    // final dy = details.velocity.pixelsPerSecond.dy;
+    final dy = details.velocity.pixelsPerSecond.dy;
 
     final double magnitude = details.velocity.pixelsPerSecond.distance;
 
-    if (_offset.dy > detailTop) {
+    // drag image up, show image detail
+    if (_offset.dy < 0.0 && dy < 0) {
+      final Size size = getTrueSize();
+      final bottomHeight = (context.size.height - size.height) / 2;
+      final deltaH = (context.size.height - 240.0 - bottomHeight) * -1;
+      _flingAnimation = _controller
+          .drive(Tween<Offset>(begin: _offset, end: Offset(0, deltaH)));
+
+      // show title
+      widget.toggleTitle(show: true);
+      setState(() {
+        detailTop = deltaH;
+        showDetails = true;
+      });
+    } else {
       // return to center
       _flingAnimation =
           _controller.drive(Tween<Offset>(begin: _offset, end: Offset(0, 0)));
@@ -570,28 +573,6 @@ class _GridPhotoState extends State<GridPhoto>
       setState(() {
         detailTop = double.negativeInfinity;
         showDetails = false;
-      });
-    } else {
-      // other position move detail
-      final Size size = getTrueSize();
-      final bottomHeight = (context.size.height - size.height) / 2;
-      final maxHeight =
-          (context.size.height - 240.0 - bottomHeight) * -1 - detailHeight;
-
-      print('maxHeight $maxHeight $_offset');
-      _flingAnimation = _controller.drive(
-        Tween<Offset>(
-          begin: _offset,
-          end: maxHeight > _offset.dy
-              ? Offset(0, maxHeight)
-              : Offset(0, _offset.dy),
-        ),
-      );
-
-      // show title
-      widget.toggleTitle(show: true);
-      setState(() {
-        showDetails = true;
       });
     }
     opacity = 1.0;
@@ -758,32 +739,6 @@ class _GridPhotoState extends State<GridPhoto>
     );
   }
 
-  String location = '';
-  bool fired = false;
-  Future searchReGeocode(GPSLoc loc) async {
-    if (fired) return;
-    fired = true;
-    try {
-      await Future.delayed(Duration(seconds: 2));
-      final res = await ASearch.AMapSearch().searchReGeocode(
-        ASearch.LatLng(30.9824, 120.3053),
-        100,
-        0,
-        // LatLng(loc.latitude, loc.longitude),
-        // 100,
-        // 0,
-      );
-      location = res.regeocodeAddress.city;
-      if (mounted && location != null) {
-        setState(() {});
-      }
-    } catch (e) {
-      print('searchReGeocode error $e');
-    } finally {
-      // fired = false;
-    }
-  }
-
   Widget renderDetail() {
     final photo = widget.photo;
     final metadata = photo.metadata;
@@ -819,34 +774,6 @@ class _GridPhotoState extends State<GridPhoto>
     ];
     if (metadata.model != null && metadata.make != null) {
       rowList.add(detailRow(Icon(Icons.camera), metadata.model, metadata.make));
-    }
-    if (metadata.gps != null) {
-      final loc = convertGPS(metadata.gps);
-      if (loc != null) {
-        detailHeight = 400;
-        searchReGeocode(loc).catchError(print);
-
-        rowList
-            .add(detailRow(Icon(Icons.location_on), location, loc.toString()));
-        rowList.add(Flexible(
-          child: AMap.AMapView(
-            onAMapViewCreated: (controller) {
-              _aMapController = controller;
-            },
-            amapOptions: AMap.AMapOptions(
-              compassEnabled: false,
-              zoomControlsEnabled: true,
-              logoPosition: AMap.LOGO_POSITION_BOTTOM_CENTER,
-              camera: AMap.CameraPosition(
-                target: AMap.LatLng(loc.latitude, loc.longitude),
-                zoom: 15,
-              ),
-            ),
-          ),
-        ));
-      }
-    } else {
-      detailHeight = 96;
     }
 
     return GestureDetector(
@@ -937,7 +864,7 @@ class _GridPhotoState extends State<GridPhoto>
                 left: 0,
                 right: 0,
                 top: getDetailTop(),
-                height: showDetails ? 640 : 0,
+                height: showDetails ? 480 : 0,
                 child:
                     showDetails && _scale == 1 ? renderDetail() : Container(),
               ),

@@ -17,10 +17,6 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="winas_flutter"
         android:icon="@mipmap/ic_launcher">
-        <!-- key for amap -->
-        <meta-data
-            android:name="com.amap.api.v2.apikey"
-            android:value="db48eaf98740f0ea550863860b3aab81"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -59,10 +55,10 @@
                 android:exported="false"
                 android:grantUriPermissions="true"
                 tools:replace="android:authorities">
-        <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/winas_file_provider_path"
-                tools:replace="android:resource" />
+            <meta-data
+                    android:name="android.support.FILE_PROVIDER_PATHS"
+                    android:resource="@xml/winas_file_provider_path"
+                    tools:replace="android:resource" />
         </provider>
     </application>
 </manifest>
