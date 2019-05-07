@@ -243,6 +243,7 @@ class Metadata {
   String fullDate;
   String make;
   String model;
+  String gps;
   int height;
   int width;
   int rot;
@@ -255,6 +256,7 @@ class Metadata {
     this.rot = m['rot'];
     this.make = m['make'];
     this.model = m['model'];
+    this.gps = m['gps'];
     // print('Metadata>>>>>>> $m');
     try {
       // only allow format: "2017:06:17 17:31:18"
@@ -286,6 +288,7 @@ class Metadata {
       'rot': rot,
       'make': make,
       'model': model,
+      'gps': gps,
     };
     return jsonEncode(m);
   }

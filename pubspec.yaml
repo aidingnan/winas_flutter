@@ -63,6 +63,10 @@ dependencies:
   # wifi ssid
   wifi: 0.1.5
 
+  # amap
+  amap_base_map: 0.3.4
+  amap_base_search: 0.3.4
+
   # request
   dio: 2.1.3
   # fix bug in PUT List<int> method

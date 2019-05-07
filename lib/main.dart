@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:redux_persist/redux_persist.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:amap_base_map/amap_base_map.dart' as AMap;
+import 'package:amap_base_search/amap_base_search.dart' as ASearch;
 import './login/login.dart';
 import './nav/bottom_navigation.dart';
 import './redux/redux.dart';
@@ -40,6 +42,13 @@ void main() async {
     initialState: initialState ?? AppState.initial(),
     middleware: [persistor.createMiddleware()],
   );
+
+  try {
+    await ASearch.AMap.init('db48eaf98740f0ea550863860b3aab81');
+    await AMap.AMap.init('db48eaf98740f0ea550863860b3aab81');
+  } catch (e) {
+    print('init AMap error $e');
+  }
 
   runApp(MyApp(initialState, store));
 }

@@ -418,3 +418,59 @@ String converError(dynamic error) {
   }
   return error.toString();
 }
+
+/// GPSLoc(latitude, nlongitude);
+class GPSLoc {
+  double latitude = 0;
+  double longitude = 0;
+  GPSLoc(this.latitude, this.longitude);
+  @override
+  String toString() => '$latitude, $longitude';
+}
+
+// 18 deg 12' 48.58" N, 109 deg 31' 56.29" E  => (109.532, 18.213)
+GPSLoc convertGPS(String gps) {
+  try {
+    double latitude = 0;
+    double longitude = 0;
+
+    /// raw: [ `18 deg 12' 48.58" N`, `109 deg 31' 56.29" E` ]
+    /// array: [ ['18', 'deg', "12'", '48.58"', 'N'], ['109', 'deg', "31'", '56.29"', 'E'] ]
+    final List<List<String>> array =
+        List.from(gps.split(', ').map((String a) => a.split(' ')));
+
+    if (array.length != 2) return null;
+    array.forEach((a) {
+      // degree
+      final d = double.parse(a[0]);
+      // minute
+      final m = double.parse(a[2].substring(0, a[2].length - 1));
+      // second
+      final s = double.parse(a[3].substring(0, a[3].length - 1));
+
+      // keep 3 digits
+      final value = ((d + m / 60.0 + s / 3600.0) * 1000.0).round() / 1000.0;
+
+      switch (a[4]) {
+        case 'N':
+          latitude = value;
+          break;
+        case 'E':
+          longitude = value;
+          break;
+        case 'S':
+          latitude = -1 * value;
+          break;
+        case 'W':
+          longitude = -1 * value;
+          break;
+        default:
+          return null;
+      }
+    });
+    return GPSLoc(latitude, longitude);
+  } catch (e) {
+    print('convert gps error $e');
+    return null;
+  }
+}
