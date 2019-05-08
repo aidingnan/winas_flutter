@@ -7,7 +7,8 @@ import 'package:connectivity/connectivity.dart';
 class Apis {
   bool isIOS = !Platform.isAndroid;
   bool isCloud;
-  final cloudAddress = 'https://test.nodetribe.com/c/v1';
+  final cloudAddress = 'http://test.aidingnan.com:12345/c/v1';
+  // final cloudAddress = 'https://test.nodetribe.com/c/v1';
   String token;
   String cookie;
   String lanToken;

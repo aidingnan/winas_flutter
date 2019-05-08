@@ -4,7 +4,8 @@ import 'package:dio/dio.dart';
 
 class Request {
   bool isIOS = !Platform.isAndroid;
-  String cloudAddress = 'https://test.nodetribe.com/c/v1';
+  final cloudAddress = 'http://test.aidingnan.com:12345/c/v1';
+  // final cloudAddress = 'https://test.nodetribe.com/c/v1';
   String token;
   String cookie;
   Dio dio = Dio();
