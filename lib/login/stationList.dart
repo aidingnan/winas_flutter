@@ -80,6 +80,9 @@ class _StationListState extends State<StationList> {
       stationList = null;
     }
     loading = false;
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override

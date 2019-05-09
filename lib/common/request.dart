@@ -39,8 +39,8 @@ class Request {
           token = res['token'];
         }
         if (response.data is Map && response.data['url'] == '/c/v1/station') {
-          assert(response.headers['set-cookie'][0] != null);
-          cookie = response.headers['set-cookie'][0];
+          cookie = response.headers['set-cookie']?.first;
+          assert(cookie != null);
         }
         if (res != null) return res;
         return response.data;
