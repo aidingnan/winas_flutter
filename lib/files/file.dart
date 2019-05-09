@@ -592,11 +592,20 @@ class _FilesState extends State<Files> {
   AppBar selectAppBar(AppState state) {
     final length = select.selectedEntry.length;
     return AppBar(
-      title: Text(
-        '选择了$length项',
-        style: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.normal,
+      title: WillPopScope(
+        onWillPop: () {
+          if (select.selectMode()) {
+            select.clearSelect();
+            return Future.value(false);
+          }
+          return Future.value(true);
+        },
+        child: Text(
+          '选择了$length项',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.normal,
+          ),
         ),
       ),
       leading: IconButton(
@@ -963,28 +972,19 @@ class _FilesState extends State<Files> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        if (select.selectMode()) {
-          select.clearSelect();
-          return Future.value(false);
-        }
-        return Future.value(true);
-      },
-      child: Stack(
-        children: <Widget>[
-          Positioned.fill(
-            child: node.tag == 'home'
-                ? mainView(true)
-                : (node.tag == 'dir' || node.tag == 'built-in')
-                    ? mainView(false)
-                    : Center(child: Text('Error !')),
-          ),
+    return Stack(
+      children: <Widget>[
+        Positioned.fill(
+          child: node.tag == 'home'
+              ? mainView(true)
+              : (node.tag == 'dir' || node.tag == 'built-in')
+                  ? mainView(false)
+                  : Center(child: Text('Error !')),
+        ),
 
-          /// xcopy task fab
-          TaskFab(hasBottom: node.tag == 'home'),
-        ],
-      ),
+        /// xcopy task fab
+        TaskFab(hasBottom: node.tag == 'home'),
+      ],
     );
   }
 }
