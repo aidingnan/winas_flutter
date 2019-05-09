@@ -87,6 +87,14 @@ class Apis {
         data: args, cancelToken: cancelToken, onSendProgress: onProgress);
   }
 
+  /// post with token
+  tpatch(String ep, dynamic args) {
+    assert(token != null);
+    if (isCloud ?? true) return command('PATCH', ep, args);
+    dio.options.headers['Authorization'] = 'JWT $lanToken';
+    return dio.patch('$lanAdrress/$ep', data: args);
+  }
+
   /// delete with token
   tdel(String ep, dynamic args, {CancelToken cancelToken}) {
     assert(token != null);
@@ -206,8 +214,16 @@ class Apis {
         r = tget('drives', null);
         break;
 
-      case 'createDrives':
+      case 'drive':
+        r = tget('drives/${args['uuid']}', null);
+        break;
+
+      case 'createDrive':
         r = tpost('drives', args);
+        break;
+
+      case 'updateDrive':
+        r = tpatch('drives/${args['uuid']}', args['props']);
         break;
 
       case 'space':
@@ -251,6 +267,7 @@ class Apis {
         );
         break;
 
+      // xcopy
       case 'xcopy':
         r = tpost('tasks', args);
         break;
@@ -271,6 +288,7 @@ class Apis {
         r = tget('files', args);
         break;
 
+      // bind device
       case 'winasInfo':
         r = isCloud
             ? command('GET', 'winasd/info', null)

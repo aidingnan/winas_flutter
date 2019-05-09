@@ -119,7 +119,7 @@ class BackupWorker {
         }
       };
 
-      await apis.req('createDrives', args);
+      await apis.req('createDrive', args);
 
       // retry get backupDrive
       backupDrive = await getBackupDrive();
@@ -314,6 +314,29 @@ class BackupWorker {
     finished += 1;
   }
 
+  Future<void> updateStatus(Entry rootDir) async {
+    final res = await apis.req(
+      'drive',
+      {'uuid': rootDir.pdrv},
+    );
+    final client = res.data['client'];
+    final props = {
+      'op': 'backup',
+      'client': {
+        'status': 'Idle',
+        'lastBackupTime': DateTime.now().millisecondsSinceEpoch,
+        'id': client['id'],
+        'disabled': false,
+        'type': client['type'],
+      }
+    };
+
+    await apis.req('updateDrive', {
+      'uuid': rootDir.pdrv,
+      'props': props,
+    });
+  }
+
   Future<void> startAsync() async {
     status = Status.running;
     final data = await getMachineId();
@@ -326,7 +349,6 @@ class BackupWorker {
     List<AssetEntity> assetList = await getAssetList();
     total = assetList.length;
     final remoteDirs = await getRemoteDirs(rootDir);
-
     for (AssetEntity entity in assetList) {
       if (status == Status.running) {
         try {
@@ -336,7 +358,9 @@ class BackupWorker {
         }
       }
     }
-
+    print('upload all assetList');
+    await updateStatus(rootDir);
+    print('updateStatus finished');
     status = Status.finished;
     finished = 0;
   }

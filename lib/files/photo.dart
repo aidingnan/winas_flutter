@@ -12,6 +12,7 @@ showPhoto(BuildContext ctx, Entry entry, Uint8List thumbData) {
   Navigator.push(
     ctx,
     MaterialPageRoute<void>(
+      fullscreenDialog: true,
       builder: (BuildContext context) {
         return Scaffold(
           appBar: AppBar(
