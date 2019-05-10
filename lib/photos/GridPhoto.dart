@@ -336,7 +336,7 @@ class _GridPhotoState extends State<GridPhoto>
     // quick fix bug of Twofingers drag which not recognized as scale
     if (delta.distance > 32) delta = Offset(0, 0);
     prevPosition = details.globalPosition;
-    print('onDetailVerticalDragUpdate $details $delta');
+    // print('onDetailVerticalDragUpdate $details $delta');
     setState(() {
       // Ensure that image location under the focal point stays in the same place despite scaling.
       _offset = _offset + Offset(0, delta.dy);

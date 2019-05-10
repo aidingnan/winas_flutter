@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
@@ -7,6 +8,7 @@ import './stationLogin.dart';
 import './scanBleDevice.dart';
 import '../common/utils.dart';
 import '../common/request.dart';
+import '../files/tokenExpired.dart';
 
 final pColor = Colors.teal;
 
@@ -77,6 +79,12 @@ class _StationListState extends State<StationList> {
       setState(() {});
     } catch (error) {
       print(error);
+      if (error is DioError && error?.response?.statusCode == 401) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) => TokenExpired(),
+        );
+      }
       stationList = null;
     }
     loading = false;
