@@ -103,7 +103,9 @@ class _SecurityState extends State<Security> {
                       '退出登录',
                       () {
                         logout();
-                        Navigator.pushReplacementNamed(context, '/login');
+                        // pop all page
+                        Navigator.pushNamedAndRemoveUntil(
+                            context, '/login', (Route<dynamic> route) => false);
                       },
                       Container(),
                     );
