@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 import 'dart:async';
 import 'dart:convert';
 import 'package:dio/dio.dart';
@@ -29,13 +28,13 @@ class TransferItem {
   Entry entry;
   TransType transType;
   String speed = '';
+  List<int> deltaSizeList = [];
+  List<int> deltaTimeList = [];
   String error;
   int finishedTime = -1;
   int startTime = -1;
   int finishedSize = 0;
   String filePath = '';
-  int previousSize = 0;
-  int previousTime = 0;
 
   CancelToken cancelToken;
   Function deleteFile;
@@ -44,8 +43,7 @@ class TransferItem {
   String status = 'init';
 
   TransferItem({this.entry, this.transType, this.filePath})
-      : this.uuid = Uuid().v4(),
-        this.previousTime = DateTime.now().millisecondsSinceEpoch;
+      : this.uuid = Uuid().v4();
 
   TransferItem.fromMap(Map m) {
     this.entry = Entry.fromMap(jsonDecode(m['entry']));
@@ -91,12 +89,20 @@ class TransferItem {
   void update(int size) {
     this.finishedSize = size;
     int now = DateTime.now().millisecondsSinceEpoch;
-    int timeSpent = max(now - this.previousTime, 1);
 
-    int speed = ((size - this.previousSize) / timeSpent * 1000).round();
+    this.deltaSizeList.insert(0, size);
+    this.deltaTimeList.insert(0, now);
+
+    final deltaSize = this.deltaSizeList.first - this.deltaSizeList.last;
+    final deltaTime = this.deltaTimeList.first - this.deltaTimeList.last;
+    final speed = deltaSize / deltaTime * 1000;
     this.speed = '${prettySize(speed)}/s';
-    this.previousSize = size;
-    this.previousTime = now;
+
+    // get average value of up to last 4 seconds or 256 update-data
+    if (deltaTime > 4 * 1000 || this.deltaSizeList.length > 256) {
+      this.deltaSizeList.removeLast();
+      this.deltaTimeList.removeLast();
+    }
   }
 
   void start(CancelToken cancelToken, Function deleteFile) {
@@ -199,12 +205,16 @@ class TransferManager {
 
       // reload transferItem
       for (TransferItem item in transferList) {
-        if (item.transType ==TransType.download) {
-          item.reload(() => _instance._cleanDir(item.filePath).catchError(print));
+        if (item.transType == TransType.download) {
+          item.reload(
+              () => _instance._cleanDir(item.filePath).catchError(print));
         } else {
           // update to the correct filePath
           final pathList = item.filePath.split('/');
-          final truePath = _instance._transDir() + pathList[pathList.length - 2] + '/' + pathList.last;
+          final truePath = _instance._transDir() +
+              pathList[pathList.length - 2] +
+              '/' +
+              pathList.last;
           item.filePath = truePath;
           item.reload(() => {});
         }

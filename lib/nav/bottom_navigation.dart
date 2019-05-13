@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'dart:async';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
@@ -176,6 +178,10 @@ class _BottomNavigationState extends State<BottomNavigation>
 
   @override
   Widget build(BuildContext context) {
+    // set SystemUiStyle to dark
+    if (Platform.isAndroid) {
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+    }
     final BottomNavigationBar botNavBar = BottomNavigationBar(
       items: _navigationViews
           .map<BottomNavigationBarItem>(
