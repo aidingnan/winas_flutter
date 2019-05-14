@@ -6,7 +6,26 @@ import '../photos/GridPhoto.dart';
 
 List<String> photoMagic = ['JPEG', 'GIF', 'PNG', 'BMP'];
 
-List<String> thumbMagic = ['JPEG', 'GIF', 'PNG', 'BMP', 'PDF'];
+List<String> thumbMagic = [
+  'HEIC',
+  'JPEG',
+  'JPG',
+  'GIF',
+  'PNG',
+  'BMP',
+  'PDF',
+  'RAW',
+  'RM',
+  'RMVB',
+  'WMV',
+  'AVI',
+  'MP4',
+  '3GP',
+  'MKV',
+  'MOV',
+  'FLV',
+  'MPEG',
+];
 
 showPhoto(BuildContext ctx, Entry entry, Uint8List thumbData) {
   Navigator.push(

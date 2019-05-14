@@ -139,8 +139,9 @@ class CacheManager {
   ///
   /// fire cancelToken.cancel() to cancel request
   Future<Uint8List> getThumbData(Entry entry, AppState state,
-      {CancelToken cancelToken}) async {
-    String entryPath = _thumbnailDir() + entry.hash + '&width=200&height=200';
+      {CancelToken cancelToken, int height = 200, int width = 200}) async {
+    String entryPath =
+        _thumbnailDir() + entry.hash + '&width=$width&height=$height';
     File entryFile = File(entryPath);
 
     FileStat res = await entryFile.stat();
@@ -166,8 +167,8 @@ class CacheManager {
       'alt': 'thumbnail',
       'autoOrient': 'true',
       'modifier': 'caret',
-      'width': 200,
-      'height': 200,
+      'width': width,
+      'height': height,
     };
 
     try {
@@ -189,6 +190,24 @@ class CacheManager {
   }
 
   List<Task> tasks = [];
+
+  /// download HEIC raw file, use AsyncMemoizer to memoizer result to fix bug of hero
+  Future getHEICPhoto(Entry entry, AppState state) {
+    int index = tasks.indexWhere((task) => task.name == entry.hash);
+    final height = entry.metadata.height ?? 200;
+    final width = entry.metadata.width ?? 200;
+    if (index > -1) {
+      return tasks[index].lock.runOnce(
+            () => getThumbData(entry, state, height: height, width: width),
+          );
+    } else {
+      Task task = Task(entry.hash);
+      tasks.add(task);
+      return task.lock.runOnce(
+        () => getThumbData(entry, state, height: height, width: width),
+      );
+    }
+  }
 
   /// download raw photo, use AsyncMemoizer to memoizer result to fix bug of hero
   Future getPhoto(Entry entry, AppState state) {

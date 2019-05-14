@@ -5,8 +5,6 @@ import 'package:flutter_redux/flutter_redux.dart';
 import '../redux/redux.dart';
 import '../common/taskManager.dart';
 
-const photoTypes = ['JPEG', 'PNG', 'JPG', 'GIF', 'BMP', 'RAW', 'MP4', 'MOV'];
-
 class PhotoItem extends StatefulWidget {
   PhotoItem({Key key, this.item, this.showPhoto, this.cellSize, this.select})
       : super(key: key);

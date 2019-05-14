@@ -462,7 +462,12 @@ class _GridPhotoState extends State<GridPhoto>
       }
     } else {
       // download raw photo
-      imageData = await cm.getPhoto(widget.photo, state);
+      if (widget.photo?.metadata?.type == 'HEIC') {
+        imageData = await cm.getHEICPhoto(widget.photo, state);
+      } else {
+        imageData = await cm.getPhoto(widget.photo, state);
+      }
+
       info = await _getImage(MemoryImage(imageData));
 
       if (imageData != null && this.mounted) {

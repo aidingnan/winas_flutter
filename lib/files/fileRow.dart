@@ -8,26 +8,6 @@ import '../redux/redux.dart';
 import '../common/renderIcon.dart';
 import '../common/taskManager.dart';
 
-List<String> thumbMagic = [
-  'JPEG',
-  'JPG',
-  'GIF',
-  'PNG',
-  'BMP',
-  'PDF',
-  'RAW',
-  'RM',
-  'RMVB',
-  'WMV',
-  'AVI',
-  'MP4',
-  '3GP',
-  'MKV',
-  'MOV',
-  'FLV',
-  'MPEG',
-];
-
 /// Ellipsis Text
 Widget ellipsisText(String text, {TextStyle style}) {
   return Text(
