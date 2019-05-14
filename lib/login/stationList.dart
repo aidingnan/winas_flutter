@@ -134,7 +134,7 @@ class _StationListState extends State<StationList> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            '您还没有闻上云盘',
+            '您还没有口袋网盘',
             style: TextStyle(fontSize: 21),
           ),
           Container(height: 56),

@@ -1,4 +1,4 @@
-package com.wisnuc.winas;
+package com.aidingnan.winas;
 
 import android.net.Uri;
 import android.os.Build;

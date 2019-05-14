@@ -35,7 +35,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.wisnuc.winas"
+        applicationId "com.aidingnan.winas"
         minSdkVersion 19
         targetSdkVersion 27
         versionCode flutterVersionCode.toInteger()

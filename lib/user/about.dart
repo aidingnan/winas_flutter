@@ -40,7 +40,7 @@ class _AboutState extends State<About> {
           Container(
             padding: EdgeInsets.all(16),
             child: Text(
-              '闻上云盘 版本$version',
+              '口袋网盘 版本$version',
               style: TextStyle(color: Colors.black87, fontSize: 21),
             ),
           ),
@@ -71,7 +71,7 @@ class _AboutState extends State<About> {
                 bool isIOS = !Platform.isAndroid;
                 String url = isIOS
                     ? 'itms-apps://itunes.apple.com/cn/app/wisnuc/id1132191394?mt=8'
-                    : 'http://www.wisnuc.com/download';
+                    : 'https://www.aidingnan.com/download';
                 if (await canLaunch(url)) {
                   await launch(url);
                 } else {
@@ -121,7 +121,7 @@ class _AboutState extends State<About> {
                             Container(
                               padding: EdgeInsets.fromLTRB(8, 32, 8, 8),
                               child: Text(
-                                '闻上盒子系列产品 用户使用许可协议',
+                                '口袋网盘系列产品 用户使用许可协议',
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w500),
                               ),

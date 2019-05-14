@@ -97,7 +97,7 @@ class _DeviceInfoState extends State<DeviceInfo> {
         sliverActionButton(
           '型号',
           () => {},
-          _ellipsisText('Winas'),
+          _ellipsisText('Bacchus'),
         ),
         sliverActionButton(
           '序列号',

@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
     return StoreProvider(
       store: store,
       child: MaterialApp(
-        title: 'Winas App',
+        title: 'Pocket Drive',
         theme: ThemeData(
           primaryColor: Colors.teal,
           accentColor: Colors.redAccent,

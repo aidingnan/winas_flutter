@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.wisnuc.winas">
+    package="com.aidingnan.winas">
 
     <!-- The INTERNET permission is required for development. Specifically,
          flutter needs it to communicate with the running application
@@ -15,7 +15,7 @@
          FlutterApplication and put your custom class here. -->
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="winas_flutter"
+        android:label="口袋网盘"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

@@ -90,7 +90,7 @@ class _FirmwareState extends State<Firmware> {
                       style: TextStyle(fontSize: 18),
                     ),
                     Container(height: 4),
-                    Text('Wisnuc Inc.'),
+                    Text('Aidingnan Inc.'),
                     Container(height: 4),
                     Text('2019-03-05'),
                   ],

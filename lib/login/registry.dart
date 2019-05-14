@@ -528,7 +528,7 @@ class _RegistryState extends State<Registry> {
           ),
           Container(height: 16.0),
           Text(
-            '欢迎使用闻上云盘',
+            '欢迎使用口袋网盘',
             style: TextStyle(color: Colors.white),
           ),
           Expanded(

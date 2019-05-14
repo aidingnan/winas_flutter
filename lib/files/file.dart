@@ -467,7 +467,7 @@ class _FilesState extends State<Files> {
                     context: context,
                     builder: (BuildContext context) =>
                         NewFolder(node: currentNode),
-                  ).then((success) => success ? refresh(state) : null),
+                  ).then((success) => success == true ? refresh(state) : null),
             ),
       // Button to toggle gridView
       StoreConnector<AppState, VoidCallback>(

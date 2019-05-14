@@ -695,47 +695,6 @@ AppState appReducer(AppState state, action) {
   );
 }
 
-AppState fakeState = AppState(
-  account: Account(
-    token:
-        '1@eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY5NDc2NjdhLWY4ZmYtNDk4Yy1iMGNiLWViYzRkOTc3MTVkNyIsInBhc3N3b3JkIjoiKjg0QUFDMTJGNTRBQjY2NkVDRkMyQTgzQzY3NjkwOEM4QkJDMzgxQjEiLCJjbGllbnRJZCI6ImZsdXR0ZXJfVGVzdCIsInR5cGUiOiJBbmRyb2lkIn0.kiODgW5nfxnQylcUSgRHChEA8DV8SzL7FCkQ115tDBo',
-    nickName: '斯德哥尔摩',
-    username: '18817301665',
-    avatarUrl:
-        "https://wisnuc.s3.cn-north-1.amazonaws.com.cn/avatar/8a35501b-4d99-4830-95b8-649233d59658",
-    id: "6947667a-f8ff-498c-b0cb-ebc4d97715d7",
-    mail: "xu.kang@winsuntech.cn",
-  ),
-  device: Device(deviceName: 'Fake winas'),
-  localUser: null,
-  drives: [
-    Drive(tag: 'home', uuid: "15a5b6d7-74da-4a0f-bdd7-64ecad6498aa"),
-    Drive(tag: 'built-in', uuid: "6afcf55e-8482-4542-a33d-4791a7277f96"),
-    Drive(
-      type: 'backup',
-      uuid: "9e85bff6-1cf4-429f-a2c2-6c11e0913ab4",
-      client: DriveClient(type: 'iOS'),
-      label: "iPhone 8",
-    ),
-    Drive(
-      type: 'backup',
-      uuid: "860688ed-7a83-45b3-9d67-aee517e2b7e2",
-      client: DriveClient(type: 'Android'),
-      label: "lxw-PC",
-    ),
-  ],
-  apis: Apis(
-      '0@eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY5NDc2NjdhLWY4ZmYtNDk4Yy1iMGNiLWViYzRkOTc3MTVkNyIsInBhc3N3b3JkIjoiKjg0QUFDMTJGNTRBQjY2NkVDRkMyQTgzQzY3NjkwOEM4QkJDMzgxQjEiLCJjbGllbnRJZCI6ImZsdXR0ZXJfVGVzdCIsInR5cGUiOiJBbmRyb2lkIn0.9cwn6OHlNfwQAQR7DciV9E2DPIcl-yWGBfvpdWUluaM',
-      "10.10.9.234",
-      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1dWlkIjoiY2NmMmJlYzQtOTk2ZC00OTUyLTllNmMtZjRmOTBiNjBkODEwIiwid2luYXNVc2VySWQiOiI2OTQ3NjY3YS1mOGZmLTQ5OGMtYjBjYi1lYmM0ZDk3NzE1ZDciLCJ0aW1lc3RhbXAiOjE1NDgyMjU0ODI2NzB9.qYZv8CyLUxxNu0UrMsx7Y-4wkhW64sv1cE5Qu2JYJus',
-      "6947667a-f8ff-498c-b0cb-ebc4d97715d7",
-      false,
-      "test_b44-a529-4dcf-aa30-240a151d8e03",
-      'cookie'),
-  config: Config(gridView: true),
-  cloud: Request(),
-);
-
 class AppState {
   final Account account;
   final Device device;
@@ -762,8 +721,6 @@ class AppState {
         apis: null,
         config: Config(gridView: false),
       );
-
-  factory AppState.autologin() => fakeState;
 
   static AppState fromJson(dynamic json) {
     var m = jsonDecode(json);

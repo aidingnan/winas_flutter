@@ -161,7 +161,7 @@ class _LoginPageState extends State<LoginPage> {
                   Container(
                     margin: EdgeInsets.only(bottom: 48),
                     child: Text(
-                      '欢迎使用闻上云盘',
+                      '欢迎使用口袋网盘',
                       style: TextStyle(fontSize: 28.0, color: Colors.white),
                       textAlign: TextAlign.left,
                     ),
@@ -229,7 +229,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
 
                   // license
-                  Text('点击继续、创建账号即表明同意闻上云盘的产品使用协议隐私政策',
+                  Text('点击继续、创建账号即表明同意口袋网盘的产品使用协议隐私政策',
                       style: TextStyle(fontSize: 12.0, color: Colors.white),
                       textAlign: TextAlign.left),
 
