@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'dart:async';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:fluwx/fluwx.dart' as fluwx;
 import 'package:flutter_redux/flutter_redux.dart';
@@ -28,6 +30,10 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     _initFluwx().catchError(print);
+    // set SystemUiStyle to dark
+    if (Platform.isAndroid) {
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+    }
   }
 
   StreamSubscription<fluwx.WeChatAuthResponse> _wxlogin;
