@@ -51,7 +51,7 @@ dependencies:
   share_extend: 1.0.8
 
   # async utility
-  async: 2.0.8
+  async: 2.1.0
   synchronized: 2.1.0
 
   # create uuid
