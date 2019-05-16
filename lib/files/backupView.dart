@@ -70,6 +70,127 @@ class _BackupViewState extends State<BackupView> {
     }
   }
 
+  /// list og backup drive
+  Widget renderList() {
+    return CustomScrollView(
+      controller: myScrollController,
+      physics: AlwaysScrollableScrollPhysics(),
+      slivers: <Widget>[
+        SliverFixedExtentList(
+          itemExtent: 48.0,
+          delegate: SliverChildBuilderDelegate(
+              (context, index) => Column(
+                    children: <Widget>[
+                      Container(height: 8, color: Colors.grey[100]),
+                      Container(
+                        padding: EdgeInsets.only(left: 18, right: 18),
+                        height: 40,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Text(
+                              '备份设备',
+                              style: TextStyle(color: Colors.black54),
+                            ),
+                            Text(
+                              '已备容量',
+                              style: TextStyle(color: Colors.black54),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+              childCount: 1),
+        ),
+        SliverFixedExtentList(
+          itemExtent: 64.0,
+          delegate: SliverChildBuilderDelegate((context, index) {
+            Drive drive = drives[index];
+
+            Color backgroundColor = Color(0xFF039be5);
+            IconData icon = Icons.laptop;
+
+            switch (drive?.client?.type) {
+              case 'Win-PC':
+                backgroundColor = Color(0xFF039be5);
+                icon = Icons.laptop;
+                break;
+              case 'Mac-PC':
+                backgroundColor = Color(0xFF000000);
+                icon = Icons.laptop;
+                break;
+              case 'Mobile-Android':
+                backgroundColor = Color(0xFF43a047);
+                icon = Icons.phone_iphone;
+                break;
+              case 'Mobile-iOS':
+                backgroundColor = Color(0xFF000000);
+                icon = Icons.phone_iphone;
+                break;
+              case 'Linux-PC':
+                backgroundColor = Color(0xFF039be5);
+                icon = Icons.laptop;
+                break;
+              default:
+                break;
+            }
+
+            return Material(
+              child: InkWell(
+                onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return Files(
+                            node: Node(
+                              name: drive.label,
+                              driveUUID: drive.uuid,
+                              dirUUID: drive.uuid,
+                              tag: 'dir',
+                              location: 'backup',
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                child: Container(
+                  constraints: BoxConstraints.expand(),
+                  padding: EdgeInsets.fromLTRB(16, 12, 16, 12),
+                  child: Row(
+                    children: <Widget>[
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          // color: Colors.cyan[800],
+                          color: backgroundColor,
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                        ),
+                        child: Icon(icon, color: Colors.white),
+                      ),
+                      Container(width: 16),
+                      Text(drive.label, style: TextStyle(fontSize: 16)),
+                      Expanded(flex: 1, child: Container()),
+                      Text(
+                        drive.fileTotalSize == '0 B'
+                            ? '未备份'
+                            : drive.fileTotalSize,
+                        style: TextStyle(color: Colors.black54),
+                      ),
+                      Icon(Icons.chevron_right),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }, childCount: drives.length),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, Store<AppState>>(
@@ -142,122 +263,7 @@ class _BackupViewState extends State<BackupView> {
                             ),
                           ],
                         )
-                      : CustomScrollView(
-                          controller: myScrollController,
-                          physics: AlwaysScrollableScrollPhysics(),
-                          slivers: <Widget>[
-                            SliverFixedExtentList(
-                              itemExtent: 48.0,
-                              delegate: SliverChildBuilderDelegate(
-                                  (context, index) => Column(
-                                        children: <Widget>[
-                                          Container(
-                                              height: 8,
-                                              color: Colors.grey[100]),
-                                          Container(
-                                            padding: EdgeInsets.only(
-                                                left: 18, right: 18),
-                                            height: 40,
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: <Widget>[
-                                                Text(
-                                                  '备份设备',
-                                                  style: TextStyle(
-                                                      color: Colors.black54),
-                                                ),
-                                                Text(
-                                                  '已备容量',
-                                                  style: TextStyle(
-                                                      color: Colors.black54),
-                                                ),
-                                              ],
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                  childCount: 1),
-                            ),
-                            SliverFixedExtentList(
-                              itemExtent: 64.0,
-                              delegate:
-                                  SliverChildBuilderDelegate((context, index) {
-                                Drive drive = drives[index];
-                                print('drive $drive');
-                                bool isMobile = [
-                                  'Mobile-iOS',
-                                  'Mobile-Android',
-                                ].contains(drive?.client?.type);
-                                return Material(
-                                  child: InkWell(
-                                    onTap: () => Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) {
-                                              return Files(
-                                                node: Node(
-                                                  name: drive.label,
-                                                  driveUUID: drive.uuid,
-                                                  dirUUID: drive.uuid,
-                                                  tag: 'dir',
-                                                  location: 'backup',
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                    child: Container(
-                                      constraints: BoxConstraints.expand(),
-                                      padding:
-                                          EdgeInsets.fromLTRB(16, 12, 16, 12),
-                                      child: Row(
-                                        children: <Widget>[
-                                          Container(
-                                            width: 40,
-                                            height: 40,
-                                            decoration: BoxDecoration(
-                                              // color: Colors.cyan[800],
-                                              color: isMobile
-                                                  ? Colors.black
-                                                  : Colors.blue,
-                                              borderRadius: BorderRadius.all(
-                                                Radius.circular(20),
-                                              ),
-                                            ),
-                                            child: Icon(
-                                              isMobile
-                                                  ? Icons.phone_iphone
-                                                  : Icons.laptop,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                          Container(width: 16),
-                                          Text(
-                                            drive.label,
-                                            style: TextStyle(fontSize: 16),
-                                          ),
-                                          Expanded(flex: 1, child: Container()),
-                                          Text(
-                                            drive.fileTotalSize == '0 B'
-                                                ? '未备份'
-                                                : drive.fileTotalSize,
-                                            style: TextStyle(
-                                                color: Colors.black54),
-                                          ),
-                                          Icon(Icons.chevron_right),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              }, childCount: drives.length),
-                            ),
-                          ],
-                        ),
+                      : renderList(),
         );
       },
     );
