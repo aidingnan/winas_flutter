@@ -1,17 +1,22 @@
 import 'dart:typed_data';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
-import './GridPhoto.dart';
+import './gridPhoto.dart';
+import './gridVideo.dart';
 import '../redux/redux.dart';
 import '../common/utils.dart';
 import '../common/cache.dart';
 import '../files/delete.dart';
 import '../transfer/manager.dart';
 
-class PhotoViewer extends StatefulWidget {
-  const PhotoViewer(
+const videoTypes = 'RM.RMVB.WMV.AVI.MP4.3GP.MKV.MOV.FLV.MPEG';
+
+class PageViewer extends StatefulWidget {
+  const PageViewer(
       {Key key, this.photo, this.thumbData, this.list, this.updateList})
       : super(key: key);
   final Uint8List thumbData;
@@ -19,10 +24,10 @@ class PhotoViewer extends StatefulWidget {
   final Entry photo;
   final Function updateList;
   @override
-  _PhotoViewerState createState() => _PhotoViewerState();
+  _PageViewerState createState() => _PageViewerState();
 }
 
-class _PhotoViewerState extends State<PhotoViewer> {
+class _PageViewerState extends State<PageViewer> {
   /// current photo, default: widget.photo
   Entry currentItem;
   ScrollController myScrollController = ScrollController();
@@ -46,14 +51,19 @@ class _PhotoViewerState extends State<PhotoViewer> {
   bool showTitle = true;
   void toggleTitle({bool show}) {
     if (show != null) {
-      setState(() {
-        showTitle = show;
-      });
+      showTitle = show;
     } else {
-      setState(() {
-        showTitle = !showTitle;
-      });
+      showTitle = !showTitle;
     }
+
+    // show/hidden status bar
+    if (showTitle) {
+      SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+    } else {
+      SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+    }
+
+    setState(() {});
   }
 
   void _share(BuildContext ctx, Entry entry, AppState state) async {
@@ -128,15 +138,26 @@ class _PhotoViewerState extends State<PhotoViewer> {
             child: PageView.builder(
               controller: pageController,
               itemBuilder: (context, position) {
-                final photo = widget.list[position];
-
-                final view = GridPhoto(
-                  updateOpacity: updateOpacity,
-                  photo: photo,
-                  thumbData: photo == widget.photo ? widget.thumbData : null,
-                  toggleTitle: toggleTitle,
-                  showTitle: showTitle,
-                );
+                final Entry item = widget.list[position];
+                final ext = item?.metadata?.type?.toUpperCase();
+                final isVideo = videoTypes.split('.').contains(ext);
+                final view = isVideo
+                    ? GridVideo(
+                        updateOpacity: updateOpacity,
+                        video: item,
+                        thumbData:
+                            item == widget.photo ? widget.thumbData : null,
+                        toggleTitle: toggleTitle,
+                        showTitle: showTitle,
+                      )
+                    : GridPhoto(
+                        updateOpacity: updateOpacity,
+                        photo: item,
+                        thumbData:
+                            item == widget.photo ? widget.thumbData : null,
+                        toggleTitle: toggleTitle,
+                        showTitle: showTitle,
+                      );
                 return Container(child: view);
               },
               itemCount: widget.list.length,
@@ -152,9 +173,9 @@ class _PhotoViewerState extends State<PhotoViewer> {
           ),
           // title
           Positioned(
-            top: 0,
             left: 0,
             right: 0,
+            bottom: MediaQuery.of(context).size.height - 80,
             child: showTitle
                 ? Material(
                     color: Color.fromARGB(240, 255, 255, 255),

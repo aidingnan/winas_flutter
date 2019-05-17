@@ -4,7 +4,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 
 import './photoItem.dart';
-import './photoViewer.dart';
+import './pageViewer.dart';
 import '../redux/redux.dart';
 import '../common/utils.dart';
 import '../files/delete.dart';
@@ -88,7 +88,7 @@ class _PhotoListState extends State<PhotoList> {
       ctx,
       TransparentPageRoute(
         builder: (BuildContext context) {
-          return PhotoViewer(
+          return PageViewer(
             photo: entry,
             list: widget.album.items,
             thumbData: thumbData,

@@ -2,10 +2,12 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 import '../redux/redux.dart';
-import '../photos/GridPhoto.dart';
+import '../photos/gridPhoto.dart';
 
+/// Image Widget support types
 List<String> photoMagic = ['JPEG', 'GIF', 'PNG', 'BMP'];
 
+/// show thumbnails of videos and images
 List<String> thumbMagic = [
   'HEIC',
   'JPEG',

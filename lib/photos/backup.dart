@@ -43,6 +43,8 @@ class RemoteList {
   }
 }
 
+
+/// manager of photo backup
 class BackupWorker {
   Apis apis;
   BackupWorker(this.apis);

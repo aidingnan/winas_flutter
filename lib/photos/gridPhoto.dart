@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
-import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 import '../redux/redux.dart';
@@ -10,8 +8,6 @@ import '../common/utils.dart';
 import '../common/cache.dart';
 
 const double _kMinFlingVelocity = 800.0;
-
-const videoTypes = 'RM.RMVB.WMV.AVI.MP4.3GP.MKV.MOV.FLV.MPEG';
 
 class GridPhoto extends StatefulWidget {
   const GridPhoto({
@@ -42,8 +38,6 @@ class _GridPhotoState extends State<GridPhoto>
   double _scale = 1.0;
   Offset _normalizedOffset;
   double _previousScale;
-  VideoPlayerController videoPlayerController;
-  ChewieController chewieController;
   Widget playerWidget;
   bool showDetails = false;
   double detailTop = double.negativeInfinity;
@@ -58,10 +52,6 @@ class _GridPhotoState extends State<GridPhoto>
   @override
   void dispose() {
     _controller?.dispose();
-    videoPlayerController?.pause();
-    videoPlayerController?.dispose();
-    chewieController?.pause();
-    chewieController?.dispose();
     super.dispose();
   }
 
@@ -145,6 +135,7 @@ class _GridPhotoState extends State<GridPhoto>
 
   Offset prevPosition;
 
+  /// ⤡⤢ Scale Start
   void _handleOnScaleStart(ScaleStartDetails details) {
     opacity = 1;
     prevPosition = details.focalPoint;
@@ -163,6 +154,7 @@ class _GridPhotoState extends State<GridPhoto>
     });
   }
 
+  /// ⤡⤢ Scale Update
   void _handleOnScaleUpdate(ScaleUpdateDetails details) {
     if (_scale == 1.0 && details.scale == 1.0) {
       /// rate of downScale to close viewer
@@ -197,6 +189,7 @@ class _GridPhotoState extends State<GridPhoto>
     }
   }
 
+  /// ⤡⤢ Scale End
   void _handleOnScaleEnd(ScaleEndDetails details) {
     /// dy > 0: drag down
     /// dy < 0: drag up
@@ -252,8 +245,8 @@ class _GridPhotoState extends State<GridPhoto>
       ..fling(velocity: magnitude / 1000.0);
   }
 
-  /// on Horizontal Drag Start
-  void handleHDragStart(DragStartDetails detail) {
+  /// ←→ Horizontal Drag Start
+  void _handleHDragStart(DragStartDetails detail) {
     opacity = 1;
 
     // toggle title
@@ -269,8 +262,8 @@ class _GridPhotoState extends State<GridPhoto>
     });
   }
 
-  /// on Horizontal Drag Update
-  void handleHDragUpdate(DragUpdateDetails details) {
+  /// ←→ Horizontal Drag Update
+  void _handleHDragUpdate(DragUpdateDetails details) {
     Offset delta = details.globalPosition - prevPosition;
 
     // quick fix bug of Twofingers drag which not recognized as scale
@@ -283,8 +276,8 @@ class _GridPhotoState extends State<GridPhoto>
     });
   }
 
-  /// on Horizontal Drag End
-  void handleHDragEnd(DragEndDetails detail) {
+  /// ←→ on Horizontal Drag End
+  void _handleHDragEnd(DragEndDetails detail) {
     if (opacity <= 0.8) {
       Navigator.pop(context);
       return;
@@ -313,8 +306,8 @@ class _GridPhotoState extends State<GridPhoto>
       ..fling(velocity: magnitude / 1000.0);
   }
 
-  /// on Detail Vertical Drag Start
-  void onDetailVerticalDragStart(DragStartDetails detail) {
+  /// ↑↓ Detail Vertical Drag Start
+  void _onDetailVerticalDragStart(DragStartDetails detail) {
     opacity = 1;
 
     // toggle title
@@ -329,8 +322,8 @@ class _GridPhotoState extends State<GridPhoto>
     });
   }
 
-  /// on Detail Vertical Drag Update
-  void onDetailVerticalDragUpdate(DragUpdateDetails details) {
+  /// ↑↓ Detail Vertical Drag Update
+  void _onDetailVerticalDragUpdate(DragUpdateDetails details) {
     Offset delta = details.globalPosition - prevPosition;
 
     // quick fix bug of Twofingers drag which not recognized as scale
@@ -343,8 +336,8 @@ class _GridPhotoState extends State<GridPhoto>
     });
   }
 
-  /// on Detail Vertical Drag End
-  void onDetailVerticalDragEnd(DragEndDetails details) {
+  /// ↑↓ Detail Vertical Drag End
+  void _onDetailVerticalDragEnd(DragEndDetails details) {
     /// dy > 0: drag down
     /// dy < 0: drag up
     final dy = details.velocity.pixelsPerSecond.dy;
@@ -383,100 +376,6 @@ class _GridPhotoState extends State<GridPhoto>
       ..fling(velocity: magnitude / 1000.0);
   }
 
-  Future<ImageInfo> _getImage(imageProvider) {
-    final Completer completer = Completer<ImageInfo>();
-    final ImageStream stream =
-        imageProvider.resolve(const ImageConfiguration());
-    final listener = (ImageInfo info, bool synchronousCall) {
-      if (!completer.isCompleted) {
-        completer.complete(info);
-      }
-    };
-    stream.addListener(listener);
-    completer.future.then((_) {
-      stream.removeListener(listener);
-    });
-    return completer.future;
-  }
-
-  Uint8List imageData;
-  Uint8List thumbData;
-
-  _getPhoto(AppState state) async {
-    final cm = await CacheManager.getInstance();
-
-    // download thumb
-    if (thumbData == null) {
-      thumbData = await cm.getThumbData(widget.photo, state);
-    }
-
-    info = await _getImage(MemoryImage(thumbData));
-
-    if (this.mounted) {
-      print('thumbData updated');
-      setState(() {});
-    } else {
-      return;
-    }
-    // is video
-    final ext = widget.photo.metadata.type;
-    if (videoTypes.split('.').contains(ext)) {
-      final apis = state.apis;
-      // preview video
-      if (apis.isCloud) return;
-
-      final key = await cm.getRandomKey(widget.photo, state);
-      if (key == null) return;
-
-      final String url =
-          'http://${apis.lanIp}:3000/media/$key.${ext.toLowerCase()}';
-      print('${widget.photo.name}');
-      print('url: $url, $mounted');
-
-      // keep singleton
-      if (videoPlayerController != null) return;
-
-      videoPlayerController = VideoPlayerController.network(url);
-      double aspectRatio;
-      final meta = widget.photo.metadata;
-      if (meta.width != null && meta.height != null && meta.width != 0) {
-        aspectRatio = meta.width / meta.height;
-        if (meta.rot == 90) {
-          aspectRatio = 1 / aspectRatio;
-        }
-      }
-      print('aspectRatio $aspectRatio');
-      chewieController = ChewieController(
-        videoPlayerController: videoPlayerController,
-        aspectRatio: aspectRatio,
-        autoPlay: true,
-        looping: false,
-      );
-
-      playerWidget = Chewie(
-        controller: chewieController,
-      );
-
-      if (this.mounted) {
-        setState(() {});
-      }
-    } else {
-      // download raw photo
-      if (widget.photo?.metadata?.type == 'HEIC') {
-        imageData = await cm.getHEICPhoto(widget.photo, state);
-      } else {
-        imageData = await cm.getPhoto(widget.photo, state);
-      }
-
-      info = await _getImage(MemoryImage(imageData));
-
-      if (imageData != null && this.mounted) {
-        print('imageData updated');
-        setState(() {});
-      }
-    }
-  }
-
   int lastTapTime = 0;
 
   /// milliseconds of double tap's delay
@@ -490,7 +389,7 @@ class _GridPhotoState extends State<GridPhoto>
 
   /// handle double tap
   bool canceled = false;
-  void handleTapUp(TapUpDetails event) {
+  void _handleTapUp(TapUpDetails event) {
     final tapTime = DateTime.now().millisecondsSinceEpoch;
     if (tapTime - lastTapTime < timeDelay) {
       canceled = true;
@@ -520,6 +419,64 @@ class _GridPhotoState extends State<GridPhoto>
           .then((v) => canceled ? null : widget.toggleTitle());
     }
     lastTapTime = tapTime;
+  }
+
+  /// get image info via MemoryImage
+  Future<ImageInfo> _getImage(Uint8List imageData) {
+    // no image data
+    if (imageData == null) return Future.value(null);
+
+    // use MemoryImage to load image
+    final imageProvider = MemoryImage(imageData);
+    final Completer completer = Completer<ImageInfo>();
+    final ImageStream stream =
+        imageProvider.resolve(const ImageConfiguration());
+    final listener = (ImageInfo info, bool synchronousCall) {
+      if (!completer.isCompleted) {
+        completer.complete(info);
+      }
+    };
+    stream.addListener(listener);
+    completer.future.then((_) {
+      stream.removeListener(listener);
+    });
+    return completer.future;
+  }
+
+  Uint8List imageData;
+  Uint8List thumbData;
+
+  _getPhoto(AppState state) async {
+    final cm = await CacheManager.getInstance();
+
+    // download thumb
+    if (thumbData == null) {
+      thumbData = await cm.getThumbData(widget.photo, state);
+    }
+
+    info = await _getImage(thumbData);
+
+    if (this.mounted) {
+      print('thumbData updated');
+      setState(() {});
+    } else {
+      return;
+    }
+
+    // download raw photo
+    if (widget.photo?.metadata?.type == 'HEIC') {
+      // TODO: handle heic file
+      imageData = await cm.getHEICPhoto(widget.photo, state);
+    } else {
+      imageData = await cm.getPhoto(widget.photo, state);
+    }
+
+    info = await _getImage(imageData);
+
+    if (imageData != null && this.mounted) {
+      print('imageData updated');
+      setState(() {});
+    }
   }
 
   Widget detailRow(Widget icon, String mainText, String subText) {
@@ -582,9 +539,9 @@ class _GridPhotoState extends State<GridPhoto>
     }
 
     return GestureDetector(
-      onVerticalDragStart: onDetailVerticalDragStart,
-      onVerticalDragUpdate: onDetailVerticalDragUpdate,
-      onVerticalDragEnd: onDetailVerticalDragEnd,
+      onVerticalDragStart: _onDetailVerticalDragStart,
+      onVerticalDragUpdate: _onDetailVerticalDragUpdate,
+      onVerticalDragEnd: _onDetailVerticalDragEnd,
       child: Container(
         color: Colors.white,
         child: Column(
@@ -608,6 +565,7 @@ class _GridPhotoState extends State<GridPhoto>
               : Color.fromARGB((opacity * 255).round(), 0, 0, 0),
           child: Stack(
             children: <Widget>[
+              // thumbnail
               Positioned.fill(
                 child: thumbData == null
                     ? Center(child: CircularProgressIndicator())
@@ -617,7 +575,7 @@ class _GridPhotoState extends State<GridPhoto>
                             onScaleStart: _handleOnScaleStart,
                             onScaleUpdate: _handleOnScaleUpdate,
                             onScaleEnd: _handleOnScaleEnd,
-                            onTapUp: handleTapUp,
+                            onTapUp: _handleTapUp,
                             child: ClipRect(
                               child: Transform(
                                 transform: Matrix4.identity()
@@ -632,12 +590,14 @@ class _GridPhotoState extends State<GridPhoto>
                             ),
                           ),
               ),
+
+              // photo
               Positioned.fill(
                 child: thumbData == null && imageData == null
                     ? Center(child: CircularProgressIndicator())
                     : playerWidget != null
                         ? GestureDetector(
-                            onTapUp: handleTapUp,
+                            onTapUp: _handleTapUp,
                             child: playerWidget,
                           )
                         : GestureDetector(
@@ -645,12 +605,12 @@ class _GridPhotoState extends State<GridPhoto>
                             onScaleUpdate: _handleOnScaleUpdate,
                             onScaleEnd: _handleOnScaleEnd,
                             onHorizontalDragUpdate:
-                                _scale == 1.0 ? null : handleHDragUpdate,
+                                _scale == 1.0 ? null : _handleHDragUpdate,
                             onHorizontalDragStart:
-                                _scale == 1.0 ? null : handleHDragStart,
+                                _scale == 1.0 ? null : _handleHDragStart,
                             onHorizontalDragEnd:
-                                _scale == 1.0 ? null : handleHDragEnd,
-                            onTapUp: handleTapUp,
+                                _scale == 1.0 ? null : _handleHDragEnd,
+                            onTapUp: _handleTapUp,
                             child: ClipRect(
                               child: Transform(
                                 transform: Matrix4.identity()
@@ -665,6 +625,8 @@ class _GridPhotoState extends State<GridPhoto>
                             ),
                           ),
               ),
+
+              // details
               Positioned(
                 left: 0,
                 right: 0,
@@ -673,6 +635,8 @@ class _GridPhotoState extends State<GridPhoto>
                 child:
                     showDetails && _scale == 1 ? renderDetail() : Container(),
               ),
+
+              // CircularProgressIndicator
               imageData == null && playerWidget == null
                   ? Center(child: CircularProgressIndicator())
                   : Container(),
