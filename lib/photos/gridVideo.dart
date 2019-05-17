@@ -1,15 +1,16 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'dart:typed_data';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-// import 'package:chewie/src/material_controls.dart';
 
 import '../redux/redux.dart';
 import '../common/utils.dart';
 import '../common/cache.dart';
+import './cupertino_progress_bar.dart';
 
 const videoTypes = 'RM.RMVB.WMV.AVI.MP4.3GP.MKV.MOV.FLV.MPEG';
 
@@ -40,6 +41,7 @@ class _GridVideoState extends State<GridVideo>
   ImageInfo info;
 
   /// VideoPlayerController.value()
+  ///
   /// ```
   /// VideoPlayerValue(
   ///   duration: 0:02:30.300000,
@@ -122,11 +124,13 @@ class _GridVideoState extends State<GridVideo>
   Offset prevPosition;
 
   bool isPlaying = false;
+  bool playFired = false;
 
   Future<void> playVideo() async {
     await chewieController.play();
     setState(() {
       isPlaying = true;
+      playFired = true;
     });
   }
 
@@ -135,6 +139,18 @@ class _GridVideoState extends State<GridVideo>
     setState(() {
       isPlaying = false;
     });
+  }
+
+  void _skipBack() {
+    final beginning = Duration(seconds: 0).inMilliseconds;
+    final skip = (_latestValue.position - Duration(seconds: 15)).inMilliseconds;
+    vpc.seekTo(Duration(milliseconds: math.max(skip, beginning)));
+  }
+
+  void _skipForward() {
+    final end = _latestValue.duration.inMilliseconds;
+    final skip = (_latestValue.position + Duration(seconds: 15)).inMilliseconds;
+    vpc.seekTo(Duration(milliseconds: math.min(skip, end)));
   }
 
   /// on Detail Vertical Drag Start
@@ -222,6 +238,13 @@ class _GridVideoState extends State<GridVideo>
     return completer.future;
   }
 
+  VideoPlayerValue _latestValue;
+  void _updateState() {
+    setState(() {
+      _latestValue = vpc.value;
+    });
+  }
+
   Uint8List imageData;
   Uint8List thumbData;
 
@@ -260,6 +283,7 @@ class _GridVideoState extends State<GridVideo>
     if (vpc != null) return;
 
     vpc = VideoPlayerController.network(url);
+    vpc.addListener(_updateState);
     double aspectRatio;
     final meta = widget.video.metadata;
     if (meta.width != null && meta.height != null && meta.width != 0) {
@@ -268,6 +292,7 @@ class _GridVideoState extends State<GridVideo>
         aspectRatio = 1 / aspectRatio;
       }
     }
+
     print('aspectRatio $aspectRatio, $meta');
     chewieController = ChewieController(
       videoPlayerController: vpc,
@@ -275,6 +300,7 @@ class _GridVideoState extends State<GridVideo>
       autoInitialize: true,
       autoPlay: false,
       looping: false,
+      showControls: false,
     );
 
     playerWidget = Chewie(
@@ -405,6 +431,7 @@ class _GridVideoState extends State<GridVideo>
               : Color.fromARGB((opacity * 255).round(), 0, 0, 0),
           child: Stack(
             children: <Widget>[
+              // thumbnail
               Positioned.fill(
                 child: thumbData == null
                     ? Center(child: CircularProgressIndicator())
@@ -416,6 +443,8 @@ class _GridVideoState extends State<GridVideo>
                             gaplessPlayback: true,
                           ),
               ),
+
+              // video
               Positioned.fill(
                 child: playerWidget == null
                     ? Center(child: CircularProgressIndicator())
@@ -429,40 +458,131 @@ class _GridVideoState extends State<GridVideo>
                         ),
                       ),
               ),
-              // play/pause Button
-              Positioned(
-                width: 56,
-                right: 24,
-                bottom: 24,
-                height: 56,
-                child: widget.showTitle
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(28),
-                        ),
-                        child: Material(
-                          color: Color.fromARGB(255, 0x00, 0x96, 0x88),
-                          elevation: 2.0,
+
+              // large play button in center
+              Positioned.fill(
+                child: Center(
+                  child: !isPlaying && widget.showTitle
+                      ? Container(
+                          height: 64,
+                          width: 64,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(32),
+                          ),
                           child: IconButton(
                             icon: Icon(
                               isPlaying ? Icons.pause : Icons.play_arrow,
-                              color: Colors.white,
+                              color: Colors.black54,
+                              size: 32,
                             ),
                             onPressed: () =>
                                 isPlaying ? pauseVideo() : playVideo(),
                           ),
+                        )
+                      : Container(),
+                ),
+              ),
+
+              // controller
+              Positioned(
+                left: 8,
+                right: 8,
+                bottom: 16,
+                // final orientation = MediaQuery.of(context).orientation;
+                // final barHeight = orientation == Orientation.portrait ? 30.0 : 47.0;
+                // final buttonPadding = orientation == Orientation.portrait ? 16.0 : 24.0;
+                height: 40,
+                child: playFired && widget.showTitle
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(28),
+                        ),
+                        child: Container(
+                          color: Color.fromRGBO(41, 41, 41, 0.7),
+                          child: Row(
+                            children: <Widget>[
+                              // skipback
+                              Transform(
+                                alignment: Alignment.center,
+                                transform: Matrix4.skewY(0.0)
+                                  ..rotateX(math.pi)
+                                  ..rotateZ(math.pi),
+                                child: IconButton(
+                                  padding: EdgeInsets.all(0),
+                                  icon: Icon(
+                                    Icons.refresh,
+                                    color: Colors.white,
+                                    size: 16,
+                                  ),
+                                  onPressed: _skipBack,
+                                ),
+                              ),
+
+                              // play/pause
+                              GestureDetector(
+                                onTap: () =>
+                                    isPlaying ? pauseVideo() : playVideo(),
+                                child: Icon(
+                                  isPlaying ? Icons.pause : Icons.play_arrow,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
+                              ),
+
+                              // skipforward
+                              IconButton(
+                                padding: EdgeInsets.all(0),
+                                icon: Icon(
+                                  Icons.refresh,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
+                                onPressed: _skipForward,
+                              ),
+
+                              // play position
+                              Text(
+                                formatDuration(_latestValue.position),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12.0,
+                                ),
+                              ),
+                              Container(width: 12),
+
+                              // progress bar
+                              Expanded(
+                                flex: 1,
+                                child: CupertinoVideoProgressBar(
+                                  vpc,
+                                  onDragStart: () {
+                                    print('onDragStart');
+                                  },
+                                  onDragEnd: () {
+                                    print('onDragEnd');
+                                  },
+                                ),
+                              ),
+                              Container(width: 12),
+
+                              // remaining time
+                              Text(
+                                formatDuration(
+                                  _latestValue.duration - _latestValue.position,
+                                ),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12.0,
+                                ),
+                              ),
+                              Container(width: 12),
+                            ],
+                          ),
                         ),
                       )
                     : Container(),
-              ),
-              // controller
-              // Positioned(
-              //   left: 8,
-              //   right: 8,
-              //   bottom: 0,
-              //   height: 56,
-              //   child: playerWidget == null ? Container() : MaterialControls(),
-              // )
+              )
             ],
           ),
         );
