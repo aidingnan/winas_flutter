@@ -115,12 +115,11 @@ class _SearchState extends State<Search> {
       print('search results\' length: ${res.data.length}');
       final list = res.data;
 
-      // filter archived files
+      // filter archived files and deleted files
       if (list is List) {
         _entries = List.from(
-          list
-              .map((d) => Entry.fromSearch(d, state.drives))
-              .where((entry) => entry.archived != true),
+          list.map((d) => Entry.fromSearch(d, state.drives)).where(
+              (entry) => entry.archived != true && entry.deleted != true),
         );
       } else
         throw 'result is not List';

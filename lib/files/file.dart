@@ -185,6 +185,9 @@ class _FilesState extends State<Files> {
     List<DirPath> rawPath =
         List.from(listNav.data['path'].map((path) => DirPath.fromMap(path)));
 
+    // remove deleted file/dir in backup drive
+    rawEntries = List.from(rawEntries.where((entry) => entry.deleted != true));
+
     // hidden archived entries
     if (state.config.showArchive != true) {
       rawEntries =
@@ -619,7 +622,7 @@ class _FilesState extends State<Files> {
         // copy selected entry
         Builder(builder: (ctx) {
           return IconButton(
-            icon: Icon(Icons.content_copy),
+            icon: Icon(Icons.content_copy, color: Colors.white),
             onPressed: select.selectedEntry
                         .any((e) => e.location == 'backup') ||
                     length == 0
@@ -634,7 +637,7 @@ class _FilesState extends State<Files> {
         // move selected entry
         Builder(builder: (ctx) {
           return IconButton(
-            icon: Icon(Icons.forward),
+            icon: Icon(Icons.forward, color: Colors.white),
             onPressed: select.selectedEntry
                         .any((e) => e.location == 'backup') ||
                     length == 0
@@ -649,7 +652,7 @@ class _FilesState extends State<Files> {
         // delete selected entry
         Builder(builder: (ctx) {
           return IconButton(
-            icon: Icon(Icons.delete),
+            icon: Icon(Icons.delete, color: Colors.white),
             onPressed: length == 0
                 ? null
                 : () async {

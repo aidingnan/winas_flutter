@@ -308,6 +308,7 @@ class Entry {
   String pdrv;
   String location;
   bool archived = false;
+  bool deleted = false;
 
   /// photo token date
   String hdate;
@@ -329,6 +330,7 @@ class Entry {
     this.pdir = m['pdir'];
     this.pdrv = m['pdrv'];
     this.archived = m['archived'] ?? false;
+    this.deleted = m['deleted'] ?? false;
     this.metadata = (m['metadata'] == 'null' || m['metadata'] == null)
         ? null
         : Metadata.fromMap(m['metadata'] is String
@@ -353,6 +355,7 @@ class Entry {
       'namepath': namepath,
       'metadata': metadata,
       'archived': archived,
+      'deleted': deleted,
     };
     return jsonEncode(m);
   }
@@ -378,6 +381,7 @@ class Entry {
     this.pdrv = drive.uuid;
     this.location = drive.tag ?? drive.type;
     this.archived = m['archived'] ?? false;
+    this.deleted = m['deleted'] ?? false;
     this.hdate = this.metadata?.hdate ??
         prettyDate(this.bctime ?? this.mtime, showDay: true);
   }
@@ -393,6 +397,7 @@ class Entry {
     this.hsize = prettySize(this.size);
     this.hmtime = prettyDate(this.mtime);
     this.archived = m['archived'] ?? false;
+    this.deleted = m['deleted'] ?? false;
     this.metadata =
         m['metadata'] == null ? null : Metadata.fromMap(m['metadata']);
     this.pdir = n.dirUUID;

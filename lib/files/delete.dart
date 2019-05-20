@@ -25,7 +25,7 @@ class _DeleteDialogState extends State<DeleteDialog> {
     Navigator.pop(this.context, success);
   }
 
-  void onPressed(state) async {
+  void onPressed(AppState state) async {
     setState(() {
       loading = true;
     });
@@ -48,8 +48,17 @@ class _DeleteDialogState extends State<DeleteDialog> {
       for (List<Entry> list in newEntries) {
         Map<String, dynamic> formdata = Map();
         list.forEach((e) {
-          formdata[e.name] =
-              jsonEncode({'op': 'remove', 'uuid': e.uuid, 'hash': e.hash});
+          if (e.pdir == e.pdir && e.location == 'backup') {
+            // backup root dir
+            formdata[e.uuid] = jsonEncode({'op': 'remove'});
+          } else if (e.hash != null) {
+            // file
+            formdata[e.name] =
+                jsonEncode({'op': 'remove', 'uuid': e.uuid, 'hash': e.hash});
+          } else {
+            // dir
+            formdata[e.name] = jsonEncode({'op': 'remove'});
+          }
         });
 
         await state.apis.req('deleteDirOrFile', {

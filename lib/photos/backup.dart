@@ -178,7 +178,7 @@ class BackupWorker {
     List<Entry> photoDirs = List.from(
       (res.data['entries'] as List)
           .map((entry) => Entry.mixNode(entry, currentNode))
-          .where((entry) => entry.type == 'directory'),
+          .where((entry) => entry.type == 'directory' && entry.deleted != true),
     );
 
     final List<Future> reqs = List.from(
@@ -195,7 +195,8 @@ class BackupWorker {
       List<Entry> photoItmes = List.from(
         listNavs[i]
             .data['entries']
-            .map((entry) => Entry.mixNode(entry, currentNode)),
+            .map((entry) => Entry.mixNode(entry, currentNode))
+            .where((entry) => entry.deleted != true),
       );
       remoteDirs.add(RemoteList(photoDirs[i], photoItmes));
     }
@@ -348,9 +349,7 @@ class BackupWorker {
     deviceName = data['deviceName'];
     machineId = data['machineId'];
     final Entry rootDir = await getDir();
-    final Entry entry = await getDir();
-
-    assert(entry is Entry);
+    assert(rootDir is Entry);
     List<AssetEntity> assetList = await getAssetList();
     total = assetList.length;
     final remoteDirs = await getRemoteDirs(rootDir);
