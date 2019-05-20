@@ -43,7 +43,6 @@ class RemoteList {
   }
 }
 
-
 /// manager of photo backup
 class BackupWorker {
   Apis apis;
@@ -280,15 +279,15 @@ class BackupWorker {
 
   Future<void> uploadSingle(
       AssetEntity entity, List<RemoteList> remoteDirs, Entry rootDir) async {
-    final time = getNow();
+    // final time = getNow();
 
     String id = entity.id;
     int mtime = entity.createTime;
 
-    print('before hash: $id, ${getNow() - time}');
+    // print('before hash: $id, ${getNow() - time}');
     String hash = await getHash('$id+$mtime', entity);
 
-    print('after hash, ${getNow() - time}');
+    // print('after hash, ${getNow() - time}');
     final photoEntry = PhotoEntry(id, hash, mtime);
 
     final targetDir = await getTargetDir(remoteDirs, photoEntry, rootDir);
@@ -296,11 +295,11 @@ class BackupWorker {
     // already backuped, continue next
     if (targetDir == null) {
       finished += 1;
-      print('backup ignore: $id, ${getNow() - time}');
+      // print('backup ignore: $id, ${getNow() - time}');
       return;
     }
 
-    print('before upload: $id, ${getNow() - time}');
+    // print('before upload: $id, ${getNow() - time}');
     // update cancelIsolate
     cancelUpload = CancelIsolate();
 
@@ -311,8 +310,12 @@ class BackupWorker {
     await uploadViaIsolate(apis, targetDir, filePath, hash, mtime,
         cancelIsolate: cancelUpload);
 
-    print(
-        'backup success: $id in ${DateTime.now().millisecondsSinceEpoch - time} ms');
+    // delete tmp file, only in iOS
+    if (Platform.isIOS) {
+      await file.delete();
+    }
+
+    // print('backup success: $id in ${DateTime.now().millisecondsSinceEpoch - time} ms');
     finished += 1;
   }
 
@@ -356,6 +359,7 @@ class BackupWorker {
         try {
           await uploadSingle(entity, remoteDirs, rootDir);
         } catch (e) {
+          print('backup failed: ${entity.id}');
           print(e);
         }
       }
