@@ -355,7 +355,7 @@ class BackupWorker {
     await apis.req('updateBackupAttr', {
       'driveUUID': rootDir.pdrv,
       'dirUUID': rootDir.pdrv,
-      'bname': rootDir.name,
+      'bname': rootDir.uuid,
       'props': dirProps,
     });
   }
