@@ -569,7 +569,9 @@ class _GridVideoState extends State<GridVideo>
                               // remaining time
                               Text(
                                 formatDuration(
-                                  _latestValue.duration - _latestValue.position,
+                                  _latestValue.duration ??
+                                      Duration.zero - _latestValue.position ??
+                                      Duration.zero,
                                 ),
                                 style: TextStyle(
                                   color: Colors.white,

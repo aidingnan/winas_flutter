@@ -56,12 +56,12 @@ class _PageViewerState extends State<PageViewer> {
       showTitle = !showTitle;
     }
 
-    // show/hidden status bar
-    if (showTitle) {
-      SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
-    } else {
-      SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
-    }
+    // // show/hidden status bar
+    // if (showTitle) {
+    //   SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+    // } else {
+    //   SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+    // }
 
     setState(() {});
   }
@@ -132,97 +132,90 @@ class _PageViewerState extends State<PageViewer> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Stack(
-        children: <Widget>[
-          Positioned.fill(
-            child: PageView.builder(
-              controller: pageController,
-              itemBuilder: (context, position) {
-                final Entry item = widget.list[position];
-                final ext = item?.metadata?.type?.toUpperCase();
-                final isVideo = videoTypes.split('.').contains(ext);
-                final view = isVideo
-                    ? GridVideo(
-                        updateOpacity: updateOpacity,
-                        video: item,
-                        thumbData:
-                            item == widget.photo ? widget.thumbData : null,
-                        toggleTitle: toggleTitle,
-                        showTitle: showTitle,
-                      )
-                    : GridPhoto(
-                        updateOpacity: updateOpacity,
-                        photo: item,
-                        thumbData:
-                            item == widget.photo ? widget.thumbData : null,
-                        toggleTitle: toggleTitle,
-                        showTitle: showTitle,
-                      );
-                return Container(child: view);
-              },
-              itemCount: widget.list.length,
-              onPageChanged: (int index) {
-                print('current index $index');
-                if (mounted) {
-                  setState(() {
-                    currentItem = widget.list[index];
-                  });
-                }
-              },
-            ),
-          ),
-          // title
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: MediaQuery.of(context).size.height - 80,
-            child: showTitle
-                ? Material(
-                    color: Color.fromARGB(240, 255, 255, 255),
-                    elevation: 2.0,
-                    child: SafeArea(
-                      child: StoreConnector<AppState, AppState>(
-                        converter: (store) => store.state,
-                        builder: (context, state) {
-                          return Container(
-                            color: Colors.transparent,
-                            padding: EdgeInsets.only(top: 4, bottom: 4),
-                            child: Row(
-                              children: <Widget>[
-                                Container(width: 4),
-                                IconButton(
-                                  icon: Icon(Icons.close),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                                Container(width: 16),
-                                Expanded(flex: 1, child: Container()),
-                                IconButton(
-                                  icon: Icon(Icons.share),
-                                  onPressed: () =>
-                                      _share(context, currentItem, state),
-                                ),
-                                IconButton(
-                                  icon: Icon(Icons.file_download),
-                                  onPressed: () =>
-                                      _download(context, currentItem, state),
-                                ),
-                                IconButton(
-                                  icon: Icon(Icons.delete),
-                                  onPressed: () =>
-                                      _delete(context, currentItem, state),
-                                )
-                              ],
-                            ),
+      body: StoreConnector<AppState, AppState>(
+        converter: (store) => store.state,
+        builder: (context, state) {
+          return Stack(
+            children: <Widget>[
+              Positioned.fill(
+                child: PageView.builder(
+                  controller: pageController,
+                  itemBuilder: (context, position) {
+                    final Entry item = widget.list[position];
+                    final ext = item?.metadata?.type?.toUpperCase();
+                    final isVideo = videoTypes.split('.').contains(ext);
+                    final view = isVideo
+                        ? GridVideo(
+                            updateOpacity: updateOpacity,
+                            video: item,
+                            thumbData:
+                                item == widget.photo ? widget.thumbData : null,
+                            toggleTitle: toggleTitle,
+                            showTitle: showTitle,
+                          )
+                        : GridPhoto(
+                            updateOpacity: updateOpacity,
+                            photo: item,
+                            thumbData:
+                                item == widget.photo ? widget.thumbData : null,
+                            toggleTitle: toggleTitle,
+                            showTitle: showTitle,
                           );
-                        },
-                      ),
-                    ),
-                  )
-                : Container(),
-          ),
-        ],
+                    return Container(child: view);
+                  },
+                  itemCount: widget.list.length,
+                  onPageChanged: (int index) {
+                    print('current index $index');
+                    if (mounted) {
+                      setState(() {
+                        currentItem = widget.list[index];
+                      });
+                    }
+                  },
+                ),
+              ),
+              // title
+              Positioned(
+                left: 0,
+                right: 0,
+                top: 0,
+                child: showTitle
+                    ? AppBar(
+                        automaticallyImplyLeading: false,
+                        backgroundColor:
+                            showTitle ? Colors.white : Colors.transparent,
+                        leading: IconButton(
+                          icon: Icon(Icons.close, color: Colors.black38),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                        actions: <Widget>[
+                          // share
+                          IconButton(
+                            icon: Icon(Icons.share, color: Colors.black38),
+                            onPressed: () =>
+                                _share(context, currentItem, state),
+                          ),
+                          // download
+                          IconButton(
+                            icon: Icon(Icons.file_download),
+                            color: Colors.black38,
+                            onPressed: () =>
+                                _download(context, currentItem, state),
+                          ),
+                          // delete
+                          IconButton(
+                            icon: Icon(Icons.delete),
+                            color: Colors.black38,
+                            onPressed: () =>
+                                _delete(context, currentItem, state),
+                          ),
+                        ],
+                      )
+                    : Container(),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
