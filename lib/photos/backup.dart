@@ -321,6 +321,7 @@ class BackupWorker {
   }
 
   Future<void> updateStatus(Entry rootDir) async {
+    final now = DateTime.now().millisecondsSinceEpoch;
     final res = await apis.req(
       'drive',
       {'uuid': rootDir.pdrv},
@@ -330,7 +331,7 @@ class BackupWorker {
       'op': 'backup',
       'client': {
         'status': 'Idle',
-        'lastBackupTime': DateTime.now().millisecondsSinceEpoch,
+        'lastBackupTime': now,
         'id': client['id'],
         'disabled': false,
         'type': client['type'],
@@ -340,6 +341,22 @@ class BackupWorker {
     await apis.req('updateDrive', {
       'uuid': rootDir.pdrv,
       'props': props,
+    });
+
+    final dirProps = {
+      'op': 'updateAttr',
+      'metadata': {
+        'disabled': false,
+        'status': 'Idle',
+        'lastBackupTime': now,
+      }
+    };
+
+    await apis.req('updateBackupAttr', {
+      'driveUUID': rootDir.pdrv,
+      'dirUUID': rootDir.pdrv,
+      'bname': rootDir.name,
+      'props': dirProps,
     });
   }
 

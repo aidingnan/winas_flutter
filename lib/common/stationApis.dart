@@ -221,8 +221,18 @@ class Apis {
         r = tpost('drives', args);
         break;
 
+      // backup
       case 'updateDrive':
         r = tpatch('drives/${args['uuid']}', args['props']);
+        break;
+
+      case 'updateBackupAttr':
+        r = writeDir(
+          'drives/${args['driveUUID']}/dirs/${args['dirUUID']}/entries',
+          FormData.from({
+            args['bname']: jsonEncode(args['props']),
+          }),
+        );
         break;
 
       case 'space':
