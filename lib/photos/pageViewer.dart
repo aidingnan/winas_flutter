@@ -182,8 +182,8 @@ class _PageViewerState extends State<PageViewer> {
                 child: showTitle
                     ? AppBar(
                         automaticallyImplyLeading: false,
-                        backgroundColor:
-                            showTitle ? Colors.white : Colors.transparent,
+                        brightness: Brightness.light,
+                        backgroundColor: Colors.white,
                         leading: IconButton(
                           icon: Icon(Icons.close, color: Colors.black38),
                           onPressed: () => Navigator.pop(context),
