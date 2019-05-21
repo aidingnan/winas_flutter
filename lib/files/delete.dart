@@ -48,7 +48,7 @@ class _DeleteDialogState extends State<DeleteDialog> {
       for (List<Entry> list in newEntries) {
         Map<String, dynamic> formdata = Map();
         list.forEach((e) {
-          if (e.pdir == e.pdir && e.location == 'backup') {
+          if (e.pdir == e.pdrv && e.location == 'backup') {
             // backup root dir
             formdata[e.uuid] = jsonEncode({'op': 'remove'});
           } else if (e.hash != null) {
