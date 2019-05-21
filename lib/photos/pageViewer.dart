@@ -179,38 +179,55 @@ class _PageViewerState extends State<PageViewer> {
                 left: 0,
                 right: 0,
                 top: 0,
+                // use `MediaQuery.of(context).padding.top` to fix bug in screens withs notch
+                // see AppBar and SafeArea
                 child: showTitle
-                    ? AppBar(
-                        automaticallyImplyLeading: false,
-                        brightness: Brightness.light,
-                        backgroundColor: Colors.white,
-                        leading: IconButton(
-                          icon: Icon(Icons.close, color: Colors.black38),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                        actions: <Widget>[
-                          // share
-                          IconButton(
-                            icon: Icon(Icons.share, color: Colors.black38),
-                            onPressed: () =>
-                                _share(context, currentItem, state),
+                    ? Material(
+                        elevation: 1.0,
+                        color: Colors.white,
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            top: MediaQuery.of(context).padding.top,
                           ),
-                          // download
-                          IconButton(
-                            icon: Icon(Icons.file_download),
-                            color: Colors.black38,
-                            onPressed: () =>
-                                _download(context, currentItem, state),
+                          child: MediaQuery.removePadding(
+                            context: context,
+                            removeTop: true,
+                            child: AppBar(
+                              primary: false,
+                              automaticallyImplyLeading: false,
+                              brightness: Brightness.light,
+                              backgroundColor: Colors.white,
+                              elevation: 0.0,
+                              leading: IconButton(
+                                icon: Icon(Icons.close, color: Colors.black38),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                              actions: <Widget>[
+                                // share
+                                IconButton(
+                                  icon:
+                                      Icon(Icons.share, color: Colors.black38),
+                                  onPressed: () =>
+                                      _share(context, currentItem, state),
+                                ),
+                                // download
+                                IconButton(
+                                  icon: Icon(Icons.file_download),
+                                  color: Colors.black38,
+                                  onPressed: () =>
+                                      _download(context, currentItem, state),
+                                ),
+                                // delete
+                                IconButton(
+                                  icon: Icon(Icons.delete),
+                                  color: Colors.black38,
+                                  onPressed: () =>
+                                      _delete(context, currentItem, state),
+                                ),
+                              ],
+                            ),
                           ),
-                          // delete
-                          IconButton(
-                            icon: Icon(Icons.delete),
-                            color: Colors.black38,
-                            onPressed: () =>
-                                _delete(context, currentItem, state),
-                          ),
-                        ],
-                      )
+                        ))
                     : Container(),
               ),
             ],

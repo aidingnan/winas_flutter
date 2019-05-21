@@ -123,7 +123,7 @@ class _PhotoListState extends State<PhotoList> {
         onPressed: () => select.clearSelect(),
       ),
       brightness: Brightness.light,
-      elevation: 2.0,
+      elevation: 1.0,
       iconTheme: IconThemeData(color: Colors.white),
       actions: <Widget>[
         // delete selected entry
