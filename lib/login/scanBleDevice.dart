@@ -3,8 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:pocket_drive/login/bleHelp.dart';
 
 import './ble.dart';
+import './bleHelp.dart';
 import './configDevice.dart';
 import '../common/utils.dart';
 import '../common/request.dart';
@@ -184,123 +186,154 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
       ),
       body: Container(
         color: Colors.grey[50],
-        child: error == null
-            ? CustomScrollView(
-                controller: myScrollController,
-                physics: AlwaysScrollableScrollPhysics(),
-                slivers: <Widget>[
-                  // List
-                  SliverFixedExtentList(
-                    itemExtent: noResult ? 256 : 64,
-                    delegate: SliverChildBuilderDelegate(
-                      (BuildContext ctx, int index) {
-                        // no result, show loading
-                        if (noResult) {
-                          return Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                        ScanResult scanResult = results[index];
-                        final res = parseResult(scanResult);
-                        final status = res['status'];
-                        final enabled = res['enabled'];
-
-                        return Material(
-                          child: InkWell(
-                            onTap: () async {
-                              if (!enabled) return;
-
-                              BluetoothDevice device;
-                              showLoading(ctx);
-                              try {
-                                device = await connectAsync(scanResult);
-                              } catch (e) {
-                                print(e);
-                                Navigator.pop(ctx);
-                                showSnackBar(ctx, '连接设备失败');
-                                return;
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              flex: 1,
+              child: error == null
+                  ? CustomScrollView(
+                      controller: myScrollController,
+                      physics: AlwaysScrollableScrollPhysics(),
+                      slivers: <Widget>[
+                        // List
+                        SliverFixedExtentList(
+                          itemExtent: noResult ? 256 : 64,
+                          delegate: SliverChildBuilderDelegate(
+                            (BuildContext ctx, int index) {
+                              // no result, show loading
+                              if (noResult) {
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
                               }
+                              ScanResult scanResult = results[index];
+                              final res = parseResult(scanResult);
+                              final status = res['status'];
+                              final enabled = res['enabled'];
 
-                              try {
-                                await reqAuth(device);
-                              } catch (e) {
-                                print(e);
-                                Navigator.pop(ctx);
-                                showSnackBar(ctx, '请求设备验证失败');
-                                return;
-                              }
-                              Navigator.pop(ctx);
+                              return Material(
+                                child: InkWell(
+                                  onTap: () async {
+                                    if (!enabled) return;
 
-                              Navigator.push(
-                                ctx,
-                                MaterialPageRoute(
-                                  builder: (context) => ConfigDevice(
-                                        device: device,
-                                        request: widget.request,
-                                        action: widget.action,
+                                    BluetoothDevice device;
+                                    showLoading(ctx);
+                                    try {
+                                      device = await connectAsync(scanResult);
+                                    } catch (e) {
+                                      print(e);
+                                      Navigator.pop(ctx);
+                                      showSnackBar(ctx, '连接设备失败');
+                                      return;
+                                    }
+
+                                    try {
+                                      await reqAuth(device);
+                                    } catch (e) {
+                                      print(e);
+                                      Navigator.pop(ctx);
+                                      showSnackBar(ctx, '请求设备验证失败');
+                                      return;
+                                    }
+                                    Navigator.pop(ctx);
+
+                                    Navigator.push(
+                                      ctx,
+                                      MaterialPageRoute(
+                                        builder: (context) => ConfigDevice(
+                                              device: device,
+                                              request: widget.request,
+                                              action: widget.action,
+                                            ),
                                       ),
+                                    );
+                                  },
+                                  child: Opacity(
+                                    opacity: enabled ? 1 : 0.5,
+                                    child: Container(
+                                      height: 64,
+                                      padding: EdgeInsets.all(16),
+                                      child: Row(
+                                        children: <Widget>[
+                                          Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: <Widget>[
+                                              Text('口袋网盘'),
+                                              Text(
+                                                '序列号: ${scanResult.device.name}',
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                            ],
+                                          ),
+                                          Expanded(
+                                            flex: 1,
+                                            child: Container(),
+                                          ),
+                                          Text(
+                                            status,
+                                            style: TextStyle(
+                                                color: Colors.black54),
+                                          ),
+                                          Icon(Icons.chevron_right),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               );
                             },
-                            child: Opacity(
-                              opacity: enabled ? 1 : 0.5,
-                              child: Container(
-                                height: 64,
-                                padding: EdgeInsets.all(16),
-                                child: Row(
-                                  children: <Widget>[
-                                    Text(
-                                      scanResult.device.name,
-                                      style: TextStyle(fontSize: 21),
-                                    ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: Container(),
-                                    ),
-                                    Text(
-                                      status,
-                                      style: TextStyle(color: Colors.black54),
-                                    ),
-                                    Icon(Icons.chevron_right),
-                                  ],
-                                ),
-                              ),
-                            ),
+                            childCount: noResult ? 1 : results.length,
                           ),
-                        );
-                      },
-                      childCount: noResult ? 1 : results.length,
+                        ),
+                      ],
+                    )
+                  : Column(
+                      children: <Widget>[
+                        Expanded(child: Container(), flex: 1),
+                        Icon(
+                          Icons.error,
+                          color: Colors.pinkAccent,
+                          size: 72,
+                        ),
+                        Container(height: 16),
+                        Text(error),
+                        FlatButton(
+                          padding: EdgeInsets.all(0),
+                          child: Text(
+                            '重新扫描',
+                            style: TextStyle(color: Colors.teal),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              results.clear();
+                              error = null;
+                            });
+                            startBLESearch();
+                          },
+                        ),
+                        Expanded(child: Container(), flex: 2),
+                      ],
                     ),
-                  ),
-                ],
-              )
-            : Column(
-                children: <Widget>[
-                  Expanded(child: Container(), flex: 1),
-                  Icon(
-                    Icons.error,
-                    color: Colors.pinkAccent,
-                    size: 72,
-                  ),
-                  Container(height: 16),
-                  Text(error),
-                  FlatButton(
-                    padding: EdgeInsets.all(0),
-                    child: Text(
-                      '重新扫描',
-                      style: TextStyle(color: Colors.teal),
+            ),
+            Container(
+              height: 64,
+              child: FlatButton(
+                onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (ctx) => BleHelp(),
+                        fullscreenDialog: true,
+                      ),
                     ),
-                    onPressed: () {
-                      setState(() {
-                        results.clear();
-                        error = null;
-                      });
-                      startBLESearch();
-                    },
-                  ),
-                  Expanded(child: Container(), flex: 2),
-                ],
+                child: Text(
+                  '扫描不到设备？',
+                  style: TextStyle(color: Colors.blue, fontSize: 12),
+                ),
               ),
+            )
+          ],
+        ),
       ),
     );
   }
