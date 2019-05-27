@@ -123,23 +123,27 @@ class _ResetDeviceState extends State<_ResetDevice> {
 
   /// color codes
   static const List<List<String>> colorCodes = [
-    ['红色灯 常亮', '#ff0000', 'alwaysOn'],
-    ['绿色灯 常亮', '#00ff00', 'alwaysOn'],
-    ['蓝色灯 常亮', '#0000ff', 'alwaysOn'],
-    ['红色灯 闪烁', '#ff0000', 'breath'],
-    ['绿色灯 闪烁', '#00ff00', 'breath'],
-    ['蓝色灯 闪烁', '#0000ff', 'breath'],
+    ['红色灯', '常亮', '#ff0000', 'alwaysOn'],
+    ['红色灯', '闪烁', '#ff0000', 'breath'],
+    ['绿色灯', '常亮', '#00ff00', 'alwaysOn'],
+    ['绿色灯', '闪烁', '#00ff00', 'breath'],
+    ['蓝色灯', '常亮', '#0000ff', 'alwaysOn'],
+    ['蓝色灯', '闪烁', '#0000ff', 'breath'],
   ];
+
+  /// '#ff0000' => Color(0xFF0000)
+  Color _getColor(String color) {
+    final value = int.parse('FF${color.substring(1)}', radix: 16);
+    return Color(value);
+  }
 
   /// check color code
   Future<String> checkCode(AppState state, List<String> code) async {
     final args = {
-      'color': [code[1], code[2]]
+      'color': [code[2], code[3]]
     };
     final res = await state.apis.req('localAuth', args);
-    print(res);
     String token = res.data['token'];
-    print(token);
     return token;
   }
 
@@ -222,7 +226,18 @@ class _ResetDeviceState extends State<_ResetDevice> {
                       });
                     },
                     value: code,
-                    title: Text(code[0], maxLines: 1),
+                    title: Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: code[0],
+                            style: TextStyle(color: _getColor(code[2])),
+                          ),
+                          TextSpan(text: ' '),
+                          TextSpan(text: code[1]),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),

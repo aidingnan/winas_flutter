@@ -76,7 +76,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
   /// check color code
   Future<String> checkCode(BluetoothDevice device, List<String> code) async {
     final authCommand =
-        '{"action":"auth","seq":2,"body":{"color":["${code[1]}","${code[2]}"]}}';
+        '{"action":"auth","seq":2,"body":{"color":["${code[2]}","${code[3]}"]}}';
     print(authCommand);
     final res = await getLocalAuth(device, authCommand);
     print('checkCode res: $res');
@@ -310,13 +310,19 @@ class _ConfigDeviceState extends State<ConfigDevice> {
 
   /// color codes
   static const List<List<String>> colorCodes = [
-    ['红色灯 常亮', '#ff0000', 'alwaysOn'],
-    ['红色灯 闪烁', '#ff0000', 'breath'],
-    ['绿色灯 常亮', '#00ff00', 'alwaysOn'],
-    ['绿色灯 闪烁', '#00ff00', 'breath'],
-    ['蓝色灯 常亮', '#0000ff', 'alwaysOn'],
-    ['蓝色灯 闪烁', '#0000ff', 'breath'],
+    ['红色灯', '常亮', '#ff0000', 'alwaysOn'],
+    ['红色灯', '闪烁', '#ff0000', 'breath'],
+    ['绿色灯', '常亮', '#00ff00', 'alwaysOn'],
+    ['绿色灯', '闪烁', '#00ff00', 'breath'],
+    ['蓝色灯', '常亮', '#0000ff', 'alwaysOn'],
+    ['蓝色灯', '闪烁', '#0000ff', 'breath'],
   ];
+
+  /// '#ff0000' => Color(0xFF0000)
+  Color _getColor(String color) {
+    final value = int.parse('FF${color.substring(1)}', radix: 16);
+    return Color(value);
+  }
 
   Widget renderAuth() {
     List<Widget> widgets = [
@@ -353,7 +359,16 @@ class _ConfigDeviceState extends State<ConfigDevice> {
                       });
                     },
                     value: code,
-                    title: Text(code[0], maxLines: 1),
+                    title: Text.rich(
+                      TextSpan(children: [
+                        TextSpan(
+                          text: code[0],
+                          style: TextStyle(color: _getColor(code[2])),
+                        ),
+                        TextSpan(text: ' '),
+                        TextSpan(text: code[1]),
+                      ]),
+                    ),
                   ),
                 ),
               ),
