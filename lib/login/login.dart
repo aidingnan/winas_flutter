@@ -40,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
 
   _initFluwx() async {
     await fluwx.register(
-      appId: "wxb137485b7b2ce4f0",
+      appId: "wx0aa672b8371cde8e",
       doOnAndroid: true,
       doOnIOS: true,
       enableMTA: false,
