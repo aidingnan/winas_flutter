@@ -62,7 +62,7 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
       return;
     }
 
-    scanSubscription = flutterBlue.scan().listen((scanResult) {
+    scanSubscription = flutterBlue.scan().listen((ScanResult scanResult) {
       // filter device
       if (!scanResult.device.name.toLowerCase().startsWith('wi')) return;
       final id = scanResult.device.id;
@@ -70,6 +70,7 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
       if (index > -1) return;
       results.add(scanResult);
       print('get device >>>>>>>>>>>');
+      print('AdvertisementData ${scanResult.advertisementData.localName}');
       print(id);
       print(scanResult.device.name);
 
@@ -197,7 +198,7 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                       slivers: <Widget>[
                         // List
                         SliverFixedExtentList(
-                          itemExtent: noResult ? 256 : 64,
+                          itemExtent: noResult ? 256 : 72,
                           delegate: SliverChildBuilderDelegate(
                             (BuildContext ctx, int index) {
                               // no result, show loading
@@ -244,6 +245,8 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                                               device: device,
                                               request: widget.request,
                                               action: widget.action,
+                                              onClose: () =>
+                                                  deviceConnection?.cancel(),
                                             ),
                                       ),
                                     );
@@ -251,20 +254,25 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                                   child: Opacity(
                                     opacity: enabled ? 1 : 0.5,
                                     child: Container(
-                                      height: 64,
-                                      padding: EdgeInsets.all(16),
+                                      margin: EdgeInsets.all(16),
                                       child: Row(
                                         children: <Widget>[
-                                          Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: <Widget>[
-                                              Text('口袋网盘'),
-                                              Text(
-                                                '序列号: ${scanResult.device.name}',
-                                                style: TextStyle(fontSize: 12),
-                                              ),
-                                            ],
+                                          Expanded(
+                                            flex: 2,
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: <Widget>[
+                                                Text('口袋网盘'),
+                                                Text(
+                                                  '设备号: ${scanResult.advertisementData.localName}',
+                                                  style:
+                                                      TextStyle(fontSize: 12),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                           Expanded(
                                             flex: 1,

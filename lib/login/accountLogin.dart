@@ -173,6 +173,9 @@ class _LoginState extends State<Login> {
       Account account = Account.fromMap(res.data);
       store.dispatch(LoginAction(account));
 
+      // cloud apis
+      store.dispatch(UpdateCloudAction(request));
+
       // device login
       await deviceLogin(context, request, account, store);
     }

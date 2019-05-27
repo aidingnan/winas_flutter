@@ -72,7 +72,7 @@ class MyApp extends StatelessWidget {
             store.dispatch(UpdateApisAction(null));
             store.dispatch(DeviceLoginAction(null));
             store.dispatch(UpdateConfigAction(Config()));
-            print('afterLogout ${store.state}');
+            print('afterLogout ${store.state.cloud}');
             return StationList(
               request: store.state.cloud,
               afterLogout: true,

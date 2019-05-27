@@ -14,6 +14,7 @@ enum Status {
   auth,
   wifi,
   authFailed,
+  authTimeout,
   connecting,
   connectFailed,
   binding,
@@ -23,11 +24,12 @@ enum Status {
 }
 
 class ConfigDevice extends StatefulWidget {
-  ConfigDevice({Key key, this.device, this.request, this.action})
+  ConfigDevice({Key key, this.device, this.request, this.action, this.onClose})
       : super(key: key);
   final Action action;
   final Request request;
   final BluetoothDevice device;
+  final Function onClose;
 
   @override
   _ConfigDeviceState createState() => _ConfigDeviceState();
@@ -51,13 +53,23 @@ class _ConfigDeviceState extends State<ConfigDevice> {
 
   Status status = Status.auth;
 
+  // 60 seconds to timeout
+  bool timeoutCheck = true;
   @override
   void initState() {
     super.initState();
+    Future.delayed(Duration(seconds: 60), () {
+      if (mounted && status == Status.auth && timeoutCheck) {
+        setState(() {
+          status = Status.authFailed;
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
+    widget.onClose();
     super.dispose();
   }
 
@@ -73,6 +85,9 @@ class _ConfigDeviceState extends State<ConfigDevice> {
     return token;
   }
 
+  /// store current device's ip
+  String currentIP;
+
   /// check color code
   Future<String> setWifi(String wifiPwd) async {
     assert(token != null);
@@ -83,6 +98,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
     final wifiRes = await withTimeout(connectWifi(device, wifiCommand), 20);
     print('wifiRes: $wifiRes');
     final ip = wifiRes['data']['address'];
+    currentIP = ip;
     return ip;
   }
 
@@ -92,10 +108,14 @@ class _ConfigDeviceState extends State<ConfigDevice> {
     final request = widget.request;
 
     try {
+      final now = DateTime.now().millisecondsSinceEpoch;
       bool started = false;
       var infoRes;
       // polling for winas Started, channel Connected
       while (started != true) {
+        final current = DateTime.now().millisecondsSinceEpoch;
+        if (current - now > 30000)
+          throw 'Timeout of 30 seconds for channel connected';
         await Future.delayed(Duration(seconds: 2));
         var res;
         try {
@@ -183,7 +203,11 @@ class _ConfigDeviceState extends State<ConfigDevice> {
 
     try {
       bool started = false;
+      final now = DateTime.now().millisecondsSinceEpoch;
       while (started != true) {
+        final current = DateTime.now().millisecondsSinceEpoch;
+        if (current - now > 30000)
+          throw 'Timeout of 30 seconds for winas starting';
         await Future.delayed(Duration(seconds: 1));
         final res = await request.winasdInfo(ip);
         print(res);
@@ -208,6 +232,8 @@ class _ConfigDeviceState extends State<ConfigDevice> {
       final account = store.state.account as Account;
       await stationLogin(context, request, currentDevice, account, store);
     } catch (e) {
+      print('loginFailed');
+      print(e);
       setState(() {
         status = Status.loginFailed;
       });
@@ -225,6 +251,9 @@ class _ConfigDeviceState extends State<ConfigDevice> {
       // reset token
 
       showLoading(ctx);
+
+      // fired, not time out
+      timeoutCheck = false;
       try {
         // request token
         token = await checkCode(widget.device, selected);
@@ -282,10 +311,10 @@ class _ConfigDeviceState extends State<ConfigDevice> {
   /// color codes
   static const List<List<String>> colorCodes = [
     ['红色灯 常亮', '#ff0000', 'alwaysOn'],
-    ['绿色灯 常亮', '#00ff00', 'alwaysOn'],
-    ['蓝色灯 常亮', '#0000ff', 'alwaysOn'],
     ['红色灯 闪烁', '#ff0000', 'breath'],
+    ['绿色灯 常亮', '#00ff00', 'alwaysOn'],
     ['绿色灯 闪烁', '#00ff00', 'breath'],
+    ['蓝色灯 常亮', '#0000ff', 'alwaysOn'],
     ['蓝色灯 闪烁', '#0000ff', 'breath'],
   ];
 
@@ -454,6 +483,47 @@ class _ConfigDeviceState extends State<ConfigDevice> {
     );
   }
 
+  Widget renderTimeout(BuildContext ctx) {
+    return Column(
+      children: <Widget>[
+        Container(height: 64),
+        Icon(Icons.error_outline, color: Colors.redAccent, size: 96),
+        Container(
+          padding: EdgeInsets.all(64),
+          child: Center(
+            child: Text('验证超时，请返回后重新连接'),
+          ),
+        ),
+        Container(
+          height: 88,
+          padding: EdgeInsets.all(16),
+          width: double.infinity,
+          child: RaisedButton(
+            color: Colors.teal,
+            elevation: 1.0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(48),
+            ),
+            onPressed: () {
+              // return to ble list
+              Navigator.pop(ctx);
+            },
+            child: Row(
+              children: <Widget>[
+                Expanded(child: Container()),
+                Text(
+                  '返回',
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+                Expanded(child: Container()),
+              ],
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
   Widget renderBind(BuildContext ctx) {
     String text = '';
     String buttonLabel;
@@ -464,7 +534,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
         break;
 
       case Status.connectFailed:
-        text = '连接失败';
+        text = '无法连接到您的口袋网盘设备，请确认设备与你的手机连接同一路由器或在同一内网网段中。\n当前设备IP： $currentIP';
         buttonLabel = '返回';
         icon = Icon(Icons.error_outline, color: Colors.redAccent, size: 96);
         break;
@@ -499,7 +569,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
         Container(
           padding: EdgeInsets.all(16),
           child: Text(
-            '绑定设备',
+            widget.action == Action.bind ? '绑定设备' : '设置Wi-Fi',
             style: TextStyle(color: Colors.black87, fontSize: 28),
           ),
         ),
@@ -508,7 +578,6 @@ class _ConfigDeviceState extends State<ConfigDevice> {
           child: Center(child: icon),
         ),
         Container(
-          height: 64,
           padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
           child: Center(
               child: Text(
@@ -559,6 +628,9 @@ class _ConfigDeviceState extends State<ConfigDevice> {
 
       case Status.authFailed:
         return renderFailed(ctx);
+
+      case Status.authTimeout:
+        return renderTimeout(ctx);
 
       default:
         return renderBind(ctx);
