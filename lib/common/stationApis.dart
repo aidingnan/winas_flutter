@@ -100,7 +100,8 @@ class Apis {
     if (isCloud ?? true)
       return command('DELETE', ep, args, cancelToken: cancelToken);
     dio.options.headers['Authorization'] = 'JWT $lanToken';
-    return dio.delete('$lanAdrress/$ep', data: args, cancelToken: cancelToken);
+    return dio.delete('$lanAdrress/$ep',
+        queryParameters: args, cancelToken: cancelToken);
   }
 
   /// request via cloud

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluwx/fluwx.dart' as fluwx;
 import 'package:flutter_redux/flutter_redux.dart';
@@ -58,7 +59,7 @@ class _WeChatState extends State<WeChat> {
     String clientId = await getClientId();
 
     await fluwx.sendAuth(
-      openId: "wx99b54eb728323fe8",
+      openId: "wx0aa672b8371cde8e",
       scope: "snsapi_userinfo",
       state: "winas_login",
     );
@@ -93,10 +94,13 @@ class _WeChatState extends State<WeChat> {
             showSnackBar(ctx, '该微信已绑定其它账户');
           } else {
             print(res);
-            throw Error();
+            throw res;
           }
         }).catchError((err) {
           print(err);
+          if (err is DioError) {
+            print(err.response.statusMessage);
+          }
           showSnackBar(ctx, '绑定微信失败');
         });
       } else {
@@ -110,6 +114,8 @@ class _WeChatState extends State<WeChat> {
     // remove previous listener
     _wxlogin?.cancel();
     showLoading(ctx);
+    print('wechatInfo $wechatInfo');
+    print('unionid ${wechatInfo[0]['unionid']}');
     try {
       await state.cloud.req('unbindWechat', {
         'unionid': wechatInfo[0]['unionid'],
@@ -119,7 +125,9 @@ class _WeChatState extends State<WeChat> {
       showSnackBar(ctx, '解绑成功');
     } catch (error) {
       print(error);
-
+      if (error is DioError) {
+        print(error.response);
+      }
       if (this.mounted) {
         setState(() {
           _loading = false;

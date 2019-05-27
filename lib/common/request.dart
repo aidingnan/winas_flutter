@@ -98,7 +98,7 @@ class Request {
   tdel(String ep, args) {
     assert(token != null);
     dio.options.headers['Authorization'] = token;
-    return dio.delete('$cloudAddress/$ep', data: args);
+    return dio.delete('$cloudAddress/$ep', queryParameters: args);
   }
 
   /// command via pipe

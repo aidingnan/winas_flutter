@@ -75,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
     String clientId = await getClientId();
 
     await fluwx.sendAuth(
-      openId: "wxb137485b7b2ce4f0",
+      openId: "wx0aa672b8371cde8e",
       scope: "snsapi_userinfo",
       state: "winas_login",
     );
