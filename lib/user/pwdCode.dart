@@ -10,8 +10,9 @@ final pColor = Colors.teal;
 
 /// handle smscode and reset password
 class SmsCode extends StatefulWidget {
-  SmsCode({Key key, this.phone}) : super(key: key);
+  SmsCode({Key key, this.phone, this.request}) : super(key: key);
   final String phone;
+  final Request request;
   @override
   _SmsCodeState createState() => _SmsCodeState();
 }
@@ -23,7 +24,6 @@ class _SmsCodeState extends State<SmsCode> {
   // Focus action
   FocusNode focusNode;
 
-  Request request = Request();
   String _code = '';
 
   String _password = '';
@@ -87,6 +87,7 @@ class _SmsCodeState extends State<SmsCode> {
 
   /// nextStep for reset password
   _nextStep(BuildContext context, store) async {
+    final request = widget.request;
     if (_status == 'code') {
       // check code
       if (_code.length != 4) {
@@ -132,6 +133,13 @@ class _SmsCodeState extends State<SmsCode> {
         await request.req('resetPwd', {
           'password': _password,
           'phoneTicket': _ticket,
+        });
+        final clientId = await getClientId();
+        // refresh token
+        await request.req('token', {
+          'clientId': clientId,
+          'username': widget.phone,
+          'password': _password
         });
       } catch (error) {
         _loadingOff(context);
@@ -279,7 +287,7 @@ class _SmsCodeState extends State<SmsCode> {
   _resendSmg(BuildContext ctx) async {
     _loading(ctx);
     try {
-      await request.req('smsCode', {
+      await widget.request.req('smsCode', {
         'type': 'password',
         'phone': widget.phone,
       });

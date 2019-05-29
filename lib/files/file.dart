@@ -158,14 +158,14 @@ class _FilesState extends State<Files> {
       print(error);
       if (error is DioError && error?.response?.statusCode == 401) {
         showDialog(
-          context: context,
+          context: this.context,
           builder: (BuildContext context) => TokenExpired(),
         );
       } else if (error is DioError &&
           error?.response?.data is Map &&
           error.response.data['message'] == 'Station is not online') {
         showDialog(
-          context: context,
+          context: this.context,
           builder: (BuildContext context) => DeviceNotOnline(),
         );
       } else {

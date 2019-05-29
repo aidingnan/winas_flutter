@@ -8,6 +8,7 @@ class Request {
   String token;
   String cookie;
   Dio dio = Dio();
+  bool tokenExpired = false;
 
   Request({this.token});
 
@@ -43,6 +44,15 @@ class Request {
         }
         if (res != null) return res;
         return response.data;
+      },
+      onError: (DioError error) {
+        if (error is DioError) {
+          if (error?.response?.statusCode == 401) {
+            // tokenExpired
+            this.tokenExpired = true;
+          }
+        }
+        return error;
       },
     );
 

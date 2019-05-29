@@ -47,7 +47,7 @@ class _ResetPwdState extends State<ResetPwd> {
     Navigator.push(
       ctx,
       MaterialPageRoute(builder: (context) {
-        return SmsCode(phone: phone);
+        return SmsCode(phone: phone, request: request);
       }),
     );
   }

@@ -16,6 +16,8 @@ import '../transfer/manager.dart';
 import '../files/backupView.dart';
 import '../device/myStation.dart';
 import '../transfer/transfer.dart';
+import '../files/tokenExpired.dart';
+import '../files/deviceNotOnline.dart';
 
 class NavigationIconView {
   NavigationIconView({
@@ -176,13 +178,8 @@ class _BottomNavigationState extends State<BottomNavigation>
     intentListener?.cancel();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    // set SystemUiStyle to dark
-    if (Platform.isAndroid) {
-      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
-    }
-    final BottomNavigationBar botNavBar = BottomNavigationBar(
+  BottomNavigationBar botNavBar() {
+    return BottomNavigationBar(
       items: _navigationViews
           .map<BottomNavigationBarItem>(
               (NavigationIconView navigationView) => navigationView.item)
@@ -195,14 +192,39 @@ class _BottomNavigationState extends State<BottomNavigation>
         });
       },
     );
+  }
+
+  /// check token state and station online status, show warning dialog
+  void checkTokenState(BuildContext ctx, AppState state) {
+    if (state?.apis?.tokenExpired == true || state.cloud.tokenExpired == true) {
+      showDialog(
+        context: ctx,
+        builder: (BuildContext context) => TokenExpired(),
+      );
+    } else if (state?.apis?.stationOnline != true) {
+      showDialog(
+        context: ctx,
+        builder: (BuildContext context) => DeviceNotOnline(),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // set SystemUiStyle to dark
+    if (Platform.isAndroid) {
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+    }
+
     return StoreConnector<AppState, AppState>(
       onInit: (store) => initWorks(store.state),
       onDispose: (store) => {},
       converter: (store) => store.state,
-      builder: (context, state) {
+      builder: (ctx, state) {
+        Future.delayed(Duration.zero, () => checkTokenState(ctx, state));
         return Scaffold(
           body: Center(child: _navigationViews[_currentIndex].view()),
-          bottomNavigationBar: botNavBar,
+          bottomNavigationBar: botNavBar(),
         );
       },
     );

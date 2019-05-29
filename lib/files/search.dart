@@ -45,7 +45,8 @@ final List<FileType> fileTypes = List.from([
   [
     '照片与图片',
     iconFromName('a.bmp'),
-    'JPEG.PNG.JPG.GIF.BMP.RAW.HEIC',
+    'JPEG.PNG.JPG.GIF.BMP',
+    // 'JPEG.PNG.JPG.GIF.BMP.RAW.HEIC', TODO: HEIC in search
   ],
   [
     '视频',

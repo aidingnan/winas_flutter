@@ -9,8 +9,12 @@ import '../redux/redux.dart';
 import '../common/cache.dart';
 import '../icons/winas_icons.dart';
 
+// TODO: HEIC in mediaTypes
+// const mediaTypes =
+//   'HEIC.JPEG.PNG.JPG.GIF.BMP.RAW.RM.RMVB.WMV.AVI.MP4.3GP.MKV.MOV.FLV.MPEG';
+
 const mediaTypes =
-    'HEIC.JPEG.PNG.JPG.GIF.BMP.RAW.RM.RMVB.WMV.AVI.MP4.3GP.MKV.MOV.FLV.MPEG';
+    'JPEG.PNG.JPG.GIF.BMP.RAW.RM.RMVB.WMV.AVI.MP4.3GP.MKV.MOV.FLV.MPEG';
 const videoTypes = 'RM.RMVB.WMV.AVI.MP4.3GP.MKV.MOV.FLV.MPEG';
 
 class Photos extends StatefulWidget {
@@ -63,7 +67,7 @@ class _PhotosState extends State<Photos> {
 
   /// req nasPhotos
   Future<List<Entry>> nasPhotos(Store<AppState> store) async {
-    int time = DateTime.now().millisecondsSinceEpoch;
+    final time = DateTime.now().millisecondsSinceEpoch;
     AppState state = store.state;
     final List<Drive> drives = await updateDrives(store);
 
@@ -76,7 +80,7 @@ class _PhotosState extends State<Photos> {
       'types': mediaTypes,
       'order': 'newest',
     });
-
+    print('get nas photo: ${DateTime.now().millisecondsSinceEpoch - time}');
     final List<Entry> allMedia = List.from(
       res.data.map((d) => Entry.fromSearch(d, drives)).where(
           (d) => d?.metadata?.height != null && d?.metadata?.width != null),
@@ -88,7 +92,8 @@ class _PhotosState extends State<Photos> {
       return order == 0 ? b.mtime.compareTo(a.mtime) : order;
     });
 
-    print('get nas photo: ${DateTime.now().millisecondsSinceEpoch - time}');
+    print(
+        'map and sort finished: ${DateTime.now().millisecondsSinceEpoch - time}');
     return allMedia;
   }
 

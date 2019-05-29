@@ -18,6 +18,10 @@ class Apis {
   StreamSubscription<ConnectivityResult> sub;
   Dio dio = Dio();
 
+  // handle error globally
+  bool tokenExpired = false;
+  bool stationOnline = true;
+
   Apis(this.token, this.lanIp, this.lanToken, this.userUUID, this.isCloud,
       this.deviceSN, this.cookie) {
     this.lanAdrress = 'http://${this.lanIp}:3000';
@@ -57,6 +61,19 @@ class Apis {
           return response.data['data'];
         }
         return response.data;
+      },
+      onError: (DioError error) {
+        if (error is DioError) {
+          if (error?.response?.statusCode == 401) {
+            // tokenExpired
+            this.tokenExpired = true;
+          } else if (error?.response?.data is Map &&
+              error.response.data['message'] == 'Station is not online') {
+            // station not online
+            this.stationOnline = false;
+          }
+        }
+        return error;
       },
     );
     if (dio.interceptors.length == 0) {
