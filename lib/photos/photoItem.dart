@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 import '../redux/redux.dart';
+import '../common/cache.dart';
 import '../common/taskManager.dart';
 
 class PhotoItem extends StatefulWidget {
@@ -22,9 +23,21 @@ class _PhotoItemState extends State<PhotoItem> {
   Uint8List thumbData;
   ThumbTask task;
 
-  _getThumb(AppState state) {
+  Future<void> _getThumb(AppState state) async {
     // check hash
     if (entry.hash == null) return;
+
+    // try get cached file
+    final cm = await CacheManager.getInstance();
+    final data = await cm.getCachedThumbData(entry);
+    if (data != null && this.mounted) {
+      setState(() {
+        thumbData = data;
+      });
+      return;
+    }
+
+    // download thumb via queue
     final tm = TaskManager.getInstance();
     TaskProps props = TaskProps(entry: entry, state: state);
     task = tm.createThumbTask(props, (error, value) {

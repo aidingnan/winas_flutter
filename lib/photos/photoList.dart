@@ -111,11 +111,20 @@ class _PhotoListState extends State<PhotoList> {
   AppBar selectAppBar(AppState state) {
     final length = select.selectedEntry.length;
     return AppBar(
-      title: Text(
-        '选择了$length项',
-        style: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.normal,
+      title: WillPopScope(
+        onWillPop: () {
+          if (select.selectMode()) {
+            select.clearSelect();
+            return Future.value(false);
+          }
+          return Future.value(true);
+        },
+        child: Text(
+          '选择了$length项',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.normal,
+          ),
         ),
       ),
       leading: IconButton(

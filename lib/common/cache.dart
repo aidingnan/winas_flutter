@@ -135,6 +135,30 @@ class CacheManager {
     return entryPath;
   }
 
+  /// get cached thumbs
+  Future<Uint8List> getCachedThumbData(Entry entry,
+      {int height = 200, int width = 200}) async {
+    String entryPath =
+        _thumbnailDir() + entry.hash + '&width=$width&height=$height';
+    File entryFile = File(entryPath);
+
+    FileStat res = await entryFile.stat();
+
+    Uint8List thumbData;
+
+    // file already downloaded
+    if (res.type != FileSystemEntityType.notFound) {
+      try {
+        thumbData = await entryFile.readAsBytes();
+      } catch (error) {
+        print(error);
+        return null;
+      }
+      return thumbData;
+    }
+    return null;
+  }
+
   /// download thumb withLimit
   ///
   /// fire cancelToken.cancel() to cancel request
@@ -172,6 +196,7 @@ class CacheManager {
     };
 
     try {
+      final now = DateTime.now().millisecondsSinceEpoch;
       print('download ${entry.name}');
       // download
       await state.apis.download(ep, qs, transPath, cancelToken: cancelToken);
@@ -183,6 +208,8 @@ class CacheManager {
 
       // read data
       thumbData = await entryFile.readAsBytes();
+      print(
+          'download ${entry.name} success, cost ${DateTime.now().millisecondsSinceEpoch - now}ms');
     } catch (error) {
       print('getThumbData of ${entry.name} failed ');
       return null;
