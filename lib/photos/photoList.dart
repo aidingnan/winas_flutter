@@ -8,6 +8,7 @@ import './pageViewer.dart';
 import '../redux/redux.dart';
 import '../common/utils.dart';
 import '../files/delete.dart';
+import '../icons/winas_icons.dart';
 
 class PhotoList extends StatefulWidget {
   final Album album;
@@ -249,55 +250,84 @@ class _PhotoListState extends State<PhotoList> {
           appBar: select.selectMode() ? selectAppBar(state) : listAppBar(state),
           body: Container(
             color: Colors.grey[100],
-            child: DraggableScrollbar.semicircle(
-              controller: myScrollController,
-              labelTextBuilder: (double offset) => getDate(offset, mapHeight),
-              labelConstraints: BoxConstraints.expand(width: 88, height: 36),
-              child: CustomScrollView(
-                key: Key(list.length.toString()),
-                controller: myScrollController,
-                physics: AlwaysScrollableScrollPhysics(),
-                slivers: List.from(
-                  list.map(
-                    (line) {
-                      if (line is String) {
-                        return SliverFixedExtentList(
-                          itemExtent: headerHeight,
-                          delegate: SliverChildBuilderDelegate(
-                            (context, index) => Container(
-                                  padding: EdgeInsets.all(8),
-                                  child: Text(line),
-                                ),
-                            childCount: 1,
+            child: widget.album.length == 0
+                // no content
+                ? Column(
+                    children: <Widget>[
+                      Expanded(flex: 1, child: Container()),
+                      Container(
+                        padding: EdgeInsets.all(16),
+                        child: Container(
+                          width: 72,
+                          height: 72,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[400],
+                            borderRadius: BorderRadius.circular(36),
                           ),
-                        );
-                      }
-                      return SliverGrid(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: lineCount,
-                          mainAxisSpacing: spacing,
-                          crossAxisSpacing: spacing,
-                          childAspectRatio: 1.0,
+                          child: Icon(Winas.logo,
+                              color: Colors.grey[100], size: 84),
                         ),
-                        delegate: SliverChildBuilderDelegate(
-                          (BuildContext context, int index) {
-                            return PhotoItem(
-                              // key: Key(line[index].uuid +
-                              //     line[index].selected.toString()),
-                              item: line[index],
-                              showPhoto: showPhoto,
-                              cellSize: cellSize,
-                              select: select,
+                      ),
+                      Text(
+                        '没有内容',
+                        style: TextStyle(color: Colors.black38),
+                      ),
+                      Expanded(flex: 2, child: Container()),
+                    ],
+                  )
+                // photo list
+                : DraggableScrollbar.semicircle(
+                    controller: myScrollController,
+                    labelTextBuilder: (double offset) =>
+                        getDate(offset, mapHeight),
+                    labelConstraints:
+                        BoxConstraints.expand(width: 88, height: 36),
+                    child: CustomScrollView(
+                      key: Key(list.length.toString()),
+                      controller: myScrollController,
+                      physics: AlwaysScrollableScrollPhysics(),
+                      slivers: List.from(
+                        list.map(
+                          (line) {
+                            if (line is String) {
+                              return SliverFixedExtentList(
+                                itemExtent: headerHeight,
+                                delegate: SliverChildBuilderDelegate(
+                                  (context, index) => Container(
+                                        padding: EdgeInsets.all(8),
+                                        child: Text(line),
+                                      ),
+                                  childCount: 1,
+                                ),
+                              );
+                            }
+                            return SliverGrid(
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: lineCount,
+                                mainAxisSpacing: spacing,
+                                crossAxisSpacing: spacing,
+                                childAspectRatio: 1.0,
+                              ),
+                              delegate: SliverChildBuilderDelegate(
+                                (BuildContext context, int index) {
+                                  return PhotoItem(
+                                    // key: Key(line[index].uuid +
+                                    //     line[index].selected.toString()),
+                                    item: line[index],
+                                    showPhoto: showPhoto,
+                                    cellSize: cellSize,
+                                    select: select,
+                                  );
+                                },
+                                childCount: line.length,
+                              ),
                             );
                           },
-                          childCount: line.length,
                         ),
-                      );
-                    },
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ),
           ),
         );
       },

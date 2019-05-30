@@ -454,7 +454,7 @@ class Album {
   Album(this.items, this.name);
   get length => items.length;
 
-  void setCover(thumbData) {
+  void setCover(Uint8List thumbData) {
     this.cover = thumbData;
   }
 }
