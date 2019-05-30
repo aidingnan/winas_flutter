@@ -206,26 +206,33 @@ class BackupWorker {
 
   Future<Entry> getTargetDir(
       List<RemoteList> remoteDirs, PhotoEntry photoEntry, Entry rootDir) async {
-    final index = remoteDirs.indexWhere(
-      (rl) =>
-          rl.entry.name.startsWith(photoEntry.hdate) && rl.length <= MAX_FILE,
-    );
+    // get all dirs with matched hdate
+    final List<RemoteList> dirsMatchDate = List.from(
+        remoteDirs.where((rd) => rd.entry.name.startsWith(photoEntry.hdate)));
 
     Entry targetDir;
-    // found target dir
-    if (index > -1) {
-      final remoteList = remoteDirs[index];
 
-      // photo already backup
-      if (remoteList.items.any((entry) => entry.hash == photoEntry.hash)) {
-        return null;
+    if (dirsMatchDate.length > 0) {
+      List<Entry> allItems = [];
+      for (RemoteList rl in dirsMatchDate) {
+        allItems.addAll(rl.items);
       }
 
-      targetDir = remoteList.entry;
+      // photo already backup
+      if (allItems.any((entry) => entry.hash == photoEntry.hash)) {
+        return null;
+      }
+      // found target dir which length < MAX_FILE
+      final index = dirsMatchDate.indexWhere((rd) => rd.length < MAX_FILE);
+      if (index > -1) {
+        final remoteList = dirsMatchDate[index];
 
-      // increase length
-      remoteList.fakeAdd();
-      return targetDir;
+        targetDir = remoteList.entry;
+
+        // increase length
+        remoteList.fakeAdd();
+        return targetDir;
+      }
     }
 
     // not found, create new dir
