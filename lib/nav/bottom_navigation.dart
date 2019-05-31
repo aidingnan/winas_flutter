@@ -103,7 +103,7 @@ class _BottomNavigationState extends State<BottomNavigation>
   /// 1. autoBackup
   /// 2. add intent Listener
   initWorks(AppState state) {
-    backupWorker = BackupWorker(state.apis);
+    backupWorker = BackupWorker(state.apis, state.config.cellularBackup);
 
     // start autoBackup
     if (state.config.autoBackup == true) {

@@ -9,7 +9,18 @@ import '../common/utils.dart';
 import '../common/isolate.dart';
 import '../common/stationApis.dart';
 
-enum Status { idle, running, failed, finished }
+/// `idle`: init state
+///
+/// `running`: working
+///
+/// `paused`: isMobile and backupViaCellular == false
+///
+/// `aborted`: autoBackup disabled
+///
+/// `failed`: backup error occured
+///
+/// `finished`: backup success
+enum Status { idle, running, paused, aborted, failed, finished }
 
 /// Max file count in single directory
 const MAX_FILE = 1000;
@@ -46,7 +57,7 @@ class RemoteList {
 /// manager of photo backup
 class BackupWorker {
   Apis apis;
-  BackupWorker(this.apis);
+  BackupWorker(this.apis, this.backupViaCellular);
   String machineId;
   String deviceName;
   CancelToken cancelToken;
@@ -54,8 +65,23 @@ class BackupWorker {
   CancelIsolate cancelUpload;
   CancelIsolate cancelHash;
   Status status = Status.idle;
+
+  /// retry times
+  int retry = 0;
+
+  /// total items to upload
   int total = 0;
+
+  /// uploaded items' count
+  ///
+  /// finished = trueUpload + ignored
   int finished = 0;
+
+  /// already backuped items' count
+  int ignored = 0;
+
+  /// use cellular to backup items
+  bool backupViaCellular = false;
 
   /// get all local photos and videos
   Future<List<AssetEntity>> getAssetList() async {
@@ -303,7 +329,15 @@ class BackupWorker {
     // already backuped, continue next
     if (targetDir == null) {
       finished += 1;
+      ignored += 1;
       // print('backup ignore: $id, ${getNow() - time}');
+      return;
+    }
+
+    // check network status
+    final isMobile = await apis.isMobile();
+    if (isMobile && backupViaCellular != true) {
+      status = Status.paused;
       return;
     }
 
@@ -368,6 +402,12 @@ class BackupWorker {
   }
 
   Future<void> startAsync() async {
+    final isMobile = await apis.isMobile();
+    if (isMobile && backupViaCellular != true) {
+      status = Status.paused;
+      return;
+    }
+
     status = Status.running;
     final data = await getMachineId();
     deviceName = data['deviceName'];
@@ -385,39 +425,75 @@ class BackupWorker {
           print('backup failed: ${entity.id}');
           print(e);
         }
+      } else if (status == Status.paused) {
+        return;
       }
     }
-    print('upload all assetList');
-    await updateStatus(rootDir);
-    print('updateStatus finished');
-    status = Status.finished;
-    finished = 0;
+    // TODO: handle error
+    if (finished == total) {
+      print('upload all assetList');
+      await updateStatus(rootDir);
+      print('updateStatus finished');
+      status = Status.finished;
+      finished = 0;
+      ignored = 0;
+    } else {
+      print('not all upload success');
+      status = Status.failed;
+      retryLater();
+    }
   }
 
   void start() {
     if (status == Status.running) return;
-    startAsync().catchError(print);
+    startAsync().catchError((e) {
+      print(e);
+      retryLater();
+    });
     print('backup started');
   }
 
   void abort() {
-    if (status != Status.finished) {
+    if (status == Status.running) {
       try {
         cancelUpload?.cancel();
         cancelHash?.cancel();
       } catch (e) {
         print(e);
       }
-      finished = 0;
-      status = Status.failed;
-      print('backup aborted');
     }
+    finished = 0;
+    ignored = 0;
+    retry = 0;
+    status = Status.aborted;
+    print('backup aborted');
+  }
+
+  /// used in toggle shouldBackupViaCellular
+  void restart() {
+    this.abort();
+    this.start();
+  }
+
+  /// retry after backup failed in `retry * retry` minutes
+  void retryLater() {
+    retry += 1;
+    Future.delayed(Duration(minutes: retry * retry), () {
+      this.start();
+    });
+  }
+
+  void updateConfig({bool shouldBackupViaCellular}) {
+    this.backupViaCellular = shouldBackupViaCellular;
   }
 
   bool get isIdle => status == Status.idle;
   bool get isRunning => status == Status.running;
   bool get isFinished => status == Status.finished;
   bool get isFailed => status == Status.failed;
+  bool get isPaused => status == Status.paused;
+  bool get isAborted => status == Status.aborted;
+  bool get isDiffing => isRunning && ignored != finished;
 
   String get progress => '$finished / $total';
 }

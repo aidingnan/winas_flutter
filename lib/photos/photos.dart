@@ -191,6 +191,67 @@ class _PhotosState extends State<Photos> {
     autoRefresh(isFirst: true).catchError(print);
   }
 
+  void openSettings(BuildContext ctx) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext c) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Container(
+                alignment: Alignment.topLeft,
+                padding: EdgeInsets.all(16),
+                child: Text('备份设置', style: TextStyle(fontSize: 18)),
+              ),
+              Container(
+                width: double.infinity,
+                height: 1,
+                color: Colors.grey[300],
+              ),
+              Container(height: 8),
+              Row(
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    child: Text('仅WIFI环境下备份'),
+                  ),
+                  Expanded(flex: 1, child: Container()),
+                  StoreConnector<AppState, Store<AppState>>(
+                    onInit: (store) => refresh(store, false).catchError(print),
+                    onDispose: (store) => {},
+                    converter: (store) => store,
+                    builder: (context, store) {
+                      return Switch(
+                        activeColor: Colors.teal,
+                        value: store.state.config.cellularBackup == true,
+                        onChanged: (value) {
+                          store.dispatch(UpdateConfigAction(
+                            Config.combine(
+                              store.state.config,
+                              Config(cellularBackup: value),
+                            ),
+                          ));
+                          // update backupWorker setting
+                          widget.backupWorker
+                              .updateConfig(shouldBackupViaCellular: value);
+                          // restart backup
+                          if (store.state.config.autoBackup == true) {
+                            widget.backupWorker.restart();
+                          }
+                        },
+                      );
+                    },
+                  )
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Widget renderAlbum(Album album) {
     return Container(
       child: Material(
@@ -247,6 +308,24 @@ class _PhotosState extends State<Photos> {
     );
   }
 
+  String backupStatus(Config config, BackupWorker worker) {
+    String text = '照片备份功能';
+    if (config.autoBackup == true) {
+      if (worker.isFinished) {
+        text = '备份已经完成';
+      } else if (worker.isDiffing) {
+        text = '正在准备备份';
+      } else if (worker.isRunning) {
+        text = '备份中';
+      } else if (worker.isPaused) {
+        text = '备份已暂停';
+      } else if (worker.isFailed) {
+        text = '备份未完成';
+      }
+    }
+    return text;
+  }
+
   List<Widget> renderSlivers(Store store) {
     final worker = widget.backupWorker;
     return <Widget>[
@@ -261,11 +340,7 @@ class _PhotosState extends State<Photos> {
                   children: <Widget>[
                     Center(
                       child: Text(
-                        store.state.config.autoBackup == true
-                            ? worker.isFinished
-                                ? '备份已经完成'
-                                : worker.isRunning ? '备份中' : '照片备份功能'
-                            : '照片备份功能',
+                        backupStatus(store.state.config, worker),
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
@@ -288,9 +363,9 @@ class _PhotosState extends State<Photos> {
                       value: store.state.config.autoBackup == true,
                       onChanged: (value) {
                         store.dispatch(UpdateConfigAction(
-                          Config(
-                            gridView: store.state.config.gridView,
-                            autoBackup: value,
+                          Config.combine(
+                            store.state.config,
+                            Config(autoBackup: value),
                           ),
                         ));
                         if (value == true) {
@@ -401,6 +476,12 @@ class _PhotosState extends State<Photos> {
             iconTheme: IconThemeData(color: Colors.black38),
             title: Text('相簿', style: TextStyle(color: Colors.black87)),
             centerTitle: false,
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.settings, color: Colors.black38),
+                onPressed: () => openSettings(context),
+              )
+            ],
           ),
           body: SafeArea(
             child: loading

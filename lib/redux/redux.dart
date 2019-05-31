@@ -585,26 +585,39 @@ class Config {
   bool showArchive = false;
   bool autoBackup = false;
   bool showTaskFab = false;
+  bool cellularBackup = false;
 
   Config({
-    this.gridView = false,
-    this.showArchive = false,
-    this.autoBackup = false,
-    this.showTaskFab = false,
+    this.gridView,
+    this.autoBackup,
+    this.showTaskFab,
+    this.showArchive,
+    this.cellularBackup,
   });
+
+  factory Config.initial() => Config(
+        gridView: false,
+        autoBackup: false,
+        showTaskFab: false,
+        showArchive: false,
+        cellularBackup: false,
+      );
 
   Config.combine(Config oldConfig, Config newConfig) {
     this.gridView = newConfig.gridView ?? oldConfig.gridView;
     this.autoBackup = newConfig.autoBackup ?? oldConfig.autoBackup;
+
     this.showArchive = newConfig.showArchive ?? oldConfig.showArchive;
     this.showTaskFab = newConfig.showTaskFab ?? oldConfig.showTaskFab;
+    this.cellularBackup = newConfig.cellularBackup ?? oldConfig.cellularBackup;
   }
 
   Config.fromMap(Map m) {
+    this.showTaskFab = false;
     this.gridView = m['gridView'] == true;
     this.autoBackup = m['autoBackup'] == true;
     this.showArchive = m['showArchive'] == true;
-    this.showTaskFab = false;
+    this.cellularBackup = m['cellularBackup'] == true;
   }
 
   @override
@@ -614,6 +627,7 @@ class Config {
       'autoBackup': autoBackup,
       'showArchive': showArchive,
       'showTaskFab': showTaskFab,
+      'cellularBackup': cellularBackup,
     };
     return jsonEncode(m);
   }
@@ -724,7 +738,7 @@ class AppState {
         localUser: null,
         drives: [],
         apis: null,
-        config: Config(gridView: false),
+        config: Config.initial(),
       );
 
   static AppState fromJson(dynamic json) {
