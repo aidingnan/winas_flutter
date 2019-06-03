@@ -54,10 +54,10 @@ class RemoteList {
   }
 }
 
-/// manager of photo backup
-class BackupWorker {
+/// single photo backup worker
+class Worker {
   Apis apis;
-  BackupWorker(this.apis, this.backupViaCellular);
+  Worker(this.apis);
   String machineId;
   String deviceName;
   CancelToken cancelToken;
@@ -80,11 +80,11 @@ class BackupWorker {
   /// already backuped items' count
   int ignored = 0;
 
-  /// use cellular to backup items
-  bool backupViaCellular = false;
+  bool get isAborted => status == Status.aborted;
 
   /// get all local photos and videos
   Future<List<AssetEntity>> getAssetList() async {
+    if (isAborted) return [];
     final result = await PhotoManager.requestPermission();
     if (!result) return [];
     List<AssetPathEntity> pathList = await PhotoManager.getAssetPathList();
@@ -334,13 +334,6 @@ class BackupWorker {
       return;
     }
 
-    // check network status
-    final isMobile = await apis.isMobile();
-    if (isMobile && backupViaCellular != true) {
-      status = Status.paused;
-      return;
-    }
-
     // print('before upload: $id, ${getNow() - time}');
     // update cancelIsolate
     cancelUpload = CancelIsolate();
@@ -348,6 +341,10 @@ class BackupWorker {
     // upload photo
     File file = await entity.originFile;
     String filePath = file.path;
+
+    if (isAborted) {
+      return;
+    }
 
     await uploadViaIsolate(apis, targetDir, filePath, hash, mtime,
         cancelIsolate: cancelUpload);
@@ -402,21 +399,19 @@ class BackupWorker {
   }
 
   Future<void> startAsync() async {
-    final isMobile = await apis.isMobile();
-    if (isMobile && backupViaCellular != true) {
-      status = Status.paused;
-      return;
-    }
-
     status = Status.running;
     final data = await getMachineId();
     deviceName = data['deviceName'];
     machineId = data['machineId'];
     final Entry rootDir = await getDir();
     assert(rootDir is Entry);
+
     List<AssetEntity> assetList = await getAssetList();
     total = assetList.length;
+
+    if (isAborted) return;
     final remoteDirs = await getRemoteDirs(rootDir);
+
     for (AssetEntity entity in assetList) {
       if (status == Status.running) {
         try {
@@ -425,11 +420,11 @@ class BackupWorker {
           print('backup failed: ${entity.id}');
           print(e);
         }
-      } else if (status == Status.paused) {
+      } else {
         return;
       }
     }
-    // TODO: handle error
+
     if (finished == total) {
       print('upload all assetList');
       await updateStatus(rootDir);
@@ -440,51 +435,83 @@ class BackupWorker {
     } else {
       print('not all upload success');
       status = Status.failed;
-      retryLater();
+      throw 'backup failed';
     }
   }
 
+  void abort() {
+    try {
+      cancelUpload?.cancel();
+      cancelHash?.cancel();
+    } catch (e) {
+      print(e);
+    }
+
+    status = Status.aborted;
+
+    finished = 0;
+    ignored = 0;
+    retry = 0;
+    print('backup aborted');
+  }
+
   void start() {
-    if (status == Status.running) return;
-    startAsync().catchError((e) {
+    this.startAsync().catchError((e) {
       print(e);
       retryLater();
     });
     print('backup started');
   }
 
-  void abort() {
-    if (status == Status.running) {
-      try {
-        cancelUpload?.cancel();
-        cancelHash?.cancel();
-      } catch (e) {
-        print(e);
-      }
-    }
-    finished = 0;
-    ignored = 0;
-    retry = 0;
-    status = Status.aborted;
-    print('backup aborted');
-  }
-
-  /// used in toggle shouldBackupViaCellular
-  void restart() {
-    this.abort();
-    this.start();
-  }
-
   /// retry after backup failed in `retry * retry` minutes
   void retryLater() {
     retry += 1;
     Future.delayed(Duration(minutes: retry * retry), () {
-      this.start();
+      if (isAborted) return;
+      this.startAsync();
     });
   }
+}
 
-  void updateConfig({bool shouldBackupViaCellular}) {
+/// manager of photo backup
+class BackupWorker {
+  Apis apis;
+  BackupWorker(this.apis, this.backupViaCellular);
+  Worker worker;
+  Status status = Status.idle;
+
+  /// use cellular to backup items
+  bool backupViaCellular = false;
+
+  void start() {
+    if (status == Status.running) return;
+    status = Status.running;
+    worker = Worker(apis);
+    worker.start();
+    print('backup started');
+  }
+
+  void abort() {
+    worker?.abort();
+    worker = null;
+    status = Status.aborted;
+    print('backup aborted');
+  }
+
+  void updateConfig({bool shouldBackupViaCellular, bool autoBackup}) async {
     this.backupViaCellular = shouldBackupViaCellular;
+    // backup is disabled
+    if (autoBackup != true) return;
+
+    final isMobile = await apis.isMobile();
+    if (isMobile && backupViaCellular != true) {
+      this.abort();
+      status = Status.paused;
+    } else {
+      // restart
+      this.abort();
+      this.start();
+    }
   }
 
   bool get isIdle => status == Status.idle;
@@ -493,7 +520,8 @@ class BackupWorker {
   bool get isFailed => status == Status.failed;
   bool get isPaused => status == Status.paused;
   bool get isAborted => status == Status.aborted;
-  bool get isDiffing => isRunning && ignored != finished;
+  bool get isDiffing => isRunning && worker?.ignored == worker?.finished;
 
-  String get progress => '$finished / $total';
+  String get progress =>
+      worker == null ? '' : '${worker.finished} / ${worker.total}';
 }

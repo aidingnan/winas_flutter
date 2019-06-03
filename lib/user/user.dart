@@ -4,13 +4,15 @@ import 'package:flutter/material.dart';
 import './about.dart';
 import './detail.dart';
 import './security.dart';
+import './settings.dart';
 import '../redux/redux.dart';
 import '../common/cache.dart';
 import '../common/utils.dart';
+import '../photos/backup.dart';
 
 class AccountInfo extends StatefulWidget {
-  AccountInfo({Key key}) : super(key: key);
-
+  AccountInfo({Key key, this.backupWorker}) : super(key: key);
+  final BackupWorker backupWorker;
   @override
   _AccountInfoState createState() => new _AccountInfoState();
 }
@@ -150,9 +152,16 @@ class _AccountInfoState extends State<AccountInfo> {
                   null,
                 ),
                 actionButton(
-                  '语言',
-                  () => {},
-                  Text('中文'),
+                  '设置',
+                  () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              Settings(backupWorker: widget.backupWorker),
+                          settings: RouteSettings(name: 'settings'),
+                        ),
+                      ),
+                  null,
                 ),
                 actionButton(
                   '清除缓存',

@@ -191,67 +191,6 @@ class _PhotosState extends State<Photos> {
     autoRefresh(isFirst: true).catchError(print);
   }
 
-  void openSettings(BuildContext ctx) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext c) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Container(
-                alignment: Alignment.topLeft,
-                padding: EdgeInsets.all(16),
-                child: Text('备份设置', style: TextStyle(fontSize: 18)),
-              ),
-              Container(
-                width: double.infinity,
-                height: 1,
-                color: Colors.grey[300],
-              ),
-              Container(height: 8),
-              Row(
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.all(16),
-                    child: Text('仅WIFI环境下备份'),
-                  ),
-                  Expanded(flex: 1, child: Container()),
-                  StoreConnector<AppState, Store<AppState>>(
-                    onInit: (store) => refresh(store, false).catchError(print),
-                    onDispose: (store) => {},
-                    converter: (store) => store,
-                    builder: (context, store) {
-                      return Switch(
-                        activeColor: Colors.teal,
-                        value: store.state.config.cellularBackup == true,
-                        onChanged: (value) {
-                          store.dispatch(UpdateConfigAction(
-                            Config.combine(
-                              store.state.config,
-                              Config(cellularBackup: value),
-                            ),
-                          ));
-                          // update backupWorker setting
-                          widget.backupWorker
-                              .updateConfig(shouldBackupViaCellular: value);
-                          // restart backup
-                          if (store.state.config.autoBackup == true) {
-                            widget.backupWorker.restart();
-                          }
-                        },
-                      );
-                    },
-                  )
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   Widget renderAlbum(Album album) {
     return Container(
       child: Material(
@@ -348,7 +287,9 @@ class _PhotosState extends State<Photos> {
                     Expanded(
                       child: Container(
                         child: Text(
-                          worker.isRunning ? worker.progress : '',
+                          (worker.isRunning && !worker.isDiffing)
+                              ? worker.progress
+                              : '',
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
@@ -476,12 +417,6 @@ class _PhotosState extends State<Photos> {
             iconTheme: IconThemeData(color: Colors.black38),
             title: Text('相簿', style: TextStyle(color: Colors.black87)),
             centerTitle: false,
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(Icons.settings, color: Colors.black38),
-                onPressed: () => openSettings(context),
-              )
-            ],
           ),
           body: SafeArea(
             child: loading

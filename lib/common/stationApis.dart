@@ -171,10 +171,10 @@ class Apis {
   Future<bool> isMobile() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.mobile) {
-      print('current netwprk status: mobile');
+      // print('current netwprk status: mobile');
       return true;
     } else if (connectivityResult == ConnectivityResult.wifi) {
-      print('current netwprk status: wifi');
+      // print('current netwprk status: wifi');
       return false;
     }
     return false;

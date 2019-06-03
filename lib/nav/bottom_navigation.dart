@@ -165,7 +165,7 @@ class _BottomNavigationState extends State<BottomNavigation>
         icon: Icon(Icons.person_outline),
         title: '我的',
         nav: 'user',
-        view: () => AccountInfo(),
+        view: () => AccountInfo(backupWorker: backupWorker),
         color: Colors.deepOrange,
       ),
     ];

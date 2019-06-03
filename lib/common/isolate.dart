@@ -18,6 +18,7 @@ class CancelIsolate {
 
     if (target != null) {
       try {
+        print('kill isolate target');
         target.kill();
       } catch (e) {
         print('kill isolate error:\n $e');

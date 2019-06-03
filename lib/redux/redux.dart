@@ -586,6 +586,7 @@ class Config {
   bool autoBackup = false;
   bool showTaskFab = false;
   bool cellularBackup = false;
+  bool cellularTransfer = true;
 
   Config({
     this.gridView,
@@ -593,6 +594,7 @@ class Config {
     this.showTaskFab,
     this.showArchive,
     this.cellularBackup,
+    this.cellularTransfer,
   });
 
   factory Config.initial() => Config(
@@ -601,6 +603,7 @@ class Config {
         showTaskFab: false,
         showArchive: false,
         cellularBackup: false,
+        cellularTransfer: true,
       );
 
   Config.combine(Config oldConfig, Config newConfig) {
@@ -610,6 +613,8 @@ class Config {
     this.showArchive = newConfig.showArchive ?? oldConfig.showArchive;
     this.showTaskFab = newConfig.showTaskFab ?? oldConfig.showTaskFab;
     this.cellularBackup = newConfig.cellularBackup ?? oldConfig.cellularBackup;
+    this.cellularTransfer =
+        newConfig.cellularTransfer ?? oldConfig.cellularTransfer;
   }
 
   Config.fromMap(Map m) {
@@ -618,6 +623,7 @@ class Config {
     this.autoBackup = m['autoBackup'] == true;
     this.showArchive = m['showArchive'] == true;
     this.cellularBackup = m['cellularBackup'] == true;
+    this.cellularTransfer = m['cellularTransfer'] == true;
   }
 
   @override
@@ -628,6 +634,7 @@ class Config {
       'showArchive': showArchive,
       'showTaskFab': showTaskFab,
       'cellularBackup': cellularBackup,
+      'cellularTransfer': cellularTransfer,
     };
     return jsonEncode(m);
   }
