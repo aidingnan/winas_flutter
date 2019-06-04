@@ -249,7 +249,7 @@ class Metadata {
 
   Metadata.fromMap(Map m) {
     this.type = m['type'];
-    this.datetime = m['date'];
+    this.datetime = m['datec'] ?? m['date'];
     this.height = m['h'];
     this.width = m['w'];
     this.rot = m['rot'];
@@ -257,10 +257,10 @@ class Metadata {
     this.model = m['model'];
     // print('Metadata>>>>>>> $m');
     try {
-      // only allow format: "2017:06:17 17:31:18"
+      // only allow format: "2017:06:17 17:31:18" or "2017:10:07 17:55:33-07:00"
       // hdate: 2017-06-17
       // fullDate: 2017-06-17 17:31
-      final list = this.datetime?.split(':');
+      final list = this.datetime?.substring(0, 19)?.split(':');
       if (this.datetime != null &&
           !this.datetime.startsWith('0') &&
           list.length == 5) {

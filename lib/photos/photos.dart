@@ -287,9 +287,7 @@ class _PhotosState extends State<Photos> {
                     Expanded(
                       child: Container(
                         child: Text(
-                          (worker.isRunning && !worker.isDiffing)
-                              ? worker.progress
-                              : '',
+                          worker.isRunning ? worker.progress : '',
                           style: TextStyle(color: Colors.white),
                         ),
                       ),

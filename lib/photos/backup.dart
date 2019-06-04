@@ -456,6 +456,9 @@ class Worker {
   }
 
   void start() {
+    finished = 0;
+    ignored = 0;
+    total = 0;
     this.startAsync().catchError((e) {
       print(e);
       retryLater();
@@ -468,7 +471,7 @@ class Worker {
     retry += 1;
     Future.delayed(Duration(minutes: retry * retry), () {
       if (isAborted) return;
-      this.startAsync();
+      this.start();
     });
   }
 }
@@ -520,7 +523,8 @@ class BackupWorker {
   bool get isFailed => status == Status.failed;
   bool get isPaused => status == Status.paused;
   bool get isAborted => status == Status.aborted;
-  bool get isDiffing => isRunning && worker?.ignored == worker?.finished;
+  bool get isDiffing =>
+      isRunning && worker?.ignored == worker?.finished && worker?.finished != 0;
 
   String get progress =>
       worker == null ? '' : '${worker.finished} / ${worker.total}';
