@@ -201,7 +201,8 @@ class _BottomNavigationState extends State<BottomNavigation>
         context: ctx,
         builder: (BuildContext context) => TokenExpired(),
       );
-    } else if (state?.apis?.stationOnline != true) {
+    } else if (state?.apis?.stationOnline != null &&
+        !state.apis.stationOnline) {
       showDialog(
         context: ctx,
         builder: (BuildContext context) => DeviceNotOnline(),
