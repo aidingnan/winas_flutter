@@ -196,13 +196,13 @@ class _BottomNavigationState extends State<BottomNavigation>
 
   /// check token state and station online status, show warning dialog
   void checkTokenState(BuildContext ctx, AppState state) {
-    if (state?.apis?.tokenExpired == true || state.cloud.tokenExpired == true) {
+    if (state?.apis?.tokenExpired == true ||
+        state?.cloud?.tokenExpired == true) {
       showDialog(
         context: ctx,
         builder: (BuildContext context) => TokenExpired(),
       );
-    } else if (state?.apis?.stationOnline != null &&
-        !state.apis.stationOnline) {
+    } else if (state?.apis?.stationOnline == false) {
       showDialog(
         context: ctx,
         builder: (BuildContext context) => DeviceNotOnline(),

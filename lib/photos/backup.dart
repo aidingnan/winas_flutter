@@ -432,6 +432,7 @@ class Worker {
       status = Status.finished;
       finished = 0;
       ignored = 0;
+      total = 0;
     } else {
       print('not all upload success');
       status = Status.failed;
@@ -517,12 +518,14 @@ class BackupWorker {
     }
   }
 
-  bool get isIdle => status == Status.idle;
-  bool get isRunning => status == Status.running;
-  bool get isFinished => status == Status.finished;
-  bool get isFailed => status == Status.failed;
+  bool get isIdle => worker?.status == Status.idle;
+  bool get isRunning => worker?.status == Status.running;
+  bool get isFinished => worker?.status == Status.finished;
+  bool get isFailed => worker?.status == Status.failed;
+
   bool get isPaused => status == Status.paused;
   bool get isAborted => status == Status.aborted;
+
   bool get isDiffing =>
       isRunning && worker?.ignored == worker?.finished && worker?.finished != 0;
 
