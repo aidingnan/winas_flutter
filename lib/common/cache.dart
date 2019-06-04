@@ -305,6 +305,20 @@ class CacheManager {
     return entryPath;
   }
 
+  Future<String> getPhotoPathWithTrueName(Entry entry, AppState state,
+      {Function onProgress, CancelToken cancelToken}) async {
+    String entryPath = await getPhotoPath(entry, state,
+        onProgress: onProgress, cancelToken: cancelToken);
+    if (entryPath == null) return null;
+
+    String trueNameDir = _tmpDir() + entry.uuid.substring(24, 36) + '/';
+    String trueNamePath = trueNameDir + entry.name;
+    await Directory(trueNameDir).create(recursive: true);
+    await File(entryPath).copy(trueNamePath);
+    print('trueNamePath $trueNamePath');
+    return trueNamePath;
+  }
+
   /// get random key, use AsyncMemoizer to memoizer result
   Future getRandomKey(Entry entry, AppState state) {
     final name = 'randomKey+${entry.hash}';

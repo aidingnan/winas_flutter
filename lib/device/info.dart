@@ -1,13 +1,15 @@
 import '../common/utils.dart';
 
+const UNKNOWN = '未知';
+
 class Info {
   String bleAddr;
   String eccName;
-  String bandwidth;
+  String ssid;
   String sn;
   String cert;
   String address;
-  String interfaceName;
+  String macAddress;
 
   String fingerprint;
   String signer;
@@ -16,20 +18,26 @@ class Info {
   Info.fromMap(Map m) {
     final device = m['device'];
     final net = m['net'];
-    this.bleAddr = device['bleAddr'];
-    this.eccName = device['ecc'];
 
+    this.eccName = device['ecc'];
+    final ble = m['ble'];
+    if (ble != null && ble['state'] == "Started") {
+      bleAddr = ble['address'];
+    } else {
+      bleAddr = UNKNOWN;
+    }
     this.sn = device['sn'];
     this.cert = device['cert'];
-    if (net != null && net['state'] == 70) {
+    if (net != null && net['state'] == 70 && net['detail'] != null) {
       final interface = net['addresses'][0];
-      this.bandwidth = '${interface['speed']} Mbps';
       this.address = interface['address'];
-      this.interfaceName = interface['address'];
+      final detail = net['detail'];
+      this.macAddress = detail['HwAddress'];
+      this.ssid = detail['Ssid'];
     } else {
-      this.bandwidth = '未知';
-      this.address = '未知';
-      this.interfaceName = '未知';
+      this.address = UNKNOWN;
+      this.macAddress = UNKNOWN;
+      this.ssid = UNKNOWN;
     }
 
     this.fingerprint = device['fingerprint'];

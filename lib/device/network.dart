@@ -24,7 +24,6 @@ class _NetworkState extends State<Network> {
     try {
       final res = await state.apis.req('winasInfo', null);
       info = Info.fromMap(res.data);
-      print('info: $info');
       if (this.mounted) {
         setState(() {
           loading = false;
@@ -94,7 +93,7 @@ class _NetworkState extends State<Network> {
                           actionButton(
                             'Wi-Fi名称',
                             () => {},
-                            _ellipsisText(info.interfaceName),
+                            _ellipsisText(info.ssid),
                           ),
                           actionButton(
                             '局域网IP地址',
@@ -102,9 +101,9 @@ class _NetworkState extends State<Network> {
                             _ellipsisText(info.address),
                           ),
                           actionButton(
-                            '网卡带宽',
+                            'MAC地址',
                             () => {},
-                            _ellipsisText(info.bandwidth),
+                            _ellipsisText(info.macAddress),
                           ),
                         ],
                       ),

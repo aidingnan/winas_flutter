@@ -367,7 +367,7 @@ class Entry {
     this.ctime = m['ctime'] ?? 0;
     this.mtime = m['mtime'] ?? 0;
     this.bctime = m['bctime'];
-    this.name = m['name'];
+    this.name = m['bname'] ?? m['name'];
     this.uuid = m['uuid'];
     this.type = 'file';
     this.hash = m['hash'];

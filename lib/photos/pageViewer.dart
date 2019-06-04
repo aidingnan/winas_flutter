@@ -71,7 +71,7 @@ class _PageViewerState extends State<PageViewer> {
     dialog.openDialog();
 
     final cm = await CacheManager.getInstance();
-    String entryPath = await cm.getPhotoPath(entry, state,
+    String entryPath = await cm.getPhotoPathWithTrueName(entry, state,
         onProgress: dialog.onProgress, cancelToken: dialog.cancelToken);
 
     dialog.close();
