@@ -46,7 +46,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
   String ssid;
 
   /// password for Wi-Fi
-  String pwd = 'wisnuc123456';
+  String pwd = '';
 
   /// Error for set wifi Error;
   String errorText;

@@ -51,11 +51,11 @@ class _RegistryState extends State<Registry> {
     super.dispose();
   }
 
-  String _phoneNumber = '18817301665';
+  String _phoneNumber = '';
 
   String _code = '';
 
-  String _password = '12345678';
+  String _password = '';
 
   String _error;
 
