@@ -107,6 +107,11 @@ class _FilesState extends State<Files> {
   Future refresh(AppState state, {bool isRetry: false}) async {
     String driveUUID;
     String dirUUID;
+    if (isRetry == true) {
+      setState(() {
+        loading = true;
+      });
+    }
     if (node.tag == 'home') {
       Drive homeDrive = state.drives
           .firstWhere((drive) => drive.tag == 'home', orElse: () => null);
@@ -169,6 +174,7 @@ class _FilesState extends State<Files> {
           builder: (BuildContext context) => DeviceNotOnline(),
         );
       } else {
+        print(error);
         loading = false;
         _error = error;
         if (this.mounted) {
