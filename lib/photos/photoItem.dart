@@ -67,9 +67,6 @@ class _PhotoItemState extends State<PhotoItem> {
   @override
   Widget build(BuildContext context) {
     final entry = widget.item;
-    final h = entry.metadata.height;
-    final w = entry.metadata.width;
-    final ratio = h > w ? h / w : w / h;
     return StoreConnector<AppState, AppState>(
       onInit: (store) => _getThumb(store.state),
       onDispose: (store) => {},
@@ -82,28 +79,43 @@ class _PhotoItemState extends State<PhotoItem> {
               onLongPress: () => widget.select.toggleSelect(entry),
               child: Stack(
                 children: <Widget>[
-                  Positioned.fill(
-                    child: thumbData == null
-                        ? Container()
-                        : Hero(
-                            tag: entry.uuid,
-                            child: ClipRect(
-                              child: Transform.scale(
-                                scale: ratio,
-                                child: Image.memory(
-                                  thumbData,
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
-                            ),
-                          ),
-                  ),
+                  // thumbnails
                   Positioned.fill(
                     child: thumbData == null
                         ? Container(color: Colors.grey[300])
                         : Image.memory(
                             thumbData,
                             fit: BoxFit.cover,
+                          ),
+                  ),
+                  // video duration
+                  Positioned(
+                    height: 24,
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: widget.item.metadata.duration == null
+                        ? Container()
+                        : Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [Colors.transparent, Colors.black26],
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                Text(
+                                  widget.item.metadata.duration,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                Container(width: 6),
+                              ],
+                            ),
                           ),
                   ),
                   Positioned.fill(

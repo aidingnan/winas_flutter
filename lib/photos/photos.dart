@@ -16,6 +16,7 @@ import '../icons/winas_icons.dart';
 const mediaTypes =
     'JPEG.PNG.JPG.GIF.BMP.RAW.RM.RMVB.WMV.AVI.MP4.3GP.MKV.MOV.FLV.MPEG';
 const videoTypes = 'RM.RMVB.WMV.AVI.MP4.3GP.MKV.MOV.FLV.MPEG';
+const imageTypes = 'JPEG.PNG.JPG.GIF.BMP';
 
 class Photos extends StatefulWidget {
   Photos({Key key, this.backupWorker}) : super(key: key);
@@ -39,8 +40,15 @@ class _PhotosState extends State<Photos> {
   ScrollController myScrollController = ScrollController();
 
   Future getCover(Album album, AppState state) async {
-    Entry entry = album.items[0];
+    // get first item
+    final res = await state.apis.req('search', {
+      'places': album.places,
+      'types': album.types,
+      'order': 'newest',
+      'count': 1,
+    });
 
+    Entry entry = Entry.fromMap(res.data.first);
     final cm = await CacheManager.getInstance();
     final Uint8List thumbData = await cm.getThumbData(entry, state);
 
@@ -65,38 +73,6 @@ class _PhotosState extends State<Photos> {
     return allDrives;
   }
 
-  /// req nasPhotos
-  Future<List<Entry>> nasPhotos(Store<AppState> store) async {
-    final time = DateTime.now().millisecondsSinceEpoch;
-    AppState state = store.state;
-    final List<Drive> drives = await updateDrives(store);
-
-    List<String> driveUUIDs = List.from(drives.map((d) => d.uuid));
-    String places = driveUUIDs.join('.');
-
-    // all photos and videos
-    final res = await state.apis.req('search', {
-      'places': places,
-      'types': mediaTypes,
-      'order': 'newest',
-    });
-    print('get nas photo: ${DateTime.now().millisecondsSinceEpoch - time}');
-    final List<Entry> allMedia = List.from(
-      res.data.map((d) => Entry.fromSearch(d, drives)).where(
-          (d) => d?.metadata?.height != null && d?.metadata?.width != null),
-    );
-
-    // sort allMedia
-    allMedia.sort((a, b) {
-      int order = b.hdate.compareTo(a.hdate);
-      return order == 0 ? b.mtime.compareTo(a.mtime) : order;
-    });
-
-    print(
-        'map and sort finished: ${DateTime.now().millisecondsSinceEpoch - time}');
-    return allMedia;
-  }
-
   Future refresh(Store<AppState> store, bool isManual) async {
     // use store.state to keep the state as latest
     if (!isManual &&
@@ -114,48 +90,72 @@ class _PhotosState extends State<Photos> {
     }
 
     try {
-      //nas photos
-      List<Entry> allMedia = await nasPhotos(store);
+      AppState state = store.state;
+      final List<Drive> drives = await updateDrives(store);
 
-      final List<Entry> allVideos = [];
-      final List<Entry> allPhotos = [];
+      List<String> driveUUIDs = List.from(drives.map((d) => d.uuid));
+      String places = driveUUIDs.join('.');
 
-      final videoArray = videoTypes.split('.');
+      // all photos and videos
+      final imageRes = await state.apis.req('search', {
+        'places': places,
+        'types': imageTypes,
+        'order': 'newest',
+        'countOnly': 'true',
+        'groupBy': 'place'
+      });
 
-      for (Entry entry in allMedia) {
-        if (videoArray.contains(entry?.metadata?.type)) {
-          allVideos.add(entry);
-        } else {
-          allPhotos.add(entry);
-        }
+      final videoRes = await state.apis.req('search', {
+        'places': places,
+        'types': videoTypes,
+        'order': 'newest',
+        'countOnly': 'true',
+        'groupBy': 'place'
+      });
+
+      int photosCount = 0;
+      for (Map m in imageRes.data) {
+        photosCount += m['count'];
+      }
+      int videosCount = 0;
+      for (Map m in videoRes.data) {
+        videosCount += m['count'];
       }
 
-      final allPhotosAlbum = Album(allPhotos, '照片');
-      final allVideosAlbum = Album(allVideos, '视频');
+      final allRes = [];
+      allRes.addAll(imageRes.data);
+      allRes.addAll(videoRes.data);
+      Map<String, int> groupByPlaces = {};
 
-      // find photos in each backup drives, filter: lenth > 0
-      final List<Album> backupAlbums = List.from(
-        store.state.drives
-            .where((d) => d.type == 'backup')
-            .map(
-              (d) => Album(
-                    List.from(allMedia.where((entry) => entry.pdrv == d.uuid)),
-                    d.label,
-                  ),
-            )
-            .where((a) => a.length > 0),
-      );
+      for (Map m in allRes) {
+        String key = m['key'];
+        groupByPlaces[key] = groupByPlaces[key] == null
+            ? m['count']
+            : (groupByPlaces[key] + m['count']);
+      }
 
-      albumList = [];
-      albumList.add(allPhotosAlbum);
-      albumList.add(allVideosAlbum);
-      albumList.addAll(backupAlbums);
+      final allPhotosAlbum =
+          Album('照片', places, imageTypes, photosCount, drives);
+      final allVideosAlbum =
+          Album('视频', places, videoTypes, videosCount, drives);
+
+      albumList = [allPhotosAlbum, allVideosAlbum];
+
+      final List<Drive> backupDrives =
+          List.from(store.state.drives.where((d) => d.type == 'backup'));
+      for (String key in groupByPlaces.keys) {
+        final drive = backupDrives.firstWhere((Drive d) => d.uuid == key,
+            orElse: () => null);
+        if (drive != null) {
+          albumList.add(
+              Album(drive.label, key, mediaTypes, groupByPlaces[key], [drive]));
+        }
+      }
 
       // request album's cover
       for (var album in albumList) {
         getCover(album, store.state).catchError(print);
       }
-
       // cache data
       userUUID = store.state.localUser.uuid;
       loading = false;
@@ -235,7 +235,7 @@ class _PhotosState extends State<Photos> {
                   padding: EdgeInsets.fromLTRB(0, 0, 0, 4),
                   width: double.infinity,
                   child: Text(
-                    '${album.length.toString()} 项内容',
+                    '${album.count} 项内容',
                     style: TextStyle(color: Colors.black54, fontSize: 12),
                   ),
                 ),

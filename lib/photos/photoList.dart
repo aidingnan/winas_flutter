@@ -30,17 +30,55 @@ class _PhotoListState extends State<PhotoList> {
   ///  height of header
   final double headerHeight = 32;
 
+  bool loading = true;
+  List photoMapDates;
+  List mapHeight;
+  double cellSize;
+
   /// calc photoMapDates and mapHeight from given album
-  getList(Album album, BuildContext ctx) {
-    final items = album.items;
+  getList(Album album, BuildContext ctx, AppState state,
+      {bool isManual = false}) async {
+    List<Entry> items;
+    if (album.items == null || isManual) {
+      // request album's item list
+      final res = await state.apis.req('search', {
+        'places': album.places,
+        'types': album.types,
+        'order': 'newest',
+      });
+      items = List.from(res.data.map((m) => Entry.fromSearch(m, album.drives)));
+
+      // sort allMedia
+      items.sort((a, b) {
+        int order = b.hdate.compareTo(a.hdate);
+        return order == 0 ? b.mtime.compareTo(a.mtime) : order;
+      });
+
+      // update and cache album.items
+      album.items = items;
+    } else {
+      items = album.items;
+    }
+
     final width = MediaQuery.of(ctx).size.width;
-    final cellSize = width - spacing * lineCount + spacing;
+
+    cellSize = width - spacing * lineCount + spacing;
+
     if (items.length == 0) {
-      return {'photoMapDates': [], 'mapHeight': [], 'cellSize': cellSize};
+      photoMapDates = [];
+      mapHeight = [];
+      loading = false;
+      // delay to next render circle
+      await Future.delayed(Duration.zero);
+      if (this.mounted) {
+        setState(() {});
+      }
+
+      return;
     }
 
     /// String headers '2019-03-06' or List of Entry, init with first item
-    final List photoMapDates = [
+    photoMapDates = [
       items[0].hdate,
       [items[0]],
     ];
@@ -58,7 +96,7 @@ class _PhotoListState extends State<PhotoList> {
     // remove the duplicated item
     photoMapDates[1].removeAt(0);
 
-    final List mapHeight = [];
+    mapHeight = [];
     double acc = 0;
 
     photoMapDates.forEach((line) {
@@ -73,11 +111,12 @@ class _PhotoListState extends State<PhotoList> {
       }
     });
 
-    return {
-      'photoMapDates': photoMapDates,
-      'mapHeight': mapHeight,
-      'cellSize': cellSize
-    };
+    loading = false;
+    // delay to next render circle
+    await Future.delayed(Duration.zero);
+    if (this.mounted) {
+      setState(() {});
+    }
   }
 
   void updateList() {
@@ -236,98 +275,101 @@ class _PhotoListState extends State<PhotoList> {
 
   @override
   Widget build(BuildContext context) {
-    final res = getList(widget.album, context);
-    final List list = res['photoMapDates'];
-    final List mapHeight = res['mapHeight'];
-    final double cellSize = res['cellSize'];
     return StoreConnector<AppState, AppState>(
-      onInit: (store) => {},
+      onInit: (store) => getList(widget.album, context, store.state),
       onDispose: (store) => {},
       converter: (store) => store.state,
       builder: (ctx, state) {
         return Scaffold(
-          key: Key(widget.album.length.toString()),
+          key: Key(widget.album.count.toString()),
           appBar: select.selectMode() ? selectAppBar(state) : listAppBar(state),
           body: Container(
             color: Colors.grey[100],
-            child: widget.album.length == 0
-                // no content
-                ? Column(
-                    children: <Widget>[
-                      Expanded(flex: 1, child: Container()),
-                      Container(
-                        padding: EdgeInsets.all(16),
-                        child: Container(
-                          width: 72,
-                          height: 72,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[400],
-                            borderRadius: BorderRadius.circular(36),
-                          ),
-                          child: Icon(Winas.logo,
-                              color: Colors.grey[100], size: 84),
-                        ),
-                      ),
-                      Text(
-                        '没有内容',
-                        style: TextStyle(color: Colors.black38),
-                      ),
-                      Expanded(flex: 2, child: Container()),
-                    ],
-                  )
-                // photo list
-                : DraggableScrollbar.semicircle(
-                    controller: myScrollController,
-                    labelTextBuilder: (double offset) =>
-                        getDate(offset, mapHeight),
-                    labelConstraints:
-                        BoxConstraints.expand(width: 88, height: 36),
-                    child: CustomScrollView(
-                      key: Key(list.length.toString()),
-                      controller: myScrollController,
-                      physics: AlwaysScrollableScrollPhysics(),
-                      slivers: List.from(
-                        list.map(
-                          (line) {
-                            if (line is String) {
-                              return SliverFixedExtentList(
-                                itemExtent: headerHeight,
-                                delegate: SliverChildBuilderDelegate(
-                                  (context, index) => Container(
-                                        padding: EdgeInsets.all(8),
-                                        child: Text(line),
-                                      ),
-                                  childCount: 1,
+            child: RefreshIndicator(
+              onRefresh: loading || select.selectMode()
+                  ? () async {}
+                  : () => getList(widget.album, ctx, state, isManual: true),
+              child: loading == true
+                  ? Center(child: CircularProgressIndicator())
+                  : widget.album.count == 0
+                      // no content
+                      ? Column(
+                          children: <Widget>[
+                            Expanded(flex: 1, child: Container()),
+                            Container(
+                              padding: EdgeInsets.all(16),
+                              child: Container(
+                                width: 72,
+                                height: 72,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[400],
+                                  borderRadius: BorderRadius.circular(36),
                                 ),
-                              );
-                            }
-                            return SliverGrid(
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: lineCount,
-                                mainAxisSpacing: spacing,
-                                crossAxisSpacing: spacing,
-                                childAspectRatio: 1.0,
+                                child: Icon(Winas.logo,
+                                    color: Colors.grey[100], size: 84),
                               ),
-                              delegate: SliverChildBuilderDelegate(
-                                (BuildContext context, int index) {
-                                  return PhotoItem(
-                                    // key: Key(line[index].uuid +
-                                    //     line[index].selected.toString()),
-                                    item: line[index],
-                                    showPhoto: showPhoto,
-                                    cellSize: cellSize,
-                                    select: select,
+                            ),
+                            Text(
+                              '没有内容',
+                              style: TextStyle(color: Colors.black38),
+                            ),
+                            Expanded(flex: 2, child: Container()),
+                          ],
+                        )
+                      // photo list
+                      : DraggableScrollbar.semicircle(
+                          controller: myScrollController,
+                          labelTextBuilder: (double offset) =>
+                              getDate(offset, mapHeight),
+                          labelConstraints:
+                              BoxConstraints.expand(width: 88, height: 36),
+                          child: CustomScrollView(
+                            key: Key(photoMapDates.length.toString()),
+                            controller: myScrollController,
+                            physics: AlwaysScrollableScrollPhysics(),
+                            slivers: List.from(
+                              photoMapDates.map(
+                                (line) {
+                                  if (line is String) {
+                                    return SliverFixedExtentList(
+                                      itemExtent: headerHeight,
+                                      delegate: SliverChildBuilderDelegate(
+                                        (context, index) => Container(
+                                              padding: EdgeInsets.all(8),
+                                              child: Text(line),
+                                            ),
+                                        childCount: 1,
+                                      ),
+                                    );
+                                  }
+                                  return SliverGrid(
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: lineCount,
+                                      mainAxisSpacing: spacing,
+                                      crossAxisSpacing: spacing,
+                                      childAspectRatio: 1.0,
+                                    ),
+                                    delegate: SliverChildBuilderDelegate(
+                                      (BuildContext context, int index) {
+                                        return PhotoItem(
+                                          // key: Key(line[index].uuid +
+                                          //     line[index].selected.toString()),
+                                          item: line[index],
+                                          showPhoto: showPhoto,
+                                          cellSize: cellSize,
+                                          select: select,
+                                        );
+                                      },
+                                      childCount: line.length,
+                                    ),
                                   );
                                 },
-                                childCount: line.length,
                               ),
-                            );
-                          },
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
+            ),
           ),
         );
       },

@@ -243,6 +243,8 @@ class Metadata {
   String fullDate;
   String make;
   String model;
+  // video's duration
+  String duration;
   int height;
   int width;
   int rot;
@@ -271,6 +273,28 @@ class Metadata {
     } catch (err) {
       this.hdate = null;
       print(err);
+    }
+    try {
+      final dur = m['dur'];
+      if (dur is! num) return;
+      int hours = 0;
+      int minutes = 0;
+      int seconds = 0;
+
+      hours = (dur / 3600).floor();
+      minutes = ((dur - hours * 3600) / 60).floor();
+      seconds = ((dur - hours * 3600 - minutes * 60)).ceil();
+
+      String hoursString = hours > 10 ? hours.toString() : '0$hours';
+      String minutesString = minutes > 10 ? minutes.toString() : '0$minutes';
+      String secondsString = seconds > 10 ? seconds.toString() : '0$seconds';
+      this.duration = '$minutesString:$secondsString';
+      if (hoursString != '00') {
+        this.duration = '$hoursString:${this.duration}';
+      }
+    } catch (err) {
+      print(err);
+      this.duration = null;
     }
   }
 
@@ -446,13 +470,16 @@ class Node {
 
 /// list of photos and videos from NAS
 class Album {
-  List<Entry> items = [];
+  List<Entry> items;
   String name;
+  String places;
+  String types;
+  int count = 0;
+  List<Drive> drives;
 
   // thumbData
   Uint8List cover;
-  Album(this.items, this.name);
-  get length => items.length;
+  Album(this.name, this.places, this.types, this.count, this.drives);
 
   void setCover(Uint8List thumbData) {
     this.cover = thumbData;
