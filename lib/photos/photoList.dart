@@ -197,7 +197,7 @@ class _PhotoListState extends State<PhotoList> {
                       showSnackBar(ctx, '删除失败');
                     }
                     select.clearSelect();
-                    setState(() {});
+                    getList(widget.album, context, state);
                   },
           );
         }),
