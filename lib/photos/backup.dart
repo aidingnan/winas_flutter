@@ -129,6 +129,7 @@ class Worker {
     return photosDir;
   }
 
+  /// get root backup dir
   Future<Entry> getDir() async {
     Drive backupDrive = await getBackupDrive();
 
@@ -406,11 +407,11 @@ class Worker {
     final Entry rootDir = await getDir();
     assert(rootDir is Entry);
 
-    List<AssetEntity> assetList = await getAssetList();
-    total = assetList.length;
+    final remoteDirs = await getRemoteDirs(rootDir);
 
     if (isAborted) return;
-    final remoteDirs = await getRemoteDirs(rootDir);
+    List<AssetEntity> assetList = await getAssetList();
+    total = assetList.length;
 
     for (AssetEntity entity in assetList) {
       if (status == Status.running) {
@@ -526,8 +527,7 @@ class BackupWorker {
   bool get isPaused => status == Status.paused;
   bool get isAborted => status == Status.aborted;
 
-  bool get isDiffing =>
-      isRunning && worker?.ignored == worker?.finished && worker?.finished != 0;
+  bool get isDiffing => isRunning && worker?.ignored == worker?.finished;
 
   String get progress =>
       worker == null ? '' : '${worker.finished} / ${worker.total}';

@@ -252,14 +252,14 @@ class _PhotosState extends State<Photos> {
     if (config.autoBackup == true) {
       if (worker.isFinished) {
         text = '备份已经完成';
-      } else if (worker.isDiffing) {
-        text = '正在准备备份';
-      } else if (worker.isRunning) {
-        text = '备份中';
       } else if (worker.isPaused) {
         text = '备份已暂停';
       } else if (worker.isFailed) {
         text = '备份未完成';
+      } else if (worker.isDiffing) {
+        text = '正在准备备份';
+      } else if (worker.isRunning) {
+        text = '备份中';
       }
     }
     return text;
