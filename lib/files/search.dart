@@ -383,7 +383,6 @@ class _SearchState extends State<Search> {
   /// show search result
   Widget renderList(AppState state) {
     if (_entries.length == 0) return renderNoResult();
-    print(_entries);
     return Container(
       color: Colors.grey[200],
       child: DraggableScrollbar.semicircle(
@@ -485,6 +484,9 @@ class _SearchState extends State<Search> {
                                         size: 18,
                                       ),
                                       onDeleted: () {
+                                        if (select.selectMode()) {
+                                          select.clearSelect();
+                                        }
                                         setState(() {
                                           _fileType = null;
                                           _entries = null;

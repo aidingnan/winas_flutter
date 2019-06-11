@@ -69,7 +69,6 @@ class ResetDevice extends StatelessWidget {
                           try {
                             final res =
                                 await state.apis.req('reqLocalAuth', null);
-                            print(res);
                             final colors = res.data['colors'];
                             if (colors is! List) throw 'get color code error';
                           } catch (e) {

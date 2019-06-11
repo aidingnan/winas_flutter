@@ -210,7 +210,6 @@ class _ConfigDeviceState extends State<ConfigDevice> {
           throw 'Timeout of 30 seconds for winas starting';
         await Future.delayed(Duration(seconds: 1));
         final res = await request.winasdInfo(ip);
-        print(res);
         final winas = res['winas'];
         final channel = res['channel'];
 

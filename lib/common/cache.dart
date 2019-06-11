@@ -336,7 +336,6 @@ class CacheManager {
     String key;
     try {
       final res = await state.apis.req('randomSrc', {'hash': entry.hash});
-      print(res);
       key = res.data['random'];
     } catch (e) {
       print(e);
