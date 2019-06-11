@@ -179,6 +179,9 @@ class _BottomNavigationState extends State<BottomNavigation>
         context: context,
         builder: (_) => TokenExpired(),
       );
+      // only listen once, cancel listener
+      tokenExpiredListener.cancel();
+      tokenExpiredListener = null;
     });
 
     // add tokenExpiredListener (asynchronous)
@@ -189,6 +192,9 @@ class _BottomNavigationState extends State<BottomNavigation>
         context: context,
         builder: (_) => DeviceNotOnline(),
       );
+      // only listen once, cancel listener
+      stationNotOnlineListener.cancel();
+      stationNotOnlineListener = null;
     });
   }
 
@@ -216,13 +222,6 @@ class _BottomNavigationState extends State<BottomNavigation>
       },
     );
   }
-
-  /// check token state and station online status, show warning dialog
-  // void checkTokenState(BuildContext ctx, AppState state) {
-  //   if (state?.apis?.tokenExpired == true ||
-  //       state?.cloud?.tokenExpired == true) {
-  //   } else if (state?.apis?.stationOnline == false) {}
-  // }
 
   @override
   Widget build(BuildContext context) {

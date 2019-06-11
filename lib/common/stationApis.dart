@@ -69,7 +69,7 @@ class Apis {
           if (error?.response?.statusCode == 401) {
             // tokenExpired
             this.tokenExpired = true;
-            eventBus.fire(TokenExpiredEvent('401'));
+            eventBus.fire(TokenExpiredEvent('401 in station apis'));
           } else if (error?.response?.data is Map &&
               error.response.data['message'] == 'Station is not online') {
             // station not online

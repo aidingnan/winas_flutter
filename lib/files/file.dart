@@ -11,8 +11,6 @@ import './search.dart';
 import './fileRow.dart';
 import './newFolder.dart';
 import './xcopyDialog.dart';
-import './tokenExpired.dart';
-import './deviceNotOnline.dart';
 
 import '../redux/redux.dart';
 import '../common/cache.dart';
@@ -161,25 +159,10 @@ class _FilesState extends State<Files> {
       _error = null;
     } catch (error) {
       print(error);
-      if (error is DioError && error?.response?.statusCode == 401) {
-        showDialog(
-          context: this.context,
-          builder: (BuildContext context) => TokenExpired(),
-        );
-      } else if (error is DioError &&
-          error?.response?.data is Map &&
-          error.response.data['message'] == 'Station is not online') {
-        showDialog(
-          context: this.context,
-          builder: (BuildContext context) => DeviceNotOnline(),
-        );
-      } else {
-        print(error);
-        loading = false;
-        _error = error;
-        if (this.mounted) {
-          setState(() {});
-        }
+      loading = false;
+      _error = error;
+      if (this.mounted) {
+        setState(() {});
       }
       return;
     }

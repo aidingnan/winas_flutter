@@ -1,6 +1,8 @@
-import 'dart:convert';
 import 'dart:io';
+import 'dart:convert';
 import 'package:dio/dio.dart';
+
+import './eventBus.dart';
 
 class Request {
   bool isIOS = !Platform.isAndroid;
@@ -50,6 +52,7 @@ class Request {
           if (error?.response?.statusCode == 401) {
             // tokenExpired
             this.tokenExpired = true;
+            eventBus.fire(TokenExpiredEvent('401 in could request'));
           }
         }
         return error;
