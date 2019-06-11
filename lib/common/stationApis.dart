@@ -4,6 +4,8 @@ import 'package:dio/dio.dart';
 import 'dart:io' show Platform;
 import 'package:connectivity/connectivity.dart';
 
+import './eventBus.dart';
+
 class Apis {
   bool isIOS = !Platform.isAndroid;
   bool isCloud;
@@ -67,10 +69,12 @@ class Apis {
           if (error?.response?.statusCode == 401) {
             // tokenExpired
             this.tokenExpired = true;
+            eventBus.fire(TokenExpiredEvent('401'));
           } else if (error?.response?.data is Map &&
               error.response.data['message'] == 'Station is not online') {
             // station not online
             this.stationOnline = false;
+            eventBus.fire(StationNotOnlineEvent('Station is not online'));
           }
         }
         return error;

@@ -12,6 +12,7 @@ import '../files/fileRow.dart';
 import '../photos/backup.dart';
 import '../common/intent.dart';
 import '../photos/photos.dart';
+import '../common/eventBus.dart';
 import '../transfer/manager.dart';
 import '../files/backupView.dart';
 import '../device/myStation.dart';
@@ -98,6 +99,8 @@ class _BottomNavigationState extends State<BottomNavigation>
   List<NavigationIconView> _navigationViews;
   BackupWorker backupWorker;
   StreamSubscription<String> intentListener;
+  StreamSubscription<TokenExpiredEvent> tokenExpiredListener;
+  StreamSubscription<StationNotOnlineEvent> stationNotOnlineListener;
 
   /// init works onStart:
   /// 1. autoBackup
@@ -109,7 +112,6 @@ class _BottomNavigationState extends State<BottomNavigation>
     if (state.config.autoBackup == true) {
       backupWorker.start();
     }
-
     // add listener of new intent
     intentListener = Intent.listenToOnNewIntent().listen((filePath) {
       print('newIntent: $filePath');
@@ -169,6 +171,25 @@ class _BottomNavigationState extends State<BottomNavigation>
         color: Colors.deepOrange,
       ),
     ];
+
+    // add tokenExpiredListener (asynchronous)
+    tokenExpiredListener = eventBus.on<TokenExpiredEvent>().listen((event) {
+      print(event.text);
+      showDialog(
+        context: context,
+        builder: (_) => TokenExpired(),
+      );
+    });
+
+    // add tokenExpiredListener (asynchronous)
+    stationNotOnlineListener =
+        eventBus.on<StationNotOnlineEvent>().listen((event) {
+      print(event.text);
+      showDialog(
+        context: context,
+        builder: (_) => DeviceNotOnline(),
+      );
+    });
   }
 
   @override
@@ -176,6 +197,8 @@ class _BottomNavigationState extends State<BottomNavigation>
     super.dispose();
     backupWorker?.abort();
     intentListener?.cancel();
+    tokenExpiredListener?.cancel();
+    stationNotOnlineListener?.cancel();
   }
 
   BottomNavigationBar botNavBar() {
@@ -195,20 +218,11 @@ class _BottomNavigationState extends State<BottomNavigation>
   }
 
   /// check token state and station online status, show warning dialog
-  void checkTokenState(BuildContext ctx, AppState state) {
-    if (state?.apis?.tokenExpired == true ||
-        state?.cloud?.tokenExpired == true) {
-      showDialog(
-        context: ctx,
-        builder: (BuildContext context) => TokenExpired(),
-      );
-    } else if (state?.apis?.stationOnline == false) {
-      showDialog(
-        context: ctx,
-        builder: (BuildContext context) => DeviceNotOnline(),
-      );
-    }
-  }
+  // void checkTokenState(BuildContext ctx, AppState state) {
+  //   if (state?.apis?.tokenExpired == true ||
+  //       state?.cloud?.tokenExpired == true) {
+  //   } else if (state?.apis?.stationOnline == false) {}
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -222,7 +236,7 @@ class _BottomNavigationState extends State<BottomNavigation>
       onDispose: (store) => {},
       converter: (store) => store.state,
       builder: (ctx, state) {
-        Future.delayed(Duration.zero, () => checkTokenState(ctx, state));
+        // Future.delayed(Duration.zero, () => checkTokenState(ctx, state));
         return Scaffold(
           body: Center(child: _navigationViews[_currentIndex].view()),
           bottomNavigationBar: botNavBar(),
