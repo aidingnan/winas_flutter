@@ -277,6 +277,11 @@ class _ForgetPasswordState extends State<ForgetPassword> {
             focusNode: focusNode2,
             decoration: InputDecoration(
                 labelText: "密码",
+                labelStyle: TextStyle(
+                  fontSize: 21,
+                  color: Colors.white,
+                  height: 0.8,
+                ),
                 prefixIcon: Icon(Icons.lock, color: Colors.white),
                 suffixIcon: IconButton(
                   icon: Icon(showPwd ? Icons.visibility : Icons.visibility_off,
@@ -288,7 +293,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                   },
                 ),
                 errorText: _error),
-            style: TextStyle(fontSize: 24),
+            style: TextStyle(fontSize: 24, color: Colors.white),
             obscureText: showPwd,
           ),
         ];

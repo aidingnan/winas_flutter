@@ -133,11 +133,6 @@ class _LoginState extends State<Login> {
           _error = '请输入密码';
         });
         return;
-      } else if (_password.length < 8) {
-        setState(() {
-          _error = '密码错误';
-        });
-        return;
       }
 
       String clientId = await getClientId();
@@ -166,6 +161,7 @@ class _LoginState extends State<Login> {
         }
         Navigator.pop(context);
         showSnackBar(context, '登录失败');
+        return;
       }
 
       // update Account
