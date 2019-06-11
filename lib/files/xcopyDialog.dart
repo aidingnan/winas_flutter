@@ -221,6 +221,7 @@ class _XCopyViewState extends State<_XCopyView> {
       },
       'dst': {'drive': node.driveUUID, 'dir': node.dirUUID},
     };
+
     showLoading(ctx);
     try {
       final res = await state.apis.req('xcopy', args);

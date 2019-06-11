@@ -36,7 +36,7 @@ class _AvatarViewState extends State<AvatarView> {
       maxHeight: 512,
     );
 
-    showLoading(ctx);
+    final loadingInstance = showLoading(ctx);
     setState(() {
       imageFile = cropFile;
     });
@@ -57,11 +57,11 @@ class _AvatarViewState extends State<AvatarView> {
       } else {
         throw Error();
       }
-      Navigator.pop(ctx);
+      loadingInstance.close();
       showSnackBar(ctx, '头像修改成功');
     } catch (error) {
       print(error);
-      Navigator.pop(ctx);
+      loadingInstance.close();
       showSnackBar(ctx, '上传头像失败');
     }
   }

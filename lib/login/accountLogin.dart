@@ -102,18 +102,20 @@ class _LoginState extends State<Login> {
       }
 
       // userExist
-      showLoading(context);
+
+      final loadingInstance = showLoading(context);
       bool userExist = false;
       try {
         final res = await request.req('checkUser', {'phone': _phoneNumber});
         userExist = res.data['userExist'];
       } catch (error) {
         print(error);
-        Navigator.pop(context);
+
+        loadingInstance.close();
         showSnackBar(context, '校验手机号失败');
         return;
       }
-      Navigator.pop(context);
+      loadingInstance.close();
 
       if (!userExist) {
         showSnackBar(context, '用户不存在');
@@ -145,21 +147,20 @@ class _LoginState extends State<Login> {
       // dismiss keyboard
       FocusScope.of(context).requestFocus(FocusNode());
 
-      // show loading, need `Navigator.pop(context)` to dismiss
-      showLoading(context);
+      final loadingInstance = showLoading(context);
       var res;
       try {
         res = await request.req('token', args);
       } catch (error) {
         print(error?.response?.data);
         if (error is DioError && error.response.data['code'] == 60008) {
-          Navigator.pop(context);
+          loadingInstance.close();
           setState(() {
             _error = '密码错误';
           });
           return;
         }
-        Navigator.pop(context);
+        loadingInstance.close();
         showSnackBar(context, '登录失败');
         return;
       }

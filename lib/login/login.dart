@@ -52,7 +52,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   accoutLogin(BuildContext context, store) async {
-    // show loading, need `Navigator.pop(context)` to dismiss
     showLoading(context);
 
     // update Account

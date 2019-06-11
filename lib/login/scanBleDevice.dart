@@ -218,12 +218,14 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                                     if (!enabled) return;
 
                                     BluetoothDevice device;
-                                    showLoading(ctx);
+
+                                    final loadingInstance = showLoading(ctx);
                                     try {
                                       device = await connectAsync(scanResult);
                                     } catch (e) {
                                       print(e);
-                                      Navigator.pop(ctx);
+
+                                      loadingInstance.close();
                                       showSnackBar(ctx, '连接设备失败');
                                       return;
                                     }
@@ -232,12 +234,13 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                                       await reqAuth(device);
                                     } catch (e) {
                                       print(e);
-                                      Navigator.pop(ctx);
+
+                                      loadingInstance.close();
                                       showSnackBar(ctx, '请求设备验证失败');
                                       return;
                                     }
-                                    Navigator.pop(ctx);
 
+                                    loadingInstance.close();
                                     Navigator.push(
                                       ctx,
                                       MaterialPageRoute(

@@ -61,27 +61,21 @@ class _RegistryState extends State<Registry> {
 
   String _ticket;
 
-  Future<void> accoutLogin(context, store, args) async {
-    // dismiss keyboard
-    FocusScope.of(context).requestFocus(FocusNode());
-
-    // show loading, need `Navigator.pop(context)` to dismiss
-    showLoading(context);
-  }
+  LoadingInstance _loadingInstance;
 
   /// show loading
   _loading(BuildContext ctx) {
-    showLoading(ctx);
+    _loadingInstance = showLoading(ctx);
   }
 
   /// close loading
-  _loadingOff(BuildContext ctx) {
-    Navigator.pop(ctx);
+  _loadingOff() {
+    _loadingInstance.close();
   }
 
   /// close loading, setState and focus node
   _nextPage(BuildContext context, String status, FocusNode node) {
-    _loadingOff(context);
+    _loadingOff();
     setState(() {
       _status = status;
     });
@@ -93,7 +87,7 @@ class _RegistryState extends State<Registry> {
 
   /// handle SmsError: close loading, setState
   _handleSmsError(BuildContext context, DioError error) {
-    _loadingOff(context);
+    _loadingOff();
     print(error.response.data);
     if ([60702, 60003].contains(error.response.data['code'])) {
       showSnackBar(context, '验证码请求过于频繁，请稍后再试');
@@ -124,7 +118,7 @@ class _RegistryState extends State<Registry> {
         });
       } catch (error) {
         if (error.response.data['code'] == 60001) {
-          _loadingOff(context);
+          _loadingOff();
           showSnackBar(context, '该手机号已经注册');
           setState(() {});
           return;
@@ -159,7 +153,7 @@ class _RegistryState extends State<Registry> {
           throw Error();
         }
       } catch (error) {
-        _loadingOff(context);
+        _loadingOff();
         setState(() {
           _error = '验证码错误';
         });
@@ -190,7 +184,7 @@ class _RegistryState extends State<Registry> {
           "password": _password,
         });
       } catch (error) {
-        _loadingOff(context);
+        _loadingOff();
         setState(() {
           _error = '注册失败';
         });
@@ -198,7 +192,7 @@ class _RegistryState extends State<Registry> {
       }
 
       // show next page
-      _loadingOff(context);
+      _loadingOff();
       setState(() {
         _status = 'success';
       });
@@ -311,7 +305,7 @@ class _RegistryState extends State<Registry> {
 
           _ticket = res.data;
         } catch (error) {
-          _loadingOff(context);
+          _loadingOff();
           print(error);
           showSnackBar(context, '验证码错误');
           return;
@@ -346,14 +340,14 @@ class _RegistryState extends State<Registry> {
           "wechatToken": widget.wechat,
         });
       } catch (error) {
-        _loadingOff(context);
+        _loadingOff();
         print(error);
         showSnackBar(context, '注册失败');
         return;
       }
 
       // show next page
-      _loadingOff(context);
+      _loadingOff();
       setState(() {
         _status = 'success';
       });
@@ -397,7 +391,7 @@ class _RegistryState extends State<Registry> {
       return;
     }
     _startCount();
-    _loadingOff(ctx);
+    _loadingOff();
     showSnackBar(ctx, '验证码发送成功');
   }
 

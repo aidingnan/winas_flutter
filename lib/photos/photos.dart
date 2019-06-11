@@ -91,7 +91,10 @@ class _PhotosState extends State<Photos> {
 
     try {
       AppState state = store.state;
-      await state.apis.testLAN();
+      if (isManual) {
+        await state.apis.testLAN();
+      }
+
       final List<Drive> drives = await updateDrives(store);
 
       List<String> driveUUIDs = List.from(drives.map((d) => d.uuid));

@@ -113,7 +113,8 @@ class _WeChatState extends State<WeChat> {
   _unbindWeChat(BuildContext ctx, AppState state) async {
     // remove previous listener
     _wxlogin?.cancel();
-    showLoading(ctx);
+
+    final loadingInstance = showLoading(context);
     print('wechatInfo $wechatInfo');
     print('unionid ${wechatInfo[0]['unionid']}');
     try {
@@ -121,7 +122,7 @@ class _WeChatState extends State<WeChat> {
         'unionid': wechatInfo[0]['unionid'],
       });
       await _refresh(state);
-      Navigator.pop(ctx);
+      loadingInstance.close();
       showSnackBar(ctx, '解绑成功');
     } catch (error) {
       print(error);
@@ -133,7 +134,8 @@ class _WeChatState extends State<WeChat> {
           _loading = false;
         });
       }
-      Navigator.pop(ctx);
+
+      loadingInstance.close();
       showSnackBar(ctx, '操作失败');
     }
   }

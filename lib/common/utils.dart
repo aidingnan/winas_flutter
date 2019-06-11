@@ -17,56 +17,39 @@ void showSnackBar(BuildContext ctx, String message) {
   // Scaffold.of(ctx).showSnackBar(snackBar);
 }
 
-Future<T> _showLoading<T>({
-  @required BuildContext context,
-  bool barrierDismissible = true,
-  WidgetBuilder builder,
-}) {
-  return showGeneralDialog(
-    context: context,
-    pageBuilder: (BuildContext buildContext, Animation<double> animation,
-        Animation<double> secondaryAnimation) {
-      final ThemeData theme = Theme.of(context, shadowThemeOnly: true);
-      final Widget pageChild = Builder(builder: builder);
-      return SafeArea(
-        child: Builder(builder: (BuildContext context) {
-          return theme != null
-              ? Theme(data: theme, child: pageChild)
-              : pageChild;
-        }),
-      );
-    },
-    barrierDismissible: barrierDismissible,
-    barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-    barrierColor: Colors.black12,
-    transitionDuration: const Duration(milliseconds: 150),
-    transitionBuilder: (BuildContext context, Animation<double> animation,
-        Animation<double> secondaryAnimation, Widget child) {
-      return FadeTransition(
-        opacity: CurvedAnimation(
-          parent: animation,
-          curve: Curves.easeOut,
-        ),
-        child: child,
-      );
-    },
-  );
+class LoadingInstance {
+  PageRoute route;
+  BuildContext context;
+  bool isLoading = true;
+
+  LoadingInstance(this.context, this.route);
+
+  void close() {
+    Navigator.removeRoute(context, route);
+    isLoading = false;
+  }
 }
 
-/// Show modal loading, need Navigator.pop(context) to close
-Future showLoading(BuildContext context, {bool barrierDismissible: false}) {
-  return _showLoading(
-    barrierDismissible: barrierDismissible,
-    builder: (ctx) {
-      return Container(
-        constraints: BoxConstraints.expand(),
-        child: Center(
-          child: CircularProgressIndicator(),
+/// Show modal loading
+///
+/// use `loadingInstance.close()` to finish loading
+LoadingInstance showLoading(
+  BuildContext context,
+) {
+  final router = TransparentPageRoute(
+    builder: (_) => WillPopScope(
+          onWillPop: () => Future.value(false),
+          child: Container(
+            constraints: BoxConstraints.expand(),
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
         ),
-      );
-    },
-    context: context,
   );
+  final loadingInstance = LoadingInstance(context, router);
+  Navigator.push(context, router);
+  return loadingInstance;
 }
 
 class Model {

@@ -51,19 +51,21 @@ class _SmsCodeState extends State<SmsCode> {
     super.dispose();
   }
 
+  LoadingInstance _loadingInstance;
+
   /// show loading
   _loading(BuildContext ctx) {
-    showLoading(ctx);
+    _loadingInstance = showLoading(ctx);
   }
 
   /// close loading
-  _loadingOff(BuildContext ctx) {
-    Navigator.pop(ctx);
+  _loadingOff() {
+    _loadingInstance.close();
   }
 
   /// close loading, setState and focus node
   _nextPage(BuildContext context, String status, FocusNode node) {
-    _loadingOff(context);
+    _loadingOff();
     setState(() {
       _status = status;
     });
@@ -75,7 +77,7 @@ class _SmsCodeState extends State<SmsCode> {
 
   /// handle SmsError: close loading, setState
   _handleSmsError(BuildContext context, DioError error) {
-    _loadingOff(context);
+    _loadingOff();
     print(error.response.data);
     if ([60702, 60003].contains(error.response.data['code'])) {
       showSnackBar(context, '验证码请求过于频繁，请稍后再试');
@@ -109,7 +111,7 @@ class _SmsCodeState extends State<SmsCode> {
 
         _ticket = res.data;
       } catch (error) {
-        _loadingOff(context);
+        _loadingOff();
         setState(() {
           _error = '验证码错误';
         });
@@ -142,7 +144,7 @@ class _SmsCodeState extends State<SmsCode> {
           'password': _password
         });
       } catch (error) {
-        _loadingOff(context);
+        _loadingOff();
         setState(() {
           _error = '重置密码失败';
         });
@@ -150,7 +152,7 @@ class _SmsCodeState extends State<SmsCode> {
       }
 
       // show next page
-      _loadingOff(context);
+      _loadingOff();
       setState(() {
         _status = 'success';
       });
@@ -296,7 +298,7 @@ class _SmsCodeState extends State<SmsCode> {
       return;
     }
     _startCount();
-    _loadingOff(ctx);
+    _loadingOff();
     showSnackBar(ctx, '验证码发送成功');
   }
 

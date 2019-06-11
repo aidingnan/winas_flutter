@@ -341,7 +341,8 @@ class _FilesState extends State<Files> {
             'types': node.location == 'home' ? ['file', 'directory'] : [],
             'action': (BuildContext ctx, Entry entry) async {
               Navigator.pop(ctx);
-              showLoading(this.context);
+
+              final loadingInstance = showLoading(this.context);
 
               // get built-in public drive
               Drive publicDrive = state.drives.firstWhere(
@@ -365,10 +366,10 @@ class _FilesState extends State<Files> {
               };
               try {
                 await state.apis.req('xcopy', args);
-                Navigator.pop(this.context);
+                loadingInstance.close();
                 showSnackBar(ctx, '分享成功');
               } catch (error) {
-                Navigator.pop(this.context);
+                loadingInstance.close();
                 showSnackBar(ctx, '分享失败');
               }
             },

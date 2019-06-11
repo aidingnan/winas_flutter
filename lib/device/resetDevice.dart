@@ -63,7 +63,7 @@ class ResetDevice extends StatelessWidget {
                         borderRadius: BorderRadius.circular(48),
                       ),
                       onPressed: () async {
-                        showLoading(ctx);
+                        final loadingInstance = showLoading(ctx);
                         final isLAN = await state.apis.testLAN();
                         if (isLAN) {
                           try {
@@ -74,18 +74,18 @@ class ResetDevice extends StatelessWidget {
                             if (colors is! List) throw 'get color code error';
                           } catch (e) {
                             print(e);
-                            Navigator.pop(ctx);
+                            loadingInstance.close();
                             showSnackBar(ctx, '请求设备验证失败');
                             return;
                           }
-
-                          Navigator.pushReplacement(
+                          loadingInstance.close();
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => _ResetDevice()),
                           );
                         } else {
-                          Navigator.pop(ctx);
+                          loadingInstance.close();
                           showSnackBar(ctx, '操作失败手机与设备未连至同一Wi-Fi网络');
                         }
                       },
@@ -175,15 +175,15 @@ class _ResetDeviceState extends State<_ResetDevice> {
   void nextStep(BuildContext ctx, AppState state) async {
     if (status == Status.auth) {
       print('code is $selected');
-      showLoading(ctx);
+
+      final loadingInstance = showLoading(ctx);
       try {
         String token = await checkCode(state, selected);
-        Navigator.pop(ctx);
-
+        loadingInstance.close();
         restDevice(ctx, state, token).catchError(print);
       } catch (e) {
         print(e);
-        Navigator.pop(ctx);
+        loadingInstance.close();
         setState(() {
           status = Status.authFailed;
         });

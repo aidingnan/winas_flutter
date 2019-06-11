@@ -57,13 +57,13 @@ class _StationListState extends State<StationList> {
   }
 
   Future<void> login(BuildContext ctx, Station station, store) async {
-    showLoading(ctx);
+    final loadingInstance = showLoading(context);
     try {
       await stationLogin(
           ctx, widget.request, station, store.state.account, store);
     } catch (error) {
       print(error);
-      Navigator.pop(ctx);
+      loadingInstance.close();
       showSnackBar(ctx, '登录设备失败');
       return;
     }

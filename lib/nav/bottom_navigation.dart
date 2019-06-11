@@ -174,7 +174,7 @@ class _BottomNavigationState extends State<BottomNavigation>
 
     // add tokenExpiredListener (asynchronous)
     tokenExpiredListener = eventBus.on<TokenExpiredEvent>().listen((event) {
-      print(event.text);
+      print('TokenExpiredEvent ${event.text}');
       showDialog(
         context: context,
         builder: (_) => TokenExpired(),
@@ -187,7 +187,7 @@ class _BottomNavigationState extends State<BottomNavigation>
     // add tokenExpiredListener (asynchronous)
     stationNotOnlineListener =
         eventBus.on<StationNotOnlineEvent>().listen((event) {
-      print(event.text);
+      print('StationNotOnlineEvent ${event.text}');
       showDialog(
         context: context,
         builder: (_) => DeviceNotOnline(),

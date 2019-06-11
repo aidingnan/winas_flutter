@@ -250,8 +250,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
       print('code is $selected');
       // reset token
 
-      showLoading(ctx);
-
+      final loadingInstance = showLoading(ctx);
       // fired, not time out
       timeoutCheck = false;
       try {
@@ -267,20 +266,21 @@ class _ConfigDeviceState extends State<ConfigDevice> {
           ssid = null;
         }
 
-        Navigator.pop(ctx);
+        loadingInstance.close();
         setState(() {
           status = Status.wifi;
         });
       } catch (e) {
         print(e);
-        Navigator.pop(ctx);
+
+        loadingInstance.close();
         setState(() {
           status = Status.authFailed;
         });
       }
     } else if (status == Status.wifi) {
       if (pwd is String && pwd.length > 0) {
-        showLoading(ctx);
+        final loadingInstance = showLoading(ctx);
         try {
           print('pwd: $pwd');
           final ip = await setWifi(pwd);
@@ -295,10 +295,10 @@ class _ConfigDeviceState extends State<ConfigDevice> {
             status = Status.connecting;
           });
           connectDevice(ip, token, store).catchError(print);
-          Navigator.pop(ctx);
+          loadingInstance.close();
         } catch (e) {
           print(e);
-          Navigator.pop(ctx);
+          loadingInstance.close();
           setState(() {
             errorText = '设备连接网络失败，请确认密码是否正确';
           });

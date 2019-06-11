@@ -48,14 +48,16 @@ class _ForgetPasswordState extends State<ForgetPassword> {
     super.dispose();
   }
 
+  LoadingInstance _loadingInstance;
+
   /// show loading
   _loading(BuildContext ctx) {
-    showLoading(ctx);
+    _loadingInstance = showLoading(ctx);
   }
 
   /// close loading
   _loadingOff(BuildContext ctx) {
-    Navigator.pop(ctx);
+    _loadingInstance.close();
   }
 
   /// close loading, setState and focus node
