@@ -101,7 +101,9 @@ class Worker {
     );
 
     Drive backupDrive = drives.firstWhere(
-      (d) => d?.client?.id == machineId,
+      (d) =>
+          d?.client?.id == machineId ||
+          (d?.client?.idList is List && d.client.idList.contains(machineId)),
       orElse: () => null,
     );
 
@@ -341,6 +343,8 @@ class Worker {
 
     // upload photo
     File file = await entity.originFile;
+
+    // print('file size ${file.statSync().size}');
     String filePath = file.path;
 
     if (isAborted) {
@@ -454,7 +458,6 @@ class Worker {
     finished = 0;
     ignored = 0;
     retry = 0;
-    print('backup aborted');
   }
 
   void start() {
@@ -465,7 +468,6 @@ class Worker {
       print(e);
       retryLater();
     });
-    print('backup started');
   }
 
   /// retry after backup failed in `retry * retry` minutes

@@ -148,6 +148,9 @@ class User {
 class DriveClient {
   String id;
 
+  /// list of machineIds which are combined to this single backup drive
+  List idList;
+
   bool disabled;
   int lastBackupTime;
 
@@ -161,6 +164,7 @@ class DriveClient {
 
   DriveClient.fromMap(Map m) {
     this.id = m['id'];
+    this.idList = m['idList'] ?? [];
     this.status = m['status'];
     this.disabled = m['disabled'];
     this.lastBackupTime = m['lastBackupTime'];
@@ -171,6 +175,7 @@ class DriveClient {
   String toString() {
     Map<String, dynamic> m = {
       'id': id,
+      'idList': idList,
       'status': status,
       'disabled': disabled,
       'lastBackupTime': lastBackupTime,
