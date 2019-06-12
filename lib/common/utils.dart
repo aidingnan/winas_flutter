@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:device_info/device_info.dart';
 import 'package:package_info/package_info.dart';
 
+import './iPhoneCodeMap.dart';
+
 /// showSnackBar, require BuildContext to find Scaffold
 void showSnackBar(BuildContext ctx, String message) {
   final snackBar = SnackBar(
@@ -308,12 +310,7 @@ Future getMachineId() async {
   String machineId;
   if (Platform.isIOS) {
     IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-    print(iosInfo.model);
-    print(iosInfo.localizedModel);
-    print(iosInfo.name);
-    print(iosInfo.systemName);
-    print(iosInfo.utsname);
-    deviceName = iosInfo.model;
+    deviceName = iPhoneModel(iosInfo.utsname.machine);
     machineId = iosInfo.identifierForVendor;
   } else {
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
