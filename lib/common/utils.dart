@@ -308,7 +308,12 @@ Future getMachineId() async {
   String machineId;
   if (Platform.isIOS) {
     IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-    deviceName = iosInfo.name;
+    print(iosInfo.model);
+    print(iosInfo.localizedModel);
+    print(iosInfo.name);
+    print(iosInfo.systemName);
+    print(iosInfo.utsname);
+    deviceName = iosInfo.model;
     machineId = iosInfo.identifierForVendor;
   } else {
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;

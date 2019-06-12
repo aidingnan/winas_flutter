@@ -309,8 +309,7 @@ class _PhotosState extends State<Photos> {
             builder: (BuildContext context) => WillPopScope(
                   onWillPop: () => Future.value(false),
                   child: AlertDialog(
-                    title: Text('选择备份设备'),
-                    content: Text('检测到当前设备 $deviceName 已存在备份，是否合并备份？'),
+                    content: Text('发现 $deviceName 已存在备份，是否继续使用？'),
                     actions: <Widget>[
                       FlatButton(
                         textColor: Theme.of(context).primaryColor,
@@ -321,7 +320,7 @@ class _PhotosState extends State<Photos> {
                       ),
                       FlatButton(
                         textColor: Theme.of(context).primaryColor,
-                        child: Text('合并'),
+                        child: Text('继续使用'),
                         onPressed: () async {
                           AppState state = store.state;
 
