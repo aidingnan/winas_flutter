@@ -59,9 +59,17 @@ class Apis {
   void interceptDio() {
     InterceptorsWrapper interceptorsWrapper = InterceptorsWrapper(
       onResponse: (Response response) {
-        if (response.data is Map && response.data['data'] != null) {
-          return response.data['data'];
+        bool isCloud = false;
+        try {
+          if (response.data['data'] != null) {
+            isCloud = true;
+          }
+        } catch (e) {
+          print(e);
+          isCloud = false;
         }
+
+        if (isCloud) return response.data['data'];
         return response.data;
       },
       onError: (DioError error) {

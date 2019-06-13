@@ -48,7 +48,6 @@ class _PhotosState extends State<Photos> {
       'order': 'newest',
       'count': 1,
     });
-
     Entry entry = Entry.fromMap(res.data.first);
     final cm = await CacheManager.getInstance();
     final Uint8List thumbData = await cm.getThumbData(entry, state);

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -484,19 +485,51 @@ class Worker {
 class BackupWorker {
   Apis apis;
   BackupWorker(this.apis, this.backupViaCellular);
+  StreamSubscription<ConnectivityResult> sub;
   Worker worker;
   Status status = Status.idle;
 
   /// use cellular to backup items
   bool backupViaCellular = false;
 
+  bool isMobile = false;
+
+  monitorStart() {
+    sub = Connectivity().onConnectivityChanged.listen((ConnectivityResult res) {
+      print('Network Changed to $res in backup');
+      if (res == ConnectivityResult.wifi) {
+        isMobile = false;
+      } else if (res == ConnectivityResult.mobile) {
+        isMobile = true;
+      } else {
+        // ConnectivityResult.none
+        return;
+      }
+      // pause or start backup
+      if (status == Status.running && isMobile && backupViaCellular != true) {
+        this.paused();
+      } else if (status == Status.paused && !isMobile) {
+        this.start();
+      }
+    });
+  }
+
+  monitorCancel() {
+    try {
+      sub?.cancel();
+    } catch (e) {
+      print(e);
+    }
+  }
+
   void start() async {
     if (status == Status.running) return;
-    final isMobile = await apis.isMobile();
+    isMobile = await apis.isMobile();
     if (isMobile && backupViaCellular != true) {
-      status = Status.paused;
+      this.paused();
     } else {
       status = Status.running;
+      monitorStart();
       worker = Worker(apis);
       worker.start();
       print('backup started');
@@ -506,8 +539,16 @@ class BackupWorker {
   void abort() {
     worker?.abort();
     worker = null;
+    monitorCancel();
     status = Status.aborted;
     print('backup aborted');
+  }
+
+  /// pause backup
+  void paused() {
+    this.abort();
+    status = Status.paused;
+    monitorStart();
   }
 
   void updateConfig({bool shouldBackupViaCellular, bool autoBackup}) async {
@@ -515,10 +556,9 @@ class BackupWorker {
     // backup is disabled
     if (autoBackup != true) return;
 
-    final isMobile = await apis.isMobile();
+    isMobile = await apis.isMobile();
     if (isMobile && backupViaCellular != true) {
-      this.abort();
-      status = Status.paused;
+      this.paused();
     } else {
       // restart
       this.abort();
