@@ -11,8 +11,10 @@ import '../common/utils.dart';
 import '../photos/backup.dart';
 
 class AccountInfo extends StatefulWidget {
-  AccountInfo({Key key, this.backupWorker}) : super(key: key);
+  AccountInfo({Key key, this.backupWorker, this.toggleBackup})
+      : super(key: key);
   final BackupWorker backupWorker;
+  final Function toggleBackup;
   @override
   _AccountInfoState createState() => new _AccountInfoState();
 }
@@ -156,8 +158,10 @@ class _AccountInfoState extends State<AccountInfo> {
                   () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              Settings(backupWorker: widget.backupWorker),
+                          builder: (context) => Settings(
+                                backupWorker: widget.backupWorker,
+                                toggleBackup: widget.toggleBackup,
+                              ),
                           settings: RouteSettings(name: 'settings'),
                         ),
                       ),

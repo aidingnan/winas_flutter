@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-import 'package:pocket_drive/common/utils.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -20,8 +19,9 @@ const videoTypes = 'RM.RMVB.WMV.AVI.MP4.3GP.MKV.MOV.FLV.MPEG';
 const imageTypes = 'JPEG.PNG.JPG.GIF.BMP';
 
 class Photos extends StatefulWidget {
-  Photos({Key key, this.backupWorker}) : super(key: key);
+  Photos({Key key, this.backupWorker, this.toggleBackup}) : super(key: key);
   final BackupWorker backupWorker;
+  final Function toggleBackup;
   @override
   _PhotosState createState() => _PhotosState();
 }
@@ -258,7 +258,7 @@ class _PhotosState extends State<Photos> {
       if (worker.isFinished) {
         text = '备份已经完成';
       } else if (worker.isPaused) {
-        text = '备份已暂停';
+        text = '当前在使用移动数据流量，备份已暂停';
       } else if (worker.isFailed) {
         text = '备份未完成';
       } else if (worker.isDiffing) {
@@ -268,124 +268,6 @@ class _PhotosState extends State<Photos> {
       }
     }
     return text;
-  }
-
-  void _onSwitchChange(
-      BuildContext ctx, Store<AppState> store, bool value) async {
-    final loadingInstance = showLoading(context);
-    try {
-      final data = await getMachineId();
-      final deviceName = data['deviceName'];
-      final machineId = data['machineId'];
-      print('deviceName $deviceName, machineId $machineId');
-      final res = await store.state.apis.req('drives', null);
-      // get current drives data
-      List<Drive> drives = List.from(
-        res.data.map((drive) => Drive.fromMap(drive)),
-      );
-
-      Drive backupDrive = drives.firstWhere(
-        (d) =>
-            d?.client?.id == machineId ||
-            (d?.client?.idList is List && d.client.idList.contains(machineId)),
-        orElse: () => null,
-      );
-
-      // not find backupDrive
-      // 1. create new
-      // 2. choose one oldDrive with same name
-
-      if (backupDrive == null && value == true) {
-        // check exist drive with same label
-        Drive sameLabelDrive = drives.firstWhere(
-          (d) => d.label == deviceName,
-          orElse: () => null,
-        );
-
-        if (sameLabelDrive != null) {
-          final success = await showDialog(
-            context: ctx,
-            barrierDismissible: false,
-            builder: (BuildContext context) => WillPopScope(
-                  onWillPop: () => Future.value(false),
-                  child: AlertDialog(
-                    content: Text('发现 $deviceName 已存在备份，是否继续使用？'),
-                    actions: <Widget>[
-                      FlatButton(
-                        textColor: Theme.of(context).primaryColor,
-                        child: Text('不，新建一个备份'),
-                        onPressed: () {
-                          Navigator.pop(context, true);
-                        },
-                      ),
-                      FlatButton(
-                        textColor: Theme.of(context).primaryColor,
-                        child: Text('继续使用'),
-                        onPressed: () async {
-                          AppState state = store.state;
-
-                          try {
-                            final res = await state.apis.req(
-                              'drive',
-                              {'uuid': sameLabelDrive.uuid},
-                            );
-                            final client = res.data['client'];
-                            List idList = client['idList'] ?? [client['id']];
-                            idList.add(machineId);
-                            final props = {
-                              'op': 'backup',
-                              'client': {
-                                'status': 'Idle',
-                                'lastBackupTime': client['lastBackupTime'],
-                                'id': client['id'],
-                                'idList': idList,
-                                'disabled': false,
-                                'type': client['type'],
-                              }
-                            };
-
-                            await state.apis.req('updateDrive', {
-                              'uuid': sameLabelDrive.uuid,
-                              'props': props,
-                            });
-                          } catch (e) {
-                            print(e);
-                            Navigator.pop(context, false);
-                            return;
-                          }
-                          Navigator.pop(context, true);
-                        },
-                      )
-                    ],
-                  ),
-                ),
-          );
-          if (success == false) {
-            throw 'update backup drive id list failed';
-          }
-        }
-      }
-    } catch (e) {
-      print(e);
-      loadingInstance.close();
-      showSnackBar(context, '操作失败');
-      return;
-    }
-
-    loadingInstance.close();
-
-    store.dispatch(UpdateConfigAction(
-      Config.combine(
-        store.state.config,
-        Config(autoBackup: value),
-      ),
-    ));
-
-    if (value == true) {
-      widget.backupWorker.start();
-    } else {
-      widget.backupWorker.abort();
-    }
   }
 
   List<Widget> renderSlivers(Store<AppState> store) {
@@ -421,11 +303,10 @@ class _PhotosState extends State<Photos> {
                       style: TextStyle(color: Colors.white),
                     ),
                     Switch(
-                      activeColor: Colors.white,
-                      value: store.state.config.autoBackup == true,
-                      onChanged: (bool value) =>
-                          _onSwitchChange(context, store, value),
-                    ),
+                        activeColor: Colors.white,
+                        value: store.state.config.autoBackup == true,
+                        onChanged: (bool value) =>
+                            widget.toggleBackup(context, store, value)),
                   ],
                 ),
               ),

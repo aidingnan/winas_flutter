@@ -248,9 +248,64 @@ class _FilesState extends State<Files> {
     }
   }
 
+  /// checkMobile, return shouldContinue or not
+  Future<bool> checkMobile(BuildContext ctx, AppState state) async {
+    if (state.config.cellularTransfer == false) {
+      bool isMobile = await state.apis.isMobile();
+      if (isMobile) {
+        final shouldContinue = await showDialog(
+          context: ctx,
+          barrierDismissible: false,
+          builder: (BuildContext context) => WillPopScope(
+                onWillPop: () => Future.value(false),
+                child: AlertDialog(
+                  content: Text('当前正在使用移动数据流量，点击继续可传输，但可能产生流量资费。'),
+                  actions: <Widget>[
+                    FlatButton(
+                      textColor: Theme.of(context).primaryColor,
+                      child: Text('取消'),
+                      onPressed: () {
+                        Navigator.pop(context, false);
+                      },
+                    ),
+                    StoreConnector<AppState, VoidCallback>(
+                      converter: (store) => () => store.dispatch(
+                            UpdateConfigAction(
+                              Config.combine(
+                                store.state.config,
+                                Config(cellularTransfer: true),
+                              ),
+                            ),
+                          ),
+                      builder: (context, callback) {
+                        return FlatButton(
+                          textColor: Theme.of(context).primaryColor,
+                          child: Text('打开”使用移动数据“开关'),
+                          onPressed: () {
+                            callback();
+                            Navigator.pop(context, true);
+                          },
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+        );
+
+        return shouldContinue;
+      }
+    }
+    return true;
+  }
+
   // download and openFile via system or share to other app
   void _download(BuildContext ctx, Entry entry, AppState state,
       {bool share: false}) async {
+    bool shouldContinue = await checkMobile(ctx, state);
+
+    if (shouldContinue != true) return;
+
     final dialog = DownloadingDialog(ctx, entry.size);
     dialog.openDialog();
 
@@ -330,6 +385,10 @@ class _FilesState extends State<Files> {
             'types': ['file'],
             'action': (BuildContext ctx, Entry entry) async {
               Navigator.pop(ctx);
+
+              bool shouldContinue = await checkMobile(ctx, state);
+              if (shouldContinue != true) return;
+
               final cm = TransferManager.getInstance();
               cm.newDownload(entry, state);
               showSnackBar(ctx, '该文件已加入下载任务');

@@ -490,12 +490,17 @@ class BackupWorker {
   /// use cellular to backup items
   bool backupViaCellular = false;
 
-  void start() {
+  void start() async {
     if (status == Status.running) return;
-    status = Status.running;
-    worker = Worker(apis);
-    worker.start();
-    print('backup started');
+    final isMobile = await apis.isMobile();
+    if (isMobile && backupViaCellular != true) {
+      status = Status.paused;
+    } else {
+      status = Status.running;
+      worker = Worker(apis);
+      worker.start();
+      print('backup started');
+    }
   }
 
   void abort() {

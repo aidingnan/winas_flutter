@@ -196,6 +196,7 @@ class DownloadingDialog {
   }
 
   void onProgress(int a, int b) {
+    if (closed) return;
     progress = a / total;
     ctrl.sink.add(progress);
   }
