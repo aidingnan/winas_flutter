@@ -42,7 +42,9 @@ public class MainActivity extends FlutterActivity {
     String action = intent.getAction();
     String type = intent.getType();
 
-    if (Intent.ACTION_SEND.equals(action) && type != null) {
+    if ((Intent.ACTION_SEND.equals(action) || Intent.ACTION_VIEW.equals(action)) && type != null) {
+      System.out.println("onCreate new Intent action>>>>>>>>>>>>>>>>>>");
+      System.out.println(intent);
       sharedFile = handleSendData(intent);
     }
 
@@ -73,8 +75,10 @@ public class MainActivity extends FlutterActivity {
   protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
     String action = intent.getAction();
+    System.out.println("new Intent action>>>>>>>>>>>>>>>>>>");
+    System.out.println(action);
     String type = intent.getType();
-    if (Intent.ACTION_SEND.equals(action) && type != null) {
+    if ((Intent.ACTION_SEND.equals(action) || Intent.ACTION_VIEW.equals(action)) && type != null) {
       String filePath = handleSendData(intent);
       if (channelEvents != null && filePath != null) {
         channelEvents.success(filePath);
@@ -83,7 +87,14 @@ public class MainActivity extends FlutterActivity {
   }
 
   private String handleSendData(Intent intent) {
-    Uri uri = (Uri) intent.getExtras().get("android.intent.extra.STREAM");
+    String action = intent.getAction();
+    Uri uri;
+    if (Intent.ACTION_SEND.equals(action)) {
+      uri = (Uri) intent.getExtras().get("android.intent.extra.STREAM");
+    } else {
+      uri = (Uri) intent.getData();
+    }
+    
     System.out.println("new Intent>>>>>>>>>>>>>>>>>>");
     System.out.println(uri);
     System.out.println(uri.getPath());
