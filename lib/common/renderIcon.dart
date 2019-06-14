@@ -57,6 +57,28 @@ Widget renderIcon(String name, Metadata metadata, {double size: 24}) {
     case 'wma':
     case 'wav':
       return aIcon(Winas.audio, Color(0xFF00bcd4));
+    case 'rar':
+    case 'zip':
+    case 'tar':
+    case 'gz':
+      return aIcon(Icons.archive, Colors.black38);
+    case 'apk':
+      return aIcon(Icons.android, Color(0xFFA4C639));
+    case 'js':
+    case 'jsx':
+    case 'ts':
+    case 'json':
+    case 'css':
+    case 'html':
+    case 'dart':
+    case 'py':
+    case 'go':
+    case 'java':
+    case 'c':
+    case 'cpp':
+    case 'xml':
+    case 'md':
+      return aIcon(Icons.code, Colors.black38);
     default:
       return aIcon(Icons.insert_drive_file, Colors.black38);
   }

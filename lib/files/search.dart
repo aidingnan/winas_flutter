@@ -10,18 +10,18 @@ import '../common/utils.dart';
 import '../common/renderIcon.dart';
 import '../icons/winas_icons.dart';
 
-class FileType {
+class _FileType {
   String name;
   Widget icon;
   String types;
-  FileType(this.name, this.icon, this.types);
+  _FileType(this.name, this.icon, this.types);
 }
 
 /// Get corresponding icon via given file name
 final iconFromName = (String name) => renderIcon(name, null, size: 16);
 
 /// [title, icon, types]
-final List<FileType> fileTypes = List.from([
+final List<_FileType> fileTypes = List.from([
   [
     'PDFs',
     iconFromName('a.pdf'),
@@ -58,7 +58,7 @@ final List<FileType> fileTypes = List.from([
     iconFromName('a.mp3'),
     'WAV.MP3.APE.WMA.FLAC',
   ],
-].map((x) => FileType(x[0], x[1], x[2])));
+].map((x) => _FileType(x[0], x[1], x[2])));
 
 class Search extends StatefulWidget {
   Search({Key key, this.node, this.actions, this.download}) : super(key: key);
@@ -70,7 +70,7 @@ class Search extends StatefulWidget {
 }
 
 class _SearchState extends State<Search> {
-  FileType _fileType;
+  _FileType _fileType;
   final Node node;
   Function actions;
   final download;

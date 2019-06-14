@@ -1,6 +1,9 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
@@ -480,6 +483,164 @@ class _FilesState extends State<Files> {
     );
   }
 
+  /// upload new file to current directroy
+  upload(String filePath, AppState state) {
+    final cm = TransferManager.getInstance();
+    Entry targetDir =
+        Entry(uuid: currentNode.dirUUID, pdrv: currentNode.driveUUID);
+    cm.newUploadFile(filePath, targetDir, state);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Transfer(),
+      ),
+    );
+  }
+
+  Widget navButton(Function onTap, Widget icon, Color color, String title) {
+    return Container(
+      width: 71,
+      height: 79,
+      margin: EdgeInsets.fromLTRB(8, 12, 8, 0),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          child: Column(
+            children: <Widget>[
+              Container(
+                height: 48,
+                width: 48,
+                child: icon,
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.all(
+                    const Radius.circular(24),
+                  ),
+                ),
+              ),
+              Container(
+                height: 31,
+                width: 71,
+                child: Center(
+                  child: Text(
+                    title,
+                    style: TextStyle(fontSize: 14),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// select New Image/Video/File/Folder
+  Future<void> showUploadSheet(context, state) async {
+    showModalBottomSheet(
+      context: this.context,
+      builder: (BuildContext c) {
+        return SafeArea(
+          child: Container(
+            height: 120,
+            width: double.infinity,
+            child: Row(
+              children: <Widget>[
+                navButton(
+                  () async {
+                    // close showModalBottomSheet
+                    Navigator.pop(this.context);
+
+                    File file;
+                    try {
+                      file = await ImagePicker.pickImage(
+                        source: ImageSource.gallery,
+                      );
+                    } catch (e) {
+                      print(e);
+                      showSnackBar(this.context, '操作失败，请确认是否给予了应用“存储权限”');
+                    }
+
+                    if (file != null) {
+                      upload(file.path, state);
+                    }
+                  },
+                  Icon(Icons.image, color: Colors.white),
+                  Colors.blue,
+                  '上传图片',
+                ),
+                navButton(
+                  () async {
+                    // close showModalBottomSheet
+                    Navigator.pop(this.context);
+
+                    File file;
+                    try {
+                      file = await ImagePicker.pickVideo(
+                        source: ImageSource.gallery,
+                      );
+                    } catch (e) {
+                      print(e);
+                      showSnackBar(this.context, '操作失败，请确认是否给予了应用“存储权限”');
+                    }
+
+                    if (file != null) {
+                      upload(file.path, state);
+                    }
+                  },
+                  Icon(Icons.videocam, color: Colors.white),
+                  Colors.green,
+                  '上传视频',
+                ),
+                Platform.isIOS
+                    ? Container()
+                    : navButton(
+                        () async {
+                          // close showModalBottomSheet
+                          Navigator.pop(this.context);
+                          String filePath;
+                          try {
+                            filePath = await FilePicker.getFilePath(
+                                type: FileType.ANY);
+                          } catch (e) {
+                            print(e);
+                            showSnackBar(this.context, '操作失败，请确认是否给予了应用“存储权限”');
+                          }
+
+                          if (filePath != null) {
+                            upload(filePath, state);
+                          }
+                        },
+                        Icon(Icons.insert_drive_file, color: Colors.white),
+                        Colors.lightBlue,
+                        '上传文件',
+                      ),
+                navButton(
+                  () async {
+                    // close showModalBottomSheet
+                    Navigator.pop(this.context);
+                    bool success = await showDialog(
+                      context: context,
+                      builder: (BuildContext context) =>
+                          NewFolder(node: currentNode),
+                    );
+                    if (success == true) {
+                      refresh(state);
+                    }
+                  },
+                  Icon(Icons.create_new_folder, color: Colors.white),
+                  Colors.lightGreen,
+                  '新建文件夹',
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   List<Widget> appBarAction(AppState state) {
     return [
       node.location == 'backup'
@@ -512,14 +673,10 @@ class _FilesState extends State<Files> {
                 );
               },
             )
-          // Button to add new Folder
+          // Button to add new Image/Video/File/Folder
           : IconButton(
-              icon: Icon(Icons.create_new_folder),
-              onPressed: () => showDialog(
-                    context: context,
-                    builder: (BuildContext context) =>
-                        NewFolder(node: currentNode),
-                  ).then((success) => success == true ? refresh(state) : null),
+              icon: Icon(Icons.add_circle_outline),
+              onPressed: () => showUploadSheet(context, state),
             ),
       // Button to toggle gridView
       StoreConnector<AppState, VoidCallback>(

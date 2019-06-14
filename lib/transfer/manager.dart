@@ -26,6 +26,7 @@ class Task {
 class TransferItem {
   String uuid;
   Entry entry;
+  Entry targetDir;
   TransType transType;
   String speed = '';
   List<int> deltaSizeList = [];
@@ -42,7 +43,7 @@ class TransferItem {
   /// status of TransferItem: init, working, paused, finished, failed;
   String status = 'init';
 
-  TransferItem({this.entry, this.transType, this.filePath})
+  TransferItem({this.entry, this.transType, this.filePath, this.targetDir})
       : this.uuid = Uuid().v4();
 
   TransferItem.fromMap(Map m) {
@@ -53,12 +54,16 @@ class TransferItem {
     this.startTime = m['startTime'];
     this.finishedSize = m['finishedSize'] ?? 0;
     this.filePath = m['filePath'];
+    this.targetDir = Entry.fromMap(jsonDecode(m['targetDir']));
     switch (m['transType']) {
       case 'TransType.shared':
         this.transType = TransType.shared;
         break;
       case 'TransType.download':
         this.transType = TransType.download;
+        break;
+      case 'TransType.upload':
+        this.transType = TransType.upload;
         break;
       default:
     }
@@ -68,6 +73,7 @@ class TransferItem {
   String toString() {
     Map<String, dynamic> m = {
       'entry': entry,
+      'targetDir': targetDir,
       'uuid': uuid,
       'status': status,
       'finishedTime': finishedTime,
@@ -389,8 +395,60 @@ class TransferManager {
       // hash
       final hash = await hashViaIsolate(filePath);
 
-      // upload via isolate
-      // await uploadViaIsolate(state.apis, targetDir, filePath, hash);
+      // upload async
+      await uploadAsync(state, targetDir, filePath, hash, cancelToken,
+          (int a, int b) => item.update(a));
+
+      item.finish();
+
+      await _save();
+    } catch (error) {
+      print(error);
+      // DioErrorType.CANCEL is not error
+      if (error is! DioError || (error?.type != DioErrorType.CANCEL)) {
+        item.fail(error);
+      }
+    }
+  }
+
+  /// creat a new shared task. handle shared file from other app
+  newUploadSharedFile(String filePath, AppState state) {
+    File(filePath)
+      ..stat().then(
+        (stat) {
+          print('newUploadSharedFile $stat');
+          if (stat.type != FileSystemEntityType.notFound) {
+            String name = filePath.split('/').last;
+            TransferItem item = TransferItem(
+              entry: Entry(name: name, size: stat.size),
+              transType: TransType.shared,
+              filePath: filePath,
+            );
+            transferList.add(item);
+            uploadSharedFile(item, state).catchError((error) {
+              print(error);
+              // DioErrorType.CANCEL is not error
+              if (error is! DioError || (error?.type != DioErrorType.CANCEL)) {
+                item.fail(error);
+              }
+            });
+          }
+        },
+      ).catchError(print);
+  }
+
+  Future<void> uploadFile(TransferItem item, AppState state) async {
+    final filePath = item.filePath;
+    CancelToken cancelToken = CancelToken();
+    item.start(cancelToken, () => {});
+    try {
+      await _save();
+
+      // get target dir
+      Entry targetDir = item.targetDir;
+
+      // hash
+      final hash = await hashViaIsolate(filePath);
 
       // upload async
       await uploadAsync(state, targetDir, filePath, hash, cancelToken,
@@ -408,21 +466,22 @@ class TransferManager {
     }
   }
 
-  /// creat a new upload task. handle shared file from other app
-  newUploadSharedFile(String filePath, AppState state) {
+  /// creat a new upload task
+  newUploadFile(String filePath, Entry targetDir, AppState state) {
     File(filePath)
       ..stat().then(
         (stat) {
-          print('newUploadSharedFile $stat');
+          print('new Upload File $stat');
           if (stat.type != FileSystemEntityType.notFound) {
             String name = filePath.split('/').last;
             TransferItem item = TransferItem(
               entry: Entry(name: name, size: stat.size),
-              transType: TransType.shared,
+              transType: TransType.upload,
               filePath: filePath,
+              targetDir: targetDir,
             );
             transferList.add(item);
-            uploadSharedFile(item, state).catchError((error) {
+            uploadFile(item, state).catchError((error) {
               print(error);
               // DioErrorType.CANCEL is not error
               if (error is! DioError || (error?.type != DioErrorType.CANCEL)) {

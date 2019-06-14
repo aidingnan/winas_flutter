@@ -11,7 +11,7 @@ import './iPhoneCodeMap.dart';
 void showSnackBar(BuildContext ctx, String message) {
   final snackBar = SnackBar(
     content: Text(message),
-    duration: Duration(seconds: 1),
+    duration: Duration(seconds: 3),
   );
 
   // Find the Scaffold in the Widget tree and use it to show a SnackBar!
