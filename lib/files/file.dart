@@ -6,6 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 
 import './delete.dart';
@@ -536,8 +537,64 @@ class _FilesState extends State<Files> {
     );
   }
 
+  showNoPermissionDialog(BuildContext ctx) async {
+    await showDialog(
+      context: ctx,
+      barrierDismissible: false,
+      builder: (BuildContext context) => WillPopScope(
+            onWillPop: () => Future.value(false),
+            child: AlertDialog(
+              content: Text('未获取存储权限，操作失败。请在设置中开启相应权限后重试。'),
+              actions: <Widget>[
+                FlatButton(
+                  textColor: Theme.of(context).primaryColor,
+                  child: Text('取消'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                StoreConnector<AppState, VoidCallback>(
+                  converter: (store) => () => store.dispatch(
+                        UpdateConfigAction(
+                          Config.combine(
+                            store.state.config,
+                            Config(cellularTransfer: true),
+                          ),
+                        ),
+                      ),
+                  builder: (context, callback) {
+                    return FlatButton(
+                      textColor: Theme.of(context).primaryColor,
+                      child: Text('去"设置"打开存储权限'),
+                      onPressed: () async {
+                        await PermissionHandler().openAppSettings();
+                        Navigator.pop(context);
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+    );
+  }
+
   /// select New Image/Video/File/Folder
   Future<void> showUploadSheet(context, state) async {
+    if (Platform.isAndroid) {
+      PermissionStatus permission = await PermissionHandler()
+          .checkPermissionStatus(PermissionGroup.storage);
+      if (permission.value != 2) {
+        Map<PermissionGroup, PermissionStatus> permissions =
+            await PermissionHandler()
+                .requestPermissions([PermissionGroup.storage]);
+        if (permissions[PermissionGroup.storage]?.value != 2) {
+          await showNoPermissionDialog(context);
+          return;
+        }
+      }
+    }
+
     showModalBottomSheet(
       context: this.context,
       builder: (BuildContext c) {
@@ -593,29 +650,30 @@ class _FilesState extends State<Files> {
                   Colors.green,
                   '上传视频',
                 ),
-                Platform.isIOS
-                    ? Container()
-                    : navButton(
-                        () async {
-                          // close showModalBottomSheet
-                          Navigator.pop(this.context);
-                          String filePath;
-                          try {
-                            filePath = await FilePicker.getFilePath(
-                                type: FileType.ANY);
-                          } catch (e) {
-                            print(e);
-                            showSnackBar(this.context, '操作失败，请确认是否给予了应用“存储权限”');
-                          }
+                // Platform.isIOS
+                //     ? Container()
+                //     :
+                navButton(
+                  () async {
+                    // close showModalBottomSheet
+                    Navigator.pop(this.context);
+                    String filePath;
+                    try {
+                      filePath =
+                          await FilePicker.getFilePath(type: FileType.ANY);
+                    } catch (e) {
+                      print(e);
+                      showSnackBar(this.context, '操作失败，请确认是否给予了应用“存储权限”');
+                    }
 
-                          if (filePath != null) {
-                            upload(filePath, state);
-                          }
-                        },
-                        Icon(Icons.insert_drive_file, color: Colors.white),
-                        Colors.lightBlue,
-                        '上传文件',
-                      ),
+                    if (filePath != null) {
+                      upload(filePath, state);
+                    }
+                  },
+                  Icon(Icons.insert_drive_file, color: Colors.white),
+                  Colors.lightBlue,
+                  '上传文件',
+                ),
                 navButton(
                   () async {
                     // close showModalBottomSheet

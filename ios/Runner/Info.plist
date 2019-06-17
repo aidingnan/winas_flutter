@@ -85,9 +85,12 @@
 	<string>App need your agree to use your Microphone</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>App need your agree to visit your album</string>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>App need your agree to use music</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
+		<string>remote-notification</string>
 	</array>
 	<key>UIFileSharingEnabled</key>
 	<true/>
