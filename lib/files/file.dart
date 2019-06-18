@@ -324,8 +324,10 @@ class _FilesState extends State<Files> {
       showSnackBar(ctx, '下载失败');
     } else {
       try {
-        if (share) {
-          ShareExtend.share(entryPath, "file");
+        // TODO: handle open apk file
+        final ext = entryPath.split('.').last;
+        if (share || ext?.toLowerCase() == 'apk') {
+          await ShareExtend.share(entryPath, "file");
         } else {
           await OpenFile.open(entryPath);
         }
