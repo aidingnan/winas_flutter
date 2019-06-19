@@ -86,13 +86,13 @@ class _FirmwareState extends State<Firmware> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      'Winas 1.2.1',
+                      'Winas 1.1.0',
                       style: TextStyle(fontSize: 18),
                     ),
                     Container(height: 4),
                     Text('Aidingnan Inc.'),
                     Container(height: 4),
-                    Text('2019-03-05'),
+                    Text('2019-06-18'),
                   ],
                 )
               ],

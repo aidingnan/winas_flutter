@@ -2,10 +2,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
+import './system.dart';
 import './network.dart';
 import './deviceInfo.dart';
 import './newDeviceName.dart';
-import './firmwareUpdate.dart';
 
 import '../login/ble.dart';
 import '../redux/redux.dart';
@@ -424,7 +424,7 @@ class _MyStationState extends State<MyStation> {
                           ),
                         ),
                         actionButton(
-                          '设备网络',
+                          '网络详情',
                           () => Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) {
@@ -434,7 +434,7 @@ class _MyStationState extends State<MyStation> {
                           null,
                         ),
                         actionButton(
-                          '关于本机',
+                          '设备信息',
                           () => Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) {
@@ -444,11 +444,11 @@ class _MyStationState extends State<MyStation> {
                           null,
                         ),
                         actionButton(
-                          '软件更新',
+                          '系统管理',
                           () => Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) {
-                                  return Firmware();
+                                  return System();
                                 }),
                               ),
                           null,

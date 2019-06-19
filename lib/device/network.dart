@@ -84,7 +84,7 @@ class _NetworkState extends State<Network> {
                           Container(
                             padding: EdgeInsets.all(16),
                             child: Text(
-                              '设备网络',
+                              '网络详情',
                               style: TextStyle(
                                   color: Colors.black87, fontSize: 21),
                             ),

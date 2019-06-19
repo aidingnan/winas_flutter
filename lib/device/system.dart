@@ -2,21 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 import './info.dart';
+import './resetDevice.dart';
 import '../redux/redux.dart';
 import '../common/utils.dart';
+import './firmwareUpdate.dart';
 import '../common/appBarSlivers.dart';
 
-Widget _ellipsisText(String text) {
-  return ellipsisText(text, style: TextStyle(color: Colors.black38));
-}
-
-class DeviceInfo extends StatefulWidget {
-  DeviceInfo({Key key}) : super(key: key);
+class System extends StatefulWidget {
+  System({Key key}) : super(key: key);
   @override
-  _DeviceInfoState createState() => _DeviceInfoState();
+  _SystemState createState() => _SystemState();
 }
 
-class _DeviceInfoState extends State<DeviceInfo> {
+class _SystemState extends State<System> {
   Info info;
   bool loading = true;
   bool failed = false;
@@ -66,7 +64,7 @@ class _DeviceInfoState extends State<DeviceInfo> {
   }
 
   List<Widget> getSlivers() {
-    final String titleName = '设备信息';
+    final String titleName = '系统管理';
     // title
     List<Widget> slivers = appBarSlivers(paddingLeft, titleName);
     if (loading) {
@@ -88,19 +86,28 @@ class _DeviceInfoState extends State<DeviceInfo> {
       // actions
       slivers.addAll([
         sliverActionButton(
-          '型号',
-          () => {},
-          _ellipsisText('Bacchus'),
+          '系统更新',
+          () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) {
+                return Firmware();
+              }),
+            );
+          },
+          null,
         ),
         sliverActionButton(
-          '序列号',
-          () => {},
-          _ellipsisText(info.sn),
-        ),
-        sliverActionButton(
-          '蓝牙地址',
-          () => {},
-          _ellipsisText(info.bleAddr),
+          '重置设备',
+          () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) {
+                return ResetDevice();
+              }),
+            );
+          },
+          null,
         ),
       ]);
     }
