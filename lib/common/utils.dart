@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:device_info/device_info.dart';
 import 'package:package_info/package_info.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 
 import './iPhoneCodeMap.dart';
 
@@ -427,4 +428,18 @@ String formatDuration(Duration position) {
       '${hoursString == '00' ? '' : hoursString + ':'}$minutesString:$secondsString';
 
   return formattedTime;
+}
+
+/// i18n
+/// cached BuildContext
+
+BuildContext cachedBuildContext;
+
+/// cacheContext in `login/login.dart` and `nav/bottom_navigation.dart`
+void cacheContext(BuildContext ctx) {
+  cachedBuildContext = ctx;
+}
+
+String i18n(String key, [int times]) {
+  return FlutterI18n.translate(cachedBuildContext, key);
 }

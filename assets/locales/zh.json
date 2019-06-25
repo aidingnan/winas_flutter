@@ -1,0 +1,14 @@
+{
+  "==== login/login.dart ====": "",
+  "Login": "登录",
+  "Create Account": "创建账号",
+  "Licence Hint": "点击继续、创建账号即表明同意口袋网盘的产品使用协议隐私政策",
+  "Wechat Login Failed": "微信登录失败",
+  "Wechat not Installed": "未检测到微信应用，请先安装微信",
+  "Welcoming Text": "欢迎使用口袋网盘",
+  "Login via Wechat": "使用微信登录注册",
+
+  "==== .dart ====": "",
+  "": "",
+  "END": "END"
+}

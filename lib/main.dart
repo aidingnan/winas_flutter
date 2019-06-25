@@ -4,11 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:redux_persist/redux_persist.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:path_provider/path_provider.dart';
+
+import 'package:flutter_i18n/flutter_i18n_delegate.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
+import './common/utils.dart';
 import './login/login.dart';
-import './nav/bottom_navigation.dart';
 import './redux/redux.dart';
 import './transfer/manager.dart';
 import './login/stationList.dart';
+import './nav/bottom_navigation.dart';
 
 void main() async {
   Directory root = await getApplicationDocumentsDirectory();
@@ -82,6 +87,15 @@ class MyApp extends StatelessWidget {
         home: (store?.state?.account?.id != null && store?.state?.apis != null)
             ? BottomNavigation()
             : LoginPage(),
+        localizationsDelegates: [
+          FlutterI18nDelegate(
+            useCountryCode: false,
+            fallbackFile: 'zh',
+            path: 'assets/locales',
+          ),
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate
+        ],
       ),
     );
   }

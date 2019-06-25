@@ -67,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
     _wxlogin?.cancel();
 
     if (isWeChatInstalled != true) {
-      showSnackBar(ctx, '未检测到微信应用，请先安装微信');
+      showSnackBar(ctx, i18n('Wechat not Installed'));
       return;
     }
 
@@ -109,11 +109,11 @@ class _LoginPageState extends State<LoginPage> {
           }
         }).catchError((err) {
           print(err);
-          showSnackBar(ctx, '微信登录失败');
+          showSnackBar(ctx, i18n('Wechat Login Failed'));
         });
       } else {
         print(data);
-        showSnackBar(ctx, '微信登录失败');
+        showSnackBar(ctx, i18n('Wechat Login Failed'));
       }
     });
   }
@@ -127,13 +127,14 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    cacheContext(context);
     return Scaffold(
       backgroundColor: Colors.teal,
       appBar: AppBar(
         elevation: 0.0, // no shadow
         actions: <Widget>[
           FlatButton(
-            child: Text("登录"),
+            child: Text(i18n('Login')),
             textColor: Colors.white,
             onPressed: () {
               // Navigator to Login
@@ -160,7 +161,7 @@ class _LoginPageState extends State<LoginPage> {
                   Container(
                     margin: EdgeInsets.only(bottom: 48),
                     child: Text(
-                      '欢迎使用口袋网盘',
+                      i18n('Welcoming Text'),
                       style: TextStyle(fontSize: 28.0, color: Colors.white),
                       textAlign: TextAlign.left,
                     ),
@@ -183,7 +184,7 @@ class _LoginPageState extends State<LoginPage> {
                           Icon(Winas.wechat, color: pColor),
                           Expanded(child: Container()),
                           Text(
-                            '使用微信登录注册',
+                            i18n('Login via Wechat'),
                             style: TextStyle(color: pColor, fontSize: 16),
                           ),
                           Expanded(child: Container()),
@@ -220,7 +221,7 @@ class _LoginPageState extends State<LoginPage> {
                           );
                         },
                         child: Text(
-                          '创建账号',
+                          i18n('Create Account'),
                           style: TextStyle(color: Colors.white, fontSize: 16),
                         ),
                       ),
@@ -228,7 +229,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
 
                   // license
-                  Text('点击继续、创建账号即表明同意口袋网盘的产品使用协议隐私政策',
+                  Text(i18n('Licence Hint'),
                       style: TextStyle(fontSize: 12.0, color: Colors.white),
                       textAlign: TextAlign.left),
 
