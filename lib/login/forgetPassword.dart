@@ -77,9 +77,9 @@ class _ForgetPasswordState extends State<ForgetPassword> {
     _loadingOff(context);
     print(error.response.data);
     if ([60702, 60003].contains(error.response.data['code'])) {
-      showSnackBar(context, '验证码请求过于频繁，请稍后再试');
+      showSnackBar(context, i18n('Request Verification Code Too Frquent'));
     } else {
-      showSnackBar(context, '获取验证码失败，请稍后再试');
+      showSnackBar(context, i18n('Request Verification Code Failed'));
     }
     setState(() {});
   }
@@ -90,7 +90,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
       // check phoneNumber
       if (_phoneNumber.length != 11 || !_phoneNumber.startsWith('1')) {
         setState(() {
-          _error = '请输入11位手机号';
+          _error = i18n('Invalid Phone Number');
         });
         return;
       }
@@ -106,7 +106,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
       } catch (error) {
         if (error.response.data['code'] == 60000) {
           _loadingOff(context);
-          showSnackBar(context, '该手机号未注册');
+          showSnackBar(context, i18n('Phone Number Not Register'));
           setState(() {});
           return;
         }
@@ -120,7 +120,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
       // check code
       if (_code.length != 4) {
         setState(() {
-          _error = '请输入4位验证码';
+          _error = i18n('Verification Code Length Not Match Error');
         });
         return;
       }
@@ -139,7 +139,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
       } catch (error) {
         _loadingOff(context);
         setState(() {
-          _error = '验证码错误';
+          _error = i18n('Verification Code Error');
         });
         return;
       }
@@ -150,7 +150,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
       // check password
       if (_password.length <= 7) {
         setState(() {
-          _error = '密码长度不应小于8位';
+          _error = i18n('Password Too Short Error');
         });
         return;
       }
@@ -165,7 +165,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
       } catch (error) {
         _loadingOff(context);
         setState(() {
-          _error = '重置密码失败';
+          _error = i18n('Reset Password Failed');
         });
         return;
       }
@@ -187,13 +187,13 @@ class _ForgetPasswordState extends State<ForgetPassword> {
       case 'phoneNumber':
         return <Widget>[
           Text(
-            '忘记密码',
+            i18n('Forget Password'),
             textAlign: TextAlign.left,
             style: TextStyle(fontSize: 28.0, color: Colors.white),
           ),
           Container(height: 16.0),
           Text(
-            '请输入您的手机号码来查找账号',
+            i18n('Reset Password Text'),
             style: TextStyle(color: Colors.white),
           ),
           Container(height: 32.0),
@@ -206,7 +206,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
             // controller: TextEditingController(text: _phoneNumber),
             autofocus: true,
             decoration: InputDecoration(
-                labelText: "手机号",
+                labelText: i18n('Phone Number'),
                 labelStyle: TextStyle(
                   fontSize: 21,
                   color: Colors.white,
@@ -223,13 +223,16 @@ class _ForgetPasswordState extends State<ForgetPassword> {
       case 'code':
         return <Widget>[
           Text(
-            '请输入4位验证码',
+            i18n('Verification Code Input Text'),
             textAlign: TextAlign.left,
             style: TextStyle(fontSize: 28.0, color: Colors.white),
           ),
           Container(height: 16.0),
           Text(
-            '我们向 $_phoneNumber 发送了一个验证码请在下面输入',
+            i18n(
+              'Verification Code Has Sent Text',
+              {'phoneNumber': _phoneNumber},
+            ),
             style: TextStyle(color: Colors.white),
           ),
           Container(height: 32.0),
@@ -242,7 +245,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
             // controller: TextEditingController(text: _phoneNumber),
             focusNode: focusNode1,
             decoration: InputDecoration(
-                labelText: "4位验证码",
+                labelText: i18n('Verification Code Input Text'),
                 labelStyle: TextStyle(
                   fontSize: 21,
                   color: Colors.white,
@@ -259,13 +262,13 @@ class _ForgetPasswordState extends State<ForgetPassword> {
       case 'password':
         return <Widget>[
           Text(
-            '输入新密码',
+            i18n('New Password Text'),
             textAlign: TextAlign.left,
             style: TextStyle(fontSize: 28.0, color: Colors.white),
           ),
           Container(height: 16.0),
           Text(
-            '您的密码长度至少为8个字符',
+            i18n('Password Requirements'),
             style: TextStyle(color: Colors.white),
           ),
           Container(height: 32.0),
@@ -278,7 +281,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
             // controller: TextEditingController(text: _password),
             focusNode: focusNode2,
             decoration: InputDecoration(
-                labelText: "密码",
+                labelText: i18n('Password'),
                 labelStyle: TextStyle(
                   fontSize: 21,
                   color: Colors.white,
@@ -303,13 +306,13 @@ class _ForgetPasswordState extends State<ForgetPassword> {
       case 'success':
         return <Widget>[
           Text(
-            '密码重置成功',
+            i18n('Reset Password Success'),
             textAlign: TextAlign.left,
             style: TextStyle(fontSize: 28.0, color: Colors.white),
           ),
           Container(height: 16.0),
           Text(
-            '请使用新密码登录',
+            i18n('Reset Password Success Text'),
             style: TextStyle(color: Colors.white),
           ),
           Expanded(
@@ -363,7 +366,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
     }
     _startCount();
     _loadingOff(ctx);
-    showSnackBar(ctx, '验证码发送成功');
+    showSnackBar(ctx, i18n('Send Verification Code Success'));
   }
 
   @override
@@ -376,7 +379,9 @@ class _ForgetPasswordState extends State<ForgetPassword> {
             ? <Widget>[
                 Builder(builder: (BuildContext ctx) {
                   return FlatButton(
-                    child: _count > 0 ? Text('$_count 秒后重新发送') : Text("重新发送"),
+                    child: _count > 0
+                        ? Text(i18nPlural('Resend Later', _count))
+                        : Text(i18n('Resend')),
                     textColor: Colors.white,
                     onPressed: _count > 0 ? null : () => _resendSmg(ctx),
                   );
@@ -390,7 +395,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
             converter: (store) => () => _nextStep(ctx, store),
             builder: (context, callback) => FloatingActionButton(
                   onPressed: callback,
-                  tooltip: '下一步',
+                  tooltip: i18n('Next Step'),
                   backgroundColor: Colors.white70,
                   elevation: 0.0,
                   child: Icon(

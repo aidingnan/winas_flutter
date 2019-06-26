@@ -56,7 +56,7 @@ class _LoginState extends State<Login> {
         // controller: TextEditingController(text: _phoneNumber),
         autofocus: true,
         decoration: InputDecoration(
-            labelText: "手机号",
+            labelText: i18n('Phone Number'),
             labelStyle: TextStyle(
               fontSize: 21,
               color: Colors.white,
@@ -78,7 +78,7 @@ class _LoginState extends State<Login> {
       // controller: TextEditingController(text: _password),
       focusNode: myFocusNode,
       decoration: InputDecoration(
-          labelText: "密码",
+          labelText: i18n('Password'),
           labelStyle: TextStyle(
             fontSize: 21,
             color: Colors.white,
@@ -96,7 +96,7 @@ class _LoginState extends State<Login> {
       // check length
       if (_phoneNumber.length != 11 || !_phoneNumber.startsWith('1')) {
         setState(() {
-          _error = '请输入11位手机号';
+          _error = i18n('Invalid Phone Number');
         });
         return;
       }
@@ -112,13 +112,13 @@ class _LoginState extends State<Login> {
         print(error);
 
         loadingInstance.close();
-        showSnackBar(context, '校验手机号失败');
+        showSnackBar(context, i18n('Check Phone Number Failed'));
         return;
       }
       loadingInstance.close();
 
       if (!userExist) {
-        showSnackBar(context, '用户不存在');
+        showSnackBar(context, i18n('User not Exist'));
       } else {
         // next page
         setState(() {
@@ -132,7 +132,7 @@ class _LoginState extends State<Login> {
       // login
       if (_password.length == 0) {
         setState(() {
-          _error = '请输入密码';
+          _error = i18n('Please Enter Password');
         });
         return;
       }
@@ -156,12 +156,12 @@ class _LoginState extends State<Login> {
         if (error is DioError && error.response.data['code'] == 60008) {
           loadingInstance.close();
           setState(() {
-            _error = '密码错误';
+            _error = i18n('Password Error');
           });
           return;
         }
         loadingInstance.close();
-        showSnackBar(context, '登录失败');
+        showSnackBar(context, i18n('Login Failed'));
         return;
       }
 
@@ -185,7 +185,7 @@ class _LoginState extends State<Login> {
         elevation: 0.0, // no shadow
         actions: <Widget>[
           FlatButton(
-              child: Text("忘记密码"),
+              child: Text(i18n('Forget Password')),
               textColor: Colors.white,
               onPressed: () {
                 // Navigator to Login
@@ -204,7 +204,7 @@ class _LoginState extends State<Login> {
             converter: (store) => () => _nextStep(ctx, store),
             builder: (context, callback) => FloatingActionButton(
                   onPressed: callback,
-                  tooltip: '下一步',
+                  tooltip: i18n('Next Step'),
                   backgroundColor: Colors.white70,
                   elevation: 0.0,
                   child: Icon(
@@ -235,7 +235,7 @@ class _LoginState extends State<Login> {
                 children: <Widget>[
                   SizedBox(
                     child: Text(
-                      '登录',
+                      i18n('Login'),
                       textAlign: TextAlign.left,
                       style: TextStyle(fontSize: 28.0, color: Colors.white),
                     ),

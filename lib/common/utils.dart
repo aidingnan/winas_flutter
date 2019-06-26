@@ -435,11 +435,17 @@ String formatDuration(Duration position) {
 
 BuildContext cachedBuildContext;
 
-/// cacheContext in `login/login.dart` and `nav/bottom_navigation.dart`
+/// cacheContext in `login/login.dart`, `login/stationList.dart` and `nav/bottom_navigation.dart`
 void cacheContext(BuildContext ctx) {
   cachedBuildContext = ctx;
+  print('currentLocale ${FlutterI18n.currentLocale(ctx)}');
 }
 
-String i18n(String key, [int times]) {
-  return FlutterI18n.translate(cachedBuildContext, key);
+String i18n(String key, [Map<String, String> params]) {
+  return FlutterI18n.translate(cachedBuildContext, key, params);
+}
+
+String i18nPlural(String key, int count) {
+  String translationKey = '$key.i';
+  return FlutterI18n.plural(cachedBuildContext, translationKey, count);
 }

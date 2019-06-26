@@ -67,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
     _wxlogin?.cancel();
 
     if (isWeChatInstalled != true) {
-      showSnackBar(ctx, i18n('Wechat not Installed'));
+      showSnackBar(ctx, i18n('WeChat not Installed'));
       return;
     }
 
@@ -109,11 +109,11 @@ class _LoginPageState extends State<LoginPage> {
           }
         }).catchError((err) {
           print(err);
-          showSnackBar(ctx, i18n('Wechat Login Failed'));
+          showSnackBar(ctx, i18n('WeChat Login Failed'));
         });
       } else {
         print(data);
-        showSnackBar(ctx, i18n('Wechat Login Failed'));
+        showSnackBar(ctx, i18n('WeChat Login Failed'));
       }
     });
   }
@@ -184,7 +184,7 @@ class _LoginPageState extends State<LoginPage> {
                           Icon(Winas.wechat, color: pColor),
                           Expanded(child: Container()),
                           Text(
-                            i18n('Login via Wechat'),
+                            i18n('Login via WeChat'),
                             style: TextStyle(color: pColor, fontSize: 16),
                           ),
                           Expanded(child: Container()),

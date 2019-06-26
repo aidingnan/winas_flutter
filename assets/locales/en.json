@@ -1,0 +1,14 @@
+{
+  "==== login/login.dart ====": "",
+  "Login": "Login",
+  "Create Account": "Sign up",
+  "Licence Hint": "By using our application, you are agreeing to our user agreement",
+  "WeChat Login Failed": "Failed to login via WeChat",
+  "WeChat not Installed": "WeChat is not installed, please install WeChat first.",
+  "Welcoming Text": "Welcome to Pocket Drive",
+  "Login via WeChat": "Login via WeChat",
+
+  "==== .dart ====": "",
+  "": "",
+  "END": "END"
+}

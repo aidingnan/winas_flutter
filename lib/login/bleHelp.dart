@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../common/utils.dart';
+
 class BleHelp extends StatelessWidget {
   Widget row(String text, {isTitle = false}) {
     return Container(
@@ -19,15 +21,18 @@ class BleHelp extends StatelessWidget {
         backgroundColor: Colors.white10,
         brightness: Brightness.light,
         iconTheme: IconThemeData(color: Colors.black38),
-        title: Text('帮助', style: TextStyle(color: Colors.black87)),
+        title: Text(
+          i18n('Help of BLE'),
+          style: TextStyle(color: Colors.black87),
+        ),
       ),
       body: ListView(
         children: <Widget>[
-          row('扫描不到设备？', isTitle: true),
-          row('1. 请确认口袋网盘设备已插入USB供电，设备启动至指示灯显示蓝色闪烁状态。'),
-          row('2. 确保手机蓝牙功能正常并已打开，蓝牙工作异常时，也可尝试在手机设置中重启蓝牙功能。'),
-          row('3. 对于安卓手机，App使用蓝牙控制需要手机的定位权限，请确保口袋网盘应用的定位权限未被关闭。'),
-          row('4. 尽量使手机靠近口袋网盘设备。'),
+          row(i18n('BLE No Results Title'), isTitle: true),
+          row(i18n('BLE No Results Reason 1')),
+          row(i18n('BLE No Results Reason 2')),
+          row(i18n('BLE No Results Reason 3')),
+          row(i18n('BLE No Results Reason 4')),
         ],
       ),
     );

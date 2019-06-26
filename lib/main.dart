@@ -8,7 +8,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter_i18n/flutter_i18n_delegate.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import './common/utils.dart';
 import './login/login.dart';
 import './redux/redux.dart';
 import './transfer/manager.dart';

@@ -55,7 +55,7 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
       if (!isOn) throw 'bluetooth is not on';
     } catch (e) {
       print(e);
-      error = '蓝牙不可用，请确认已打开蓝牙';
+      error = i18n('Bluetooth Not Available Error');
       if (mounted) {
         setState(() {});
       }
@@ -80,9 +80,9 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
     }, onError: (e) {
       print(e);
       if (e is PlatformException && e.code == 'no_permissions') {
-        error = '未能获取所需权限，请在设置中允许权限';
+        error = i18n('Bluetooth No Permission Error');
       } else {
-        error = '扫描设备失败，请确认蓝牙已打开';
+        error = i18n('Bluetooth Scan Failed Text');
       }
 
       if (mounted) {
@@ -142,15 +142,19 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
     String status = '';
     switch (value) {
       case 1:
-        status = widget.action == Action.bind ? '待绑定' : '请先绑定设备';
+        status = widget.action == Action.bind
+            ? i18n('Device To Be Bound')
+            : i18n('Device Need To Be Bound');
         break;
 
       case 2:
-        status = widget.action == Action.bind ? '已被绑定' : '可配置Wi-Fi';
+        status = widget.action == Action.bind
+            ? i18n('Device Already Bound')
+            : i18n('WiFi Configurable');
         break;
 
       default:
-        status = '设备异常';
+        status = i18n('Unknown Status in BLE');
     }
     bool enabled = (widget.action == Action.wifi && value == 2) ||
         (widget.action == Action.bind && value == 1);
@@ -170,7 +174,7 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
         backgroundColor: Colors.grey[50],
         iconTheme: IconThemeData(color: Colors.black38),
         title: Text(
-          '蓝牙扫描设备',
+          i18n('Scan BLE Device Title'),
           style: TextStyle(color: Colors.black87),
         ),
         actions: <Widget>[
@@ -226,7 +230,10 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                                       print(e);
 
                                       loadingInstance.close();
-                                      showSnackBar(ctx, '连接设备失败');
+                                      showSnackBar(
+                                        ctx,
+                                        i18n('Connect BLE Error'),
+                                      );
                                       return;
                                     }
 
@@ -236,7 +243,10 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                                       print(e);
 
                                       loadingInstance.close();
-                                      showSnackBar(ctx, '请求设备验证失败');
+                                      showSnackBar(
+                                        ctx,
+                                        i18n('Request BLE Color Code Error'),
+                                      );
                                       return;
                                     }
 
@@ -268,9 +278,16 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                                               mainAxisAlignment:
                                                   MainAxisAlignment.center,
                                               children: <Widget>[
-                                                Text('口袋网盘'),
+                                                Text(i18n('Product Name')),
                                                 Text(
-                                                  '设备号: ${scanResult.advertisementData.localName}',
+                                                  i18n(
+                                                    'Product Number in BLE',
+                                                    {
+                                                      'deviceNumber': scanResult
+                                                          .advertisementData
+                                                          .localName
+                                                    },
+                                                  ),
                                                   style:
                                                       TextStyle(fontSize: 12),
                                                 ),
@@ -312,7 +329,7 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                         FlatButton(
                           padding: EdgeInsets.all(0),
                           child: Text(
-                            '重新扫描',
+                            i18n('BLE Rescan'),
                             style: TextStyle(color: Colors.teal),
                           ),
                           onPressed: () {
@@ -338,7 +355,7 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                       ),
                     ),
                 child: Text(
-                  '扫描不到设备？',
+                  i18n('BLE No Results Text'),
                   style: TextStyle(color: Colors.blue, fontSize: 12),
                 ),
               ),

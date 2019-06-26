@@ -90,9 +90,9 @@ class _RegistryState extends State<Registry> {
     _loadingOff();
     print(error.response.data);
     if ([60702, 60003].contains(error.response.data['code'])) {
-      showSnackBar(context, '验证码请求过于频繁，请稍后再试');
+      showSnackBar(context, i18n('Request Verification Code Too Frquent'));
     } else {
-      showSnackBar(context, '获取验证码失败，请稍后再试');
+      showSnackBar(context, i18n('Request Verification Code Failed'));
     }
     setState(() {});
   }
@@ -103,7 +103,7 @@ class _RegistryState extends State<Registry> {
       // check phoneNumber
       if (_phoneNumber.length != 11 || !_phoneNumber.startsWith('1')) {
         setState(() {
-          _error = '请输入11位手机号';
+          _error = i18n('Invalid Phone Number');
         });
         return;
       }
@@ -119,7 +119,7 @@ class _RegistryState extends State<Registry> {
       } catch (error) {
         if (error.response.data['code'] == 60001) {
           _loadingOff();
-          showSnackBar(context, '该手机号已经注册');
+          showSnackBar(context, i18n('Phone Number Already Registered'));
           setState(() {});
           return;
         }
@@ -133,7 +133,7 @@ class _RegistryState extends State<Registry> {
       // check code
       if (_code.length != 4) {
         setState(() {
-          _error = '请输入4位验证码';
+          _error = i18n('Verification Code Length Not Match Error');
         });
         return;
       }
@@ -155,7 +155,7 @@ class _RegistryState extends State<Registry> {
       } catch (error) {
         _loadingOff();
         setState(() {
-          _error = '验证码错误';
+          _error = i18n('Verification Code Error');
         });
         return;
       }
@@ -166,7 +166,7 @@ class _RegistryState extends State<Registry> {
       // check password
       if (_password.length <= 7) {
         setState(() {
-          _error = '密码长度不应小于8位';
+          _error = i18n('Password Too Short Error');
         });
         return;
       }
@@ -186,7 +186,7 @@ class _RegistryState extends State<Registry> {
       } catch (error) {
         _loadingOff();
         setState(() {
-          _error = '注册失败';
+          _error = i18n('Sign Up Failed');
         });
         return;
       }
@@ -209,7 +209,7 @@ class _RegistryState extends State<Registry> {
       // check phoneNumber
       if (_phoneNumber.length != 11 || !_phoneNumber.startsWith('1')) {
         setState(() {
-          _error = '请输入11位手机号';
+          _error = i18n('Invalid Phone Number');
         });
         return;
       }
@@ -254,7 +254,7 @@ class _RegistryState extends State<Registry> {
     } else if (_status == 'code') {
       if (_code.length != 4) {
         setState(() {
-          _error = '请输入4位验证码';
+          _error = i18n('Verification Code Length Not Match Error');
         });
         return;
       }
@@ -272,7 +272,7 @@ class _RegistryState extends State<Registry> {
           });
         } catch (err) {
           print(err);
-          showSnackBar(context, '验证码错误');
+          showSnackBar(context, i18n('Verification Code Error'));
           return;
         }
         // bind wechat with account
@@ -282,7 +282,7 @@ class _RegistryState extends State<Registry> {
           });
         } catch (err) {
           print(err);
-          showSnackBar(context, '绑定失败');
+          showSnackBar(context, i18n('Bind WeChat Failed'));
           return;
         }
 
@@ -307,7 +307,7 @@ class _RegistryState extends State<Registry> {
         } catch (error) {
           _loadingOff();
           print(error);
-          showSnackBar(context, '验证码错误');
+          showSnackBar(context, i18n('Verification Code Error'));
           return;
         }
 
@@ -318,7 +318,7 @@ class _RegistryState extends State<Registry> {
       // register with _code, _phoneNumber, _ticket
       if (_password.length <= 7) {
         setState(() {
-          _error = '密码长度不应小于8位';
+          _error = i18n('Password Too Short Error');
         });
         return;
       }
@@ -342,7 +342,7 @@ class _RegistryState extends State<Registry> {
       } catch (error) {
         _loadingOff();
         print(error);
-        showSnackBar(context, '注册失败');
+        showSnackBar(context, i18n('Sign Up Failed'));
         return;
       }
 
@@ -392,7 +392,7 @@ class _RegistryState extends State<Registry> {
     }
     _startCount();
     _loadingOff();
-    showSnackBar(ctx, '验证码发送成功');
+    showSnackBar(ctx, i18n('Send Verification Code Success'));
   }
 
   List<Widget> renderPage() {
@@ -400,13 +400,13 @@ class _RegistryState extends State<Registry> {
       case 'phoneNumber':
         return <Widget>[
           Text(
-            '绑定手机号',
+            i18n('Bind Phone Number Title'),
             textAlign: TextAlign.left,
             style: TextStyle(fontSize: 28.0, color: Colors.white),
           ),
           Container(height: 16.0),
           Text(
-            '手机号码是您忘记密码时，找回面的唯一途径请慎重填写',
+            i18n('Bind Phone Number Text'),
             style: TextStyle(color: Colors.white),
           ),
           Container(height: 32.0),
@@ -419,7 +419,7 @@ class _RegistryState extends State<Registry> {
             // controller: TextEditingController(text: _phoneNumber),
             autofocus: true,
             decoration: InputDecoration(
-                labelText: "手机号",
+                labelText: i18n('Phone Number'),
                 labelStyle: TextStyle(
                   fontSize: 21,
                   color: Colors.white,
@@ -436,13 +436,16 @@ class _RegistryState extends State<Registry> {
       case 'code':
         return <Widget>[
           Text(
-            '请输入4位验证码',
+            i18n('Verification Code Input Text'),
             textAlign: TextAlign.left,
             style: TextStyle(fontSize: 28.0, color: Colors.white),
           ),
           Container(height: 16.0),
           Text(
-            '我们向 $_phoneNumber 发送了一个验证码请在下面输入',
+            i18n(
+              'Verification Code Has Sent Text',
+              {'phoneNumber': _phoneNumber},
+            ),
             style: TextStyle(color: Colors.white),
           ),
           Container(height: 32.0),
@@ -455,7 +458,7 @@ class _RegistryState extends State<Registry> {
             // controller: TextEditingController(text: _phoneNumber),
             focusNode: focusNode1,
             decoration: InputDecoration(
-                labelText: "4位验证码",
+                labelText: i18n('Verification Code Input Text'),
                 labelStyle: TextStyle(
                   fontSize: 21,
                   color: Colors.white,
@@ -472,13 +475,13 @@ class _RegistryState extends State<Registry> {
       case 'password':
         return <Widget>[
           Text(
-            '创建密码',
+            i18n('Set Password'),
             textAlign: TextAlign.left,
             style: TextStyle(fontSize: 28.0, color: Colors.white),
           ),
           Container(height: 16.0),
           Text(
-            '您的密码长度至少为8个字符',
+            i18n('Password Requirements'),
             style: TextStyle(color: Colors.white),
           ),
           Container(height: 32.0),
@@ -491,7 +494,7 @@ class _RegistryState extends State<Registry> {
             // controller: TextEditingController(text: _password),
             focusNode: focusNode2,
             decoration: InputDecoration(
-                labelText: "密码",
+                labelText: i18n('Password'),
                 labelStyle: TextStyle(
                   fontSize: 21,
                   color: Colors.white,
@@ -516,13 +519,13 @@ class _RegistryState extends State<Registry> {
       case 'success':
         return <Widget>[
           Text(
-            '账号创建成功',
+            i18n('Sign Up Success'),
             textAlign: TextAlign.left,
             style: TextStyle(fontSize: 28.0, color: Colors.white),
           ),
           Container(height: 16.0),
           Text(
-            '欢迎使用口袋网盘',
+            i18n('Welcoming Text'),
             style: TextStyle(color: Colors.white),
           ),
           Expanded(
@@ -552,7 +555,9 @@ class _RegistryState extends State<Registry> {
             ? <Widget>[
                 Builder(builder: (BuildContext ctx) {
                   return FlatButton(
-                    child: _count > 0 ? Text('$_count 秒后重新发送') : Text("重新发送"),
+                    child: _count > 0
+                        ? Text(i18nPlural('Resend Later', _count))
+                        : Text(i18n('Resend')),
                     textColor: Colors.white,
                     onPressed: _count > 0 ? null : () => _resendSmg(ctx),
                   );
@@ -568,7 +573,7 @@ class _RegistryState extends State<Registry> {
                 : _wechatNextStep(ctx, store),
             builder: (context, callback) => FloatingActionButton(
                   onPressed: callback,
-                  tooltip: '下一步',
+                  tooltip: i18n('Next Step'),
                   backgroundColor: Colors.white70,
                   elevation: 0.0,
                   child: Icon(

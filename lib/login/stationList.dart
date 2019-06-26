@@ -48,11 +48,12 @@ class _StationListState extends State<StationList> {
   bool loading = false;
 
   String stationStatus(Station s) {
-    if (s.sn != null && widget.currentDevSN == s.sn) return '当前设备';
+    if (s.sn != null && widget.currentDevSN == s.sn)
+      return i18n('Current Device');
     if (!s.isOnline) {
-      return '设备离线';
+      return i18n('Device Offline');
     } else {
-      return '在线';
+      return i18n('Device Online');
     }
   }
 
@@ -64,7 +65,7 @@ class _StationListState extends State<StationList> {
     } catch (error) {
       print(error);
       loadingInstance.close();
-      showSnackBar(ctx, '登录设备失败');
+      showSnackBar(ctx, i18n('Connect to Device Failed'));
       return;
     }
     // pop all page
@@ -134,7 +135,7 @@ class _StationListState extends State<StationList> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            '您还没有口袋网盘',
+            i18n('No Device Text'),
             style: TextStyle(fontSize: 21),
           ),
           Container(height: 56),
@@ -155,7 +156,7 @@ class _StationListState extends State<StationList> {
                   Icon(Icons.add, color: Colors.white),
                   Expanded(child: Container()),
                   Text(
-                    '添加新设备',
+                    i18n('Add New Device'),
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                   Expanded(child: Container()),
@@ -165,30 +166,6 @@ class _StationListState extends State<StationList> {
             ),
           ),
           Container(height: 24),
-          // Container(
-          //   height: 56,
-          //   width: double.infinity,
-          //   child: RaisedButton(
-          //     color: Colors.white,
-          //     elevation: 1.0,
-          //     shape: RoundedRectangleBorder(
-          //       borderRadius: BorderRadius.circular(48),
-          //     ),
-          //     onPressed: () {},
-          //     child: Row(
-          //       children: <Widget>[
-          //         Icon(Icons.add, color: pColor),
-          //         Expanded(child: Container()),
-          //         Text(
-          //           '扫一扫，添加他人设备',
-          //           style: TextStyle(color: pColor, fontSize: 16),
-          //         ),
-          //         Expanded(child: Container()),
-          //         Container(width: 24),
-          //       ],
-          //     ),
-          //   ),
-          // ),
         ],
       ),
     );
@@ -211,7 +188,7 @@ class _StationListState extends State<StationList> {
                     ),
                   ),
                   Text(
-                    '加载设备列表失败，请下拉重试',
+                    i18n('Pull to Refresh Device List'),
                     style: TextStyle(fontSize: 16),
                   ),
                 ],
@@ -232,10 +209,10 @@ class _StationListState extends State<StationList> {
           padding: EdgeInsets.all(16),
           child: Text(
             widget.currentDevSN != null
-                ? '请选择要切换的设备'
+                ? i18n('Select Device to Switch')
                 : widget.afterLogout == true
-                    ? '请选择要登录的设备'
-                    : '未能自动登录上次使用的设备，您可以重试或者选择其他设备。',
+                    ? i18n('Select Device to Connect')
+                    : i18n('Connect to Last Device Failed Text'),
             style: TextStyle(fontSize: 21),
           ),
         ),
@@ -330,7 +307,7 @@ class _StationListState extends State<StationList> {
                   onPressed:
                       selected < 0 ? null : () => callback(ctx, list[selected]),
                   child: Text(
-                    '登录设备',
+                    i18n('Connect to Device'),
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
@@ -355,6 +332,7 @@ class _StationListState extends State<StationList> {
 
   @override
   Widget build(BuildContext context) {
+    cacheContext(context);
     return StoreConnector<AppState, Function>(
       converter: (store) =>
           (BuildContext ctx, Station s) => login(ctx, s, store),
@@ -378,7 +356,7 @@ class _StationListState extends State<StationList> {
                       child: Container(
                         padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
                         child: Text(
-                          '注销',
+                          i18n('Logout'),
                           style: TextStyle(color: pColor, fontSize: 14),
                         ),
                       ),
@@ -411,7 +389,9 @@ class _StationListState extends State<StationList> {
                                       child: Container(
                                         width: double.infinity,
                                         padding: EdgeInsets.all(16),
-                                        child: Text('配置设备Wi-Fi'),
+                                        child: Text(
+                                          i18n('Configuring Device WiFi'),
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -425,7 +405,7 @@ class _StationListState extends State<StationList> {
                                       child: Container(
                                         width: double.infinity,
                                         padding: EdgeInsets.all(16),
-                                        child: Text('绑定新设备'),
+                                        child: Text(i18n('Bind NEW Device')),
                                       ),
                                     ),
                                   ),

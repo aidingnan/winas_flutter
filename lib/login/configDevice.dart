@@ -299,23 +299,28 @@ class _ConfigDeviceState extends State<ConfigDevice> {
           print(e);
           loadingInstance.close();
           setState(() {
-            errorText = '设备连接网络失败，请确认密码是否正确';
+            errorText = i18n('Set WiFi Error');
           });
-          // showSnackBar(ctx, '设备连接网络失败，请确认密码是否正确');
         }
       }
     }
   }
 
+  String get redLight => i18n('Red Light');
+  String get greenLight => i18n('Green Light');
+  String get blueLight => i18n('Blue Light');
+  String get alwaysOn => i18n('Always On');
+  String get breath => i18n('Breath');
+
   /// color codes
-  static const List<List<String>> colorCodes = [
-    ['红色灯', '常亮', '#ff0000', 'alwaysOn'],
-    ['红色灯', '闪烁', '#ff0000', 'breath'],
-    ['绿色灯', '常亮', '#00ff00', 'alwaysOn'],
-    ['绿色灯', '闪烁', '#00ff00', 'breath'],
-    ['蓝色灯', '常亮', '#0000ff', 'alwaysOn'],
-    ['蓝色灯', '闪烁', '#0000ff', 'breath'],
-  ];
+  List<List<String>> get colorCodes => [
+        [redLight, alwaysOn, '#ff0000', 'alwaysOn'],
+        [redLight, breath, '#ff0000', 'breath'],
+        [greenLight, alwaysOn, '#00ff00', 'alwaysOn'],
+        [greenLight, breath, '#00ff00', 'breath'],
+        [blueLight, alwaysOn, '#0000ff', 'alwaysOn'],
+        [blueLight, breath, '#0000ff', 'breath'],
+      ];
 
   /// '#ff0000' => Color(0xFF0000)
   Color _getColor(String color) {
@@ -328,14 +333,14 @@ class _ConfigDeviceState extends State<ConfigDevice> {
       Container(
         padding: EdgeInsets.all(16),
         child: Text(
-          '身份确认',
+          i18n('Color Code Auth Title'),
           style: TextStyle(color: Colors.black87, fontSize: 28),
         ),
       ),
       Container(
         padding: EdgeInsets.all(16),
         child: Text(
-          '请您观察设备指示灯，并选择它的状态：',
+          i18n('Color Code Auth Text'),
           style: TextStyle(color: Colors.black54),
         ),
       ),
@@ -388,14 +393,14 @@ class _ConfigDeviceState extends State<ConfigDevice> {
         Container(
           padding: EdgeInsets.all(16),
           child: Text(
-            '配置Wi-Fi',
+            i18n('Configure WiFi Title'),
             style: TextStyle(color: Colors.black87, fontSize: 28),
           ),
         ),
         Container(
           padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
           child: Text(
-            '配置设备的Wi-Fi，使手机与设备连至同一网络',
+            i18n('Configure WiFi Text'),
             style: TextStyle(color: Colors.black54),
           ),
         ),
@@ -403,7 +408,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
             ? Container(
                 padding: EdgeInsets.all(16),
                 child: Text(
-                  '当前手机未连接至Wi-Fi网络',
+                  i18n('Phone Not Connect to WiFi Text 1'),
                   style: TextStyle(color: Colors.black87, fontSize: 21),
                 ),
               )
@@ -412,7 +417,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
                 child: Text.rich(
                   TextSpan(children: [
                     TextSpan(
-                      text: '设备将连接至 ',
+                      text: i18n('WiFi Password Input Text Part 1'),
                       style: TextStyle(color: Colors.black54),
                     ),
                     TextSpan(
@@ -420,7 +425,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
                       style: TextStyle(fontSize: 18),
                     ),
                     TextSpan(
-                      text: ' , 请输入该Wi-Fi的密码: ',
+                      text: i18n('WiFi Password Input Text Part 2'),
                       style: TextStyle(color: Colors.black54),
                     ),
                   ]),
@@ -430,7 +435,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
             ? Container(
                 padding: EdgeInsets.all(16),
                 child: Text(
-                  '请连接后刷新重试',
+                  i18n('Phone Not Connect to WiFi Text 2'),
                   style: TextStyle(color: Colors.black87, fontSize: 21),
                 ),
               )
@@ -463,7 +468,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
         Container(
           padding: EdgeInsets.all(64),
           child: Center(
-            child: Text('验证失败，请重启设备后再重试'),
+            child: Text(i18n('Color Code Auth Failed')),
           ),
         ),
         Container(
@@ -485,7 +490,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
               children: <Widget>[
                 Expanded(child: Container()),
                 Text(
-                  '返回',
+                  i18n('Back'),
                   style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
                 Expanded(child: Container()),
@@ -505,7 +510,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
         Container(
           padding: EdgeInsets.all(64),
           child: Center(
-            child: Text('验证超时，请返回后重新连接'),
+            child: Text(i18n('Color Code Auth Timeout')),
           ),
         ),
         Container(
@@ -526,7 +531,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
               children: <Widget>[
                 Expanded(child: Container()),
                 Text(
-                  '返回',
+                  'Back',
                   style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
                 Expanded(child: Container()),
@@ -544,32 +549,32 @@ class _ConfigDeviceState extends State<ConfigDevice> {
     Widget icon = CircularProgressIndicator();
     switch (status) {
       case Status.connecting:
-        text = '连接设备中...';
+        text = i18n('Connecting to Device via Ip');
         break;
 
       case Status.connectFailed:
-        text = '无法连接到您的口袋网盘设备，请确认设备与你的手机连接同一路由器或在同一内网网段中。\n当前设备IP： $currentIP';
-        buttonLabel = '返回';
+        text = i18n('Connect to Device via Ip Failed', {'ip': currentIP});
+        buttonLabel = i18n('Back');
         icon = Icon(Icons.error_outline, color: Colors.redAccent, size: 96);
         break;
 
       case Status.binding:
-        text = '绑定设备中...';
+        text = i18n('Binding Device');
         break;
 
       case Status.bindFailed:
-        text = '绑定失败';
-        buttonLabel = '返回';
+        text = i18n('Bind Device Failed');
+        buttonLabel = i18n('Back');
         icon = Icon(Icons.error_outline, color: Colors.redAccent, size: 96);
         break;
 
       case Status.logging:
-        text = '登录设备中...';
+        text = i18n('Logging Device');
         break;
 
       case Status.loginFailed:
-        text = '登录失败';
-        buttonLabel = '返回';
+        text = i18n('Device Login Failed');
+        buttonLabel = i18n('Back');
         icon = Icon(Icons.error_outline, color: Colors.redAccent, size: 96);
         break;
 
@@ -583,7 +588,9 @@ class _ConfigDeviceState extends State<ConfigDevice> {
         Container(
           padding: EdgeInsets.all(16),
           child: Text(
-            widget.action == Action.bind ? '绑定设备' : '设置Wi-Fi',
+            widget.action == Action.bind
+                ? i18n('Bind Device Title')
+                : i18n('Configuring Device WiFi'),
             style: TextStyle(color: Colors.black87, fontSize: 28),
           ),
         ),
@@ -701,7 +708,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
                     builder: (context, store) {
                       return FloatingActionButton(
                         onPressed: !enabled ? null : () => nextStep(ctx, store),
-                        tooltip: '下一步',
+                        tooltip: i18n('Next Step'),
                         backgroundColor:
                             !enabled ? Colors.grey[200] : Colors.teal,
                         elevation: 0.0,
