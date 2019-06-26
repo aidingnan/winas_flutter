@@ -55,17 +55,25 @@ class _DeleteDialogState extends State<DeleteDialog> {
         return WillPopScope(
           onWillPop: () => Future.value(model.shouldClose),
           child: AlertDialog(
-            title: Text(widget.task != null ? '取消任务' : '清除所有任务'),
-            content: Text(widget.task != null ? '确定取消选择的任务吗？' : '确定清除所有任务吗？'),
+            title: Text(
+              widget.task != null
+                  ? i18n('Cancel Xcopy Task')
+                  : i18n('Cancel All Xcopy Tasks'),
+            ),
+            content: Text(
+              widget.task != null
+                  ? i18n('Confirm to Cancel Selected Xcopy Tasks')
+                  : i18n('Confirm to Cancel All Xcopy Tasks'),
+            ),
             actions: <Widget>[
               FlatButton(
                 textColor: Theme.of(context).primaryColor,
-                child: Text('取消'),
+                child: Text(i18n('Back')),
                 onPressed: () => close(),
               ),
               FlatButton(
                 textColor: Theme.of(context).primaryColor,
-                child: Text(loading ? '处理中' : '确定'),
+                child: Text(loading ? i18n('Processing') : i18n('Confirm')),
                 onPressed: loading ? null : () => onPressed(state),
               )
             ],

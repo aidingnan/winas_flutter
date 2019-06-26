@@ -113,7 +113,7 @@ class _ProgressState extends State<Progress> {
       children: <Widget>[
         Container(
           padding: EdgeInsets.all(16),
-          child: Text('缓存文件中', style: TextStyle(fontSize: 18)),
+          child: Text(i18n('Caching File'), style: TextStyle(fontSize: 18)),
         ),
         Container(
           padding: EdgeInsets.all(16),
@@ -136,7 +136,10 @@ class _ProgressState extends State<Progress> {
             children: <Widget>[
               Expanded(flex: 1, child: Container()),
               FlatButton(
-                child: Text('取消', style: TextStyle(color: Colors.redAccent)),
+                child: Text(
+                  i18n('Cancel'),
+                  style: TextStyle(color: Colors.redAccent),
+                ),
                 onPressed: widget.onCancel,
               ),
             ],
@@ -239,17 +242,39 @@ String prettyDate(int time, {bool showDay: false, bool showMonth: false}) {
 /// get DateTime.now().millisecondsSinceEpoch
 int getNow() => DateTime.now().millisecondsSinceEpoch;
 
-const weekDays = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'];
+const weekDays = [
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
+];
 
-/// get weekday: 7 => '星期日'
-String getWeekday(DateTime dt) => weekDays[dt.weekday - 1];
+/// get weekday: 7 => i18n('Sunday')
+String getWeekday(DateTime dt) => i18n(weekDays[dt.weekday - 1]);
 
-/// get Pixel: 10000 => '1 万像素'
+/// get Pixel: 10000 => 0.01 MP
 String getPixel(int p) {
   if (p == null || p < 0) return '';
-  if (p < 10000) return '$p 像素';
-  if (p < 10000 * 10000) return '${(p / 10000).toStringAsFixed(2)} 万像素';
-  return '${(p / 100000000).toStringAsFixed(2)} 亿像素';
+  if (p < 10000) return i18nPlural('Pixels', p);
+  if (p < 10000 * 10000)
+    return i18n(
+      '0.01 Million Pixels',
+      {
+        'count': (p / 10000).toStringAsFixed(2),
+        'million': (p / 1000000).toStringAsFixed(2),
+      },
+    );
+
+  return i18n(
+    '100 Million Pixels',
+    {
+      'count': (p / 100000000).toStringAsFixed(2),
+      'million': (p / 1000000).toStringAsFixed(2),
+    },
+  );
 }
 
 /// Ellipsis Text
@@ -395,10 +420,10 @@ String converError(dynamic error) {
   if (error is DioError) {
     if (error.message is String) if (error.message
         .contains('Connection refused')) {
-      return '未能连接到设备';
+      return i18n('Connection Refused Error');
     }
-    if (error.message.contains(' Connection closed')) {
-      return '与设备的连接已断开';
+    if (error.message.contains('Connection closed')) {
+      return i18n('Connection Closed Error');
     }
 
     return error.toString();

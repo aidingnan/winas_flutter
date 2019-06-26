@@ -2,6 +2,7 @@ import 'package:redux/redux.dart';
 import 'package:flutter/material.dart';
 
 import '../redux/redux.dart';
+import '../common/utils.dart';
 
 /// Status
 ///
@@ -47,8 +48,8 @@ class Task {
 
     this.type = m['type'];
 
-    this.text = (this.type == 'copy' ? '复制' : '移动') +
-        (this.isFinished ? '完成' : this.name);
+    this.text = (this.type == 'copy' ? i18n('Copying') : i18n('Moving')) +
+        (this.isFinished ? i18n('Finished') : this.name);
 
     this.icon = Icon(this.type == 'copy' ? Icons.content_copy : Icons.forward);
   }

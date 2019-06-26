@@ -5,6 +5,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import './taskView.dart';
 import './xcopyTasks.dart';
 import '../redux/redux.dart';
+import '../common/utils.dart';
 
 class TaskFab extends StatefulWidget {
   TaskFab({Key key, this.hasBottom}) : super(key: key);
@@ -184,7 +185,11 @@ class _TaskFabState extends State<TaskFab> with SingleTickerProviderStateMixin {
                     child: FloatingActionButton.extended(
                       backgroundColor: Colors.grey[600],
                       onPressed: onPressed,
-                      label: Text(!isFinished ? '正在复制/剪切' : '任务完成'),
+                      label: Text(
+                        !isFinished
+                            ? i18n('Xcopy Task Running')
+                            : i18n('Xcopy Task Finished'),
+                      ),
                       icon: fabIcon(),
                     ),
                   ),

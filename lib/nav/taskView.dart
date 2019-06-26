@@ -58,12 +58,12 @@ class _TaskViewState extends State<TaskView> {
 
   /// slivers
   List<Widget> getSlivers() {
-    final String titleName = '复制/移动任务';
+    final String titleName = i18n('Xcopy Tasks');
     List<Widget> slivers = appBarSlivers(paddingLeft, titleName, action: [
       Builder(
         builder: (ctx) {
           return FlatButton(
-            child: Text('全部清除'),
+            child: Text(i18n('Clear All Xcopy Tasks')),
             textColor: Colors.teal,
             onPressed: instance?.tasks?.length != 0
                 ? () async {
@@ -74,9 +74,9 @@ class _TaskViewState extends State<TaskView> {
                           ),
                     );
                     if (success == true) {
-                      showSnackBar(ctx, '清除成功');
+                      showSnackBar(ctx, i18n('Clear All Xcopy Tasks Success'));
                     } else if (success == false) {
-                      showSnackBar(ctx, '清除失败');
+                      showSnackBar(ctx, i18n('Clear All Xcopy Tasks Failed'));
                     }
                   }
                 : null,
@@ -109,7 +109,7 @@ class _TaskViewState extends State<TaskView> {
         ),
         SliverToBoxAdapter(
           child: Center(
-            child: Text('当前无传输任务'),
+            child: Text(i18n('No Xcopy Tasks')),
           ),
         ),
       ]);
@@ -175,9 +175,15 @@ class _TaskViewState extends State<TaskView> {
                                     );
 
                                     if (success == true) {
-                                      showSnackBar(ctx, '取消成功');
+                                      showSnackBar(
+                                        ctx,
+                                        i18n('Cancel Xcopy Task Success'),
+                                      );
                                     } else if (success == false) {
-                                      showSnackBar(ctx, '取消失败');
+                                      showSnackBar(
+                                        ctx,
+                                        i18n('Cancel Xcopy Task Failed'),
+                                      );
                                     }
                                   },
                                 );

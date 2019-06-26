@@ -45,7 +45,7 @@ class NavigationIconView {
 List<FileNavView> fileNavViews = [
   FileNavView(
     icon: Icon(Icons.people, color: Colors.white),
-    title: '共享空间',
+    title: i18n('Public Drive'),
     nav: 'public',
     color: Colors.orange,
     onTap: (context) => Navigator.push(
@@ -54,7 +54,7 @@ List<FileNavView> fileNavViews = [
             builder: (context) {
               return Files(
                 node: Node(
-                  name: '共享空间',
+                  name: i18n('Public Drive'),
                   tag: 'built-in',
                   location: 'built-in',
                 ),
@@ -65,7 +65,7 @@ List<FileNavView> fileNavViews = [
   ),
   FileNavView(
     icon: Icon(Icons.refresh, color: Colors.white),
-    title: '备份空间',
+    title: i18n('Backup Drive'),
     nav: 'backup',
     color: Colors.blue,
     onTap: (context) => Navigator.push(
@@ -77,7 +77,7 @@ List<FileNavView> fileNavViews = [
   ),
   FileNavView(
     icon: Icon(Icons.swap_vert, color: Colors.white),
-    title: '传输任务',
+    title: i18n('Transfer'),
     nav: 'transfer',
     color: Colors.purple,
     onTap: (context) => Navigator.push(
@@ -141,7 +141,7 @@ class _BottomNavigationState extends State<BottomNavigation>
       NavigationIconView(
         icon: Icon(Icons.folder_open),
         activeIcon: Icon(Icons.folder),
-        title: '云盘',
+        title: i18n('My Drive'),
         nav: 'files',
         view: () => Files(
             node: Node(tag: 'home', location: 'home'),
@@ -151,7 +151,7 @@ class _BottomNavigationState extends State<BottomNavigation>
       NavigationIconView(
         activeIcon: Icon(Icons.photo_library),
         icon: Icon(OMIcons.photoLibrary),
-        title: '相簿',
+        title: i18n('Photos'),
         nav: 'photos',
         view: () =>
             Photos(backupWorker: backupWorker, toggleBackup: toggleBackup),
@@ -160,7 +160,7 @@ class _BottomNavigationState extends State<BottomNavigation>
       NavigationIconView(
         activeIcon: Icon(Icons.router),
         icon: Icon(OMIcons.router),
-        title: '设备',
+        title: i18n('Device'),
         nav: 'device',
         view: () => MyStation(),
         color: Colors.deepPurple,
@@ -168,7 +168,7 @@ class _BottomNavigationState extends State<BottomNavigation>
       NavigationIconView(
         activeIcon: Icon(Icons.person),
         icon: Icon(Icons.person_outline),
-        title: '我的',
+        title: i18n('Me'),
         nav: 'user',
         view: () =>
             AccountInfo(backupWorker: backupWorker, toggleBackup: toggleBackup),
@@ -265,18 +265,23 @@ class _BottomNavigationState extends State<BottomNavigation>
             builder: (BuildContext context) => WillPopScope(
                   onWillPop: () => Future.value(false),
                   child: AlertDialog(
-                    content: Text('发现 $deviceName 已存在备份，是否继续使用？'),
+                    content: Text(
+                      i18n(
+                        'Preivous Backup Detected',
+                        {'deviceName': deviceName},
+                      ),
+                    ),
                     actions: <Widget>[
                       FlatButton(
                         textColor: Theme.of(context).primaryColor,
-                        child: Text('不，新建一个备份'),
+                        child: Text(i18n('Use New Backup')),
                         onPressed: () {
                           Navigator.pop(context, true);
                         },
                       ),
                       FlatButton(
                         textColor: Theme.of(context).primaryColor,
-                        child: Text('继续使用'),
+                        child: Text(i18n('Use Previous Backup')),
                         onPressed: () async {
                           AppState state = store.state;
 
@@ -324,7 +329,7 @@ class _BottomNavigationState extends State<BottomNavigation>
     } catch (e) {
       print(e);
       loadingInstance.close();
-      showSnackBar(context, '操作失败');
+      showSnackBar(context, i18n('Toggle Backup Failed'));
       return;
     }
 
