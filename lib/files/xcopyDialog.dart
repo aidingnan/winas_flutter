@@ -18,7 +18,7 @@ void newXCopyView(BuildContext mainCtx, BuildContext snackBarCtx,
       builder: (xcopyCtx) {
         return _XCopyView(
           node: Node(
-            name: '全部文件',
+            name: i18n('All Files'),
             tag: 'root',
             location: 'xcopy',
           ),
@@ -79,13 +79,13 @@ class _XCopyViewState extends State<_XCopyView> {
           .firstWhere((drive) => drive.tag == 'home', orElse: () => null);
       entries = [
         Entry(
-            name: '我的空间',
+            name: i18n('My Drive'),
             uuid: homeDrive.uuid,
             type: 'home',
             pdir: homeDrive.uuid,
             pdrv: homeDrive.uuid),
         Entry(
-            name: '共享空间',
+            name: i18n('Public Drive'),
             uuid: publicDrive.uuid,
             type: 'public',
             pdir: publicDrive.uuid,
@@ -174,7 +174,7 @@ class _XCopyViewState extends State<_XCopyView> {
 
   void openDir(BuildContext ctx, Entry entry) {
     if (src.any((e) => e.uuid == entry.uuid)) {
-      showSnackBar(ctx, '不能选择被操作的文件夹');
+      showSnackBar(ctx, i18n('Select Directory Itself Error'));
     } else if (entry.type != 'file') {
       Navigator.push(
         context,
@@ -234,10 +234,11 @@ class _XCopyViewState extends State<_XCopyView> {
 
       if (taskRes.data['allFinished'] == true ||
           taskRes.data['finished'] == true) {
-        showSnackBar(preCtx[0], actionType == 'copy' ? '复制成功' : '移动成功');
+        showSnackBar(
+          preCtx[0],
+          actionType == 'copy' ? i18n('Copy Success') : i18n('Move Success'),
+        );
       } else {
-        // showSnackBar(preCtx[0], actionType == 'copy' ? '复制中' : '移动中');
-
         // show taskfab
         store.dispatch(
           UpdateConfigAction(
@@ -249,7 +250,10 @@ class _XCopyViewState extends State<_XCopyView> {
         );
       }
     } catch (error) {
-      showSnackBar(preCtx[0], actionType == 'copy' ? '复制失败' : '移动失败');
+      showSnackBar(
+        preCtx[0],
+        actionType == 'copy' ? i18n('Copy Failed') : i18n('Move Failed'),
+      );
     }
     // pop deep xcopy page
     Navigator.popUntil(ctx, ModalRoute.withName('xcopy'));
@@ -355,11 +359,11 @@ class _XCopyViewState extends State<_XCopyView> {
                   onRefresh: () => _refresh(store.state),
                   child: _error != null
                       ? Center(
-                          child: Text('出错啦！'),
+                          child: Text(i18n('Failed to Load Page')),
                         )
                       : entries.length == 0
                           ? Center(
-                              child: Text('空文件夹'),
+                              child: Text(i18n('Empty Folder')),
                             )
                           : Container(
                               padding: node.tag == 'root'
@@ -475,15 +479,15 @@ class _XCopyViewState extends State<_XCopyView> {
               children: <Widget>[
                 FlatButton(
                     textColor: Colors.teal,
-                    child: Text('取消'),
+                    child: Text(i18n('Cancel')),
                     onPressed: () => close(ctx)),
                 Builder(builder: (scaffoldCtx) {
                   return FlatButton(
                     disabledTextColor: Colors.black12,
                     textColor: Colors.teal,
                     child: actionType == 'copy'
-                        ? Text('复制到此文件夹')
-                        : Text('移动到此文件夹'),
+                        ? Text(i18n('Copy to Here'))
+                        : Text(i18n('Move to Here')),
                     onPressed:
                         shouldFire() ? () => fire(scaffoldCtx, store) : null,
                   );

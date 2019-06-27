@@ -29,13 +29,13 @@ class DetailRows {
 
   List toList() {
     List list = [
-      ['类型', type],
-      ['大小', size],
-      ['位置', namepath],
+      [i18n('Type'), type],
+      [i18n('Size'), size],
+      [i18n('File Path'), namepath],
     ];
-    if (fileCount != null) list.add(['子文件数目', this.fileCount]);
-    if (dirCount != null) list.add(['子文件夹数目', this.dirCount]);
-    list.add(['修改日期', this.date]);
+    if (fileCount != null) list.add([i18n('Files Count'), this.fileCount]);
+    if (dirCount != null) list.add([i18n('Directories Count'), this.dirCount]);
+    list.add([i18n('Last Modified'), this.date]);
     return list;
   }
 }
@@ -62,11 +62,11 @@ class _DetailState extends State<Detail> {
   String transformLocation(loc) {
     switch (loc) {
       case 'home':
-        return '我的空间';
+        return i18n('My Drive');
       case 'built-in':
-        return '共享空间';
+        return i18n('Public Drive');
       case 'backup':
-        return '备份空间';
+        return i18n('Backup Drive');
     }
     return '';
   }
@@ -117,9 +117,11 @@ class _DetailState extends State<Detail> {
 
   @override
   void initState() {
-    final loadingText = '加载中';
+    final loadingText = i18n('Loading');
     rows = DetailRows(
-      type: entry.type == 'file' ? entry?.metadata?.type ?? '文件' : '文件夹',
+      type: entry.type == 'file'
+          ? entry?.metadata?.type ?? i18n('File')
+          : i18n('Folder'),
       size: entry.type == 'file' ? entry.hsize : loadingText,
       location: entry.location,
       dirCount: entry.type == 'file' ? null : loadingText,

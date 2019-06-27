@@ -151,7 +151,7 @@ class _BottomNavigationState extends State<BottomNavigation>
       NavigationIconView(
         activeIcon: Icon(Icons.photo_library),
         icon: Icon(OMIcons.photoLibrary),
-        title: i18n('Photos'),
+        title: i18n('Album'),
         nav: 'photos',
         view: () =>
             Photos(backupWorker: backupWorker, toggleBackup: toggleBackup),

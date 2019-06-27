@@ -10,12 +10,12 @@ class DeviceNotOnline extends StatelessWidget {
     return WillPopScope(
       onWillPop: () => Future.value(model.shouldClose),
       child: AlertDialog(
-        title: Text('设备已离线'),
-        content: Text('请确认设备联网状态后，重新登录设备。'),
+        title: Text(i18n('Device Not Online Title')),
+        content: Text(i18n('Device Not Online Text')),
         actions: <Widget>[
           FlatButton(
             textColor: Theme.of(context).primaryColor,
-            child: Text('确定'),
+            child: Text(i18n('Confirm')),
             onPressed: () {
               Navigator.pushNamedAndRemoveUntil(
                   context, '/deviceList', (Route<dynamic> route) => false);

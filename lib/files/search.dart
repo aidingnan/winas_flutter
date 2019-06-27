@@ -21,44 +21,44 @@ class _FileType {
 final iconFromName = (String name) => renderIcon(name, null, size: 16);
 
 /// [title, icon, types]
-final List<_FileType> fileTypes = List.from([
-  [
-    'PDFs',
-    iconFromName('a.pdf'),
-    'PDF',
-  ],
-  [
-    'Word',
-    iconFromName('a.docx'),
-    'DOCX.DOC',
-  ],
-  [
-    'Excel',
-    iconFromName('a.xlsx'),
-    'XLSX.XLS',
-  ],
-  [
-    'PPT',
-    iconFromName('a.ppt'),
-    'PPTX.PPT',
-  ],
-  [
-    '照片与图片',
-    iconFromName('a.bmp'),
-    'JPEG.PNG.JPG.GIF.BMP',
-    // 'JPEG.PNG.JPG.GIF.BMP.RAW.HEIC', TODO: HEIC in search
-  ],
-  [
-    '视频',
-    iconFromName('a.mkv'),
-    'RM.RMVB.WMV.AVI.MP4.3GP.MKV.MOV.FLV.MPEG',
-  ],
-  [
-    '音频',
-    iconFromName('a.mp3'),
-    'WAV.MP3.APE.WMA.FLAC',
-  ],
-].map((x) => _FileType(x[0], x[1], x[2])));
+List<_FileType> get fileTypes => List.from([
+      [
+        'PDFs',
+        iconFromName('a.pdf'),
+        'PDF',
+      ],
+      [
+        'Word',
+        iconFromName('a.docx'),
+        'DOCX.DOC',
+      ],
+      [
+        'Excel',
+        iconFromName('a.xlsx'),
+        'XLSX.XLS',
+      ],
+      [
+        'PPT',
+        iconFromName('a.ppt'),
+        'PPTX.PPT',
+      ],
+      [
+        i18n('Photos'),
+        iconFromName('a.bmp'),
+        'JPEG.PNG.JPG.GIF.BMP',
+        // 'JPEG.PNG.JPG.GIF.BMP.RAW.HEIC', TODO: HEIC in search
+      ],
+      [
+        i18n('Vidoes'),
+        iconFromName('a.mkv'),
+        'RM.RMVB.WMV.AVI.MP4.3GP.MKV.MOV.FLV.MPEG',
+      ],
+      [
+        i18n('Audios'),
+        iconFromName('a.mp3'),
+        'WAV.MP3.APE.WMA.FLAC',
+      ],
+    ].map((x) => _FileType(x[0], x[1], x[2])));
 
 class Search extends StatefulWidget {
   Search({Key key, this.node, this.actions, this.download}) : super(key: key);
@@ -143,7 +143,7 @@ class _SearchState extends State<Search> {
     actions = (state) => [
           {
             'icon': Icons.edit,
-            'title': '重命名',
+            'title': i18n('Rename'),
             'types': node.location == 'backup' ? [] : ['file', 'directory'],
             'action': (BuildContext ctx, Entry entry) {
               Navigator.pop(ctx);
@@ -157,7 +157,7 @@ class _SearchState extends State<Search> {
           },
           {
             'icon': Icons.content_copy,
-            'title': '复制到...',
+            'title': i18n('Copy to'),
             'types': node.location == 'backup' ? [] : ['file', 'directory'],
             'action': (BuildContext ctx, Entry entry) async {
               Navigator.pop(ctx);
@@ -167,7 +167,7 @@ class _SearchState extends State<Search> {
           },
           {
             'icon': Icons.forward,
-            'title': '移动到...',
+            'title': i18n('Move to'),
             'types': node.location == 'backup' ? [] : ['file', 'directory'],
             'action': (BuildContext ctx, Entry entry) async {
               Navigator.pop(ctx);
@@ -177,7 +177,7 @@ class _SearchState extends State<Search> {
           },
           {
             'icon': Icons.file_download,
-            'title': '下载到本地',
+            'title': i18n('Download to Local'),
             'types': ['file'],
             'action': (BuildContext ctx, Entry entry) {
               Navigator.pop(ctx);
@@ -186,7 +186,7 @@ class _SearchState extends State<Search> {
           },
           {
             'icon': Icons.open_in_new,
-            'title': '分享到其它应用',
+            'title': i18n('Share to Other App'),
             'types': ['file'],
             'action': (BuildContext ctx, Entry entry) {
               Navigator.pop(ctx);
@@ -195,7 +195,7 @@ class _SearchState extends State<Search> {
           },
           {
             'icon': Icons.delete,
-            'title': '删除',
+            'title': i18n('Delete'),
             'types': ['file', 'directory'],
             'action': (BuildContext ctx, Entry entry) async {
               Navigator.pop(ctx);
@@ -207,9 +207,9 @@ class _SearchState extends State<Search> {
 
               if (success) {
                 await _onSearch(state);
-                showSnackBar(ctx, '删除成功');
+                showSnackBar(ctx, i18n('Delete Success'));
               } else {
-                showSnackBar(ctx, '删除失败');
+                showSnackBar(ctx, i18n('Delete Failed'));
               }
             },
           },
@@ -235,7 +235,7 @@ class _SearchState extends State<Search> {
         },
         decoration: InputDecoration(
           border: InputBorder.none,
-          hintText: '搜索文件',
+          hintText: i18n('Search'),
         ),
         style: TextStyle(color: Colors.black87),
         textInputAction: TextInputAction.search,
@@ -248,7 +248,7 @@ class _SearchState extends State<Search> {
   AppBar selectAppBar(AppState state) {
     return AppBar(
       title: Text(
-        '选择了${select.selectedEntry.length}项',
+        i18nPlural('Selected N Items', select.selectedEntry.length),
         style: TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.normal,
@@ -301,9 +301,9 @@ class _SearchState extends State<Search> {
               select.clearSelect();
 
               if (success == true) {
-                showSnackBar(ctx, '删除成功');
+                showSnackBar(ctx, i18n('Delete Success'));
               } else if (success == false) {
-                showSnackBar(ctx, '删除失败');
+                showSnackBar(ctx, i18n('Delete Failed'));
               }
               await _onSearch(state);
             },
@@ -322,7 +322,7 @@ class _SearchState extends State<Search> {
           child: Row(
             children: <Widget>[
               Container(width: 16),
-              Text('文件类型'),
+              Text(i18n('File Types')),
             ],
           ),
         ),
@@ -371,7 +371,7 @@ class _SearchState extends State<Search> {
             child: Icon(Winas.logo, color: Colors.grey[50], size: 84),
           ),
         ),
-        Text('未搜索到任何结果'),
+        Text(i18n('No Search Results')),
         Expanded(
           flex: 2,
           child: Container(),

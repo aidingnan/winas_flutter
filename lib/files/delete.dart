@@ -88,18 +88,25 @@ class _DeleteDialogState extends State<DeleteDialog> {
         return WillPopScope(
           onWillPop: () => Future.value(model.shouldClose),
           child: AlertDialog(
-            title: Text(widget.isMedia ? '删除图片或视频' : '删除文件或文件夹'),
-            content:
-                Text(widget.isMedia ? '确定删除选择的图片或视频吗？' : '确定删除选择的文件或文件夹吗？'),
+            title: Text(
+              widget.isMedia
+                  ? i18n('Delete Photo or Video')
+                  : i18n('Delete File or Folder'),
+            ),
+            content: Text(
+              widget.isMedia
+                  ? i18n('Confirm to Delete Selected Photo or Video')
+                  : i18n('Confirm to Delete Selected File or Folder'),
+            ),
             actions: <Widget>[
               FlatButton(
                 textColor: Theme.of(context).primaryColor,
-                child: Text('取消'),
+                child: Text(i18n('Cancel')),
                 onPressed: () => close(),
               ),
               FlatButton(
                 textColor: Theme.of(context).primaryColor,
-                child: Text(loading ? '删除中' : '确定'),
+                child: Text(loading ? i18n('Deleting') : i18n('Confirm')),
                 onPressed: loading ? null : () => onPressed(state),
               )
             ],

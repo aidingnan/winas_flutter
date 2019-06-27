@@ -121,7 +121,7 @@ class _FilesState extends State<Files> {
       driveUUID = homeDrive?.uuid;
       dirUUID = driveUUID;
       currentNode = Node(
-        name: '云盘',
+        name: i18n('My Drive'),
         driveUUID: driveUUID,
         dirUUID: driveUUID,
         tag: 'home',
@@ -138,7 +138,7 @@ class _FilesState extends State<Files> {
       driveUUID = homeDrive?.uuid;
       dirUUID = driveUUID;
       currentNode = Node(
-        name: '共享空间',
+        name: i18n('Public Drive'),
         driveUUID: driveUUID,
         dirUUID: driveUUID,
         tag: 'built-in',
@@ -263,11 +263,11 @@ class _FilesState extends State<Files> {
           builder: (BuildContext context) => WillPopScope(
                 onWillPop: () => Future.value(false),
                 child: AlertDialog(
-                  content: Text('当前正在使用移动数据流量，点击继续可传输，但可能产生流量资费。'),
+                  content: Text(i18n('Using Mobile Data Traffic Warning')),
                   actions: <Widget>[
                     FlatButton(
                       textColor: Theme.of(context).primaryColor,
-                      child: Text('取消'),
+                      child: Text(i18n('Cancel')),
                       onPressed: () {
                         Navigator.pop(context, false);
                       },
@@ -284,7 +284,7 @@ class _FilesState extends State<Files> {
                       builder: (context, callback) {
                         return FlatButton(
                           textColor: Theme.of(context).primaryColor,
-                          child: Text('打开”使用移动数据“开关'),
+                          child: Text(i18n('Open Mobile Data Traffic Switch')),
                           onPressed: () {
                             callback();
                             Navigator.pop(context, true);
@@ -319,9 +319,9 @@ class _FilesState extends State<Files> {
 
     dialog.close();
     if (dialog.canceled) {
-      showSnackBar(ctx, '下载已取消');
+      showSnackBar(ctx, i18n('Download Canceled'));
     } else if (entryPath == null) {
-      showSnackBar(ctx, '下载失败');
+      showSnackBar(ctx, i18n('Download Failed'));
     } else {
       try {
         // TODO: handle open apk file
@@ -333,7 +333,7 @@ class _FilesState extends State<Files> {
         }
       } catch (error) {
         print(error);
-        showSnackBar(ctx, '没有打开该类型文件的应用');
+        showSnackBar(ctx, i18n('No Available App to Open This File'));
       }
     }
   }
@@ -353,7 +353,7 @@ class _FilesState extends State<Files> {
     actions = (AppState state) => [
           {
             'icon': Icons.edit,
-            'title': '重命名',
+            'title': i18n('Rename'),
             'types': node.location == 'backup' ? [] : ['file', 'directory'],
             'action': (BuildContext ctx, Entry entry) {
               Navigator.pop(ctx);
@@ -367,7 +367,7 @@ class _FilesState extends State<Files> {
           },
           {
             'icon': Icons.content_copy,
-            'title': '复制到...',
+            'title': i18n('Copy to'),
             'types': node.location == 'backup' ? [] : ['file', 'directory'],
             'action': (BuildContext ctx, Entry entry) async {
               Navigator.pop(ctx);
@@ -377,7 +377,7 @@ class _FilesState extends State<Files> {
           },
           {
             'icon': Icons.forward,
-            'title': '移动到...',
+            'title': i18n('Move to'),
             'types': node.location == 'backup' ? [] : ['file', 'directory'],
             'action': (BuildContext ctx, Entry entry) async {
               Navigator.pop(ctx);
@@ -387,7 +387,7 @@ class _FilesState extends State<Files> {
           },
           {
             'icon': Icons.file_download,
-            'title': '下载到本地',
+            'title': i18n('Download to Local'),
             'types': ['file'],
             'action': (BuildContext ctx, Entry entry) async {
               Navigator.pop(ctx);
@@ -397,12 +397,12 @@ class _FilesState extends State<Files> {
 
               final cm = TransferManager.getInstance();
               cm.newDownload(entry, state);
-              showSnackBar(ctx, '该文件已加入下载任务');
+              showSnackBar(ctx, i18n('File Add to Transfer List'));
             },
           },
           {
             'icon': Icons.share,
-            'title': '分享到共享空间',
+            'title': i18n('Share to Public Drive'),
             'types': node.location == 'home' ? ['file', 'directory'] : [],
             'action': (BuildContext ctx, Entry entry) async {
               Navigator.pop(ctx);
@@ -432,16 +432,16 @@ class _FilesState extends State<Files> {
               try {
                 await state.apis.req('xcopy', args);
                 loadingInstance.close();
-                showSnackBar(ctx, '分享成功');
+                showSnackBar(ctx, i18n('Share to Public Drive Success'));
               } catch (error) {
                 loadingInstance.close();
-                showSnackBar(ctx, '分享失败');
+                showSnackBar(ctx, i18n('Share to Public Drive Failed'));
               }
             },
           },
           {
             'icon': Icons.open_in_new,
-            'title': '分享到其它应用',
+            'title': i18n('Share to Other App'),
             'types': ['file'],
             'action': (BuildContext ctx, Entry entry) {
               Navigator.pop(ctx);
@@ -450,7 +450,7 @@ class _FilesState extends State<Files> {
           },
           {
             'icon': Icons.delete,
-            'title': '删除',
+            'title': i18n('Delete'),
             'types': ['file', 'directory'],
             'action': (BuildContext ctx, Entry entry) async {
               Navigator.pop(ctx);
@@ -462,9 +462,9 @@ class _FilesState extends State<Files> {
 
               if (success == true) {
                 await refresh(state);
-                showSnackBar(ctx, '删除成功');
+                showSnackBar(ctx, i18n('Delete Success'));
               } else if (success == false) {
-                showSnackBar(ctx, '删除失败');
+                showSnackBar(ctx, i18n('Delete Failed'));
               }
             },
           },
@@ -546,11 +546,11 @@ class _FilesState extends State<Files> {
       builder: (BuildContext context) => WillPopScope(
             onWillPop: () => Future.value(false),
             child: AlertDialog(
-              content: Text('未获取存储权限，操作失败。请在设置中开启相应权限后重试。'),
+              content: Text(i18n('No Storage Permission Warning')),
               actions: <Widget>[
                 FlatButton(
                   textColor: Theme.of(context).primaryColor,
-                  child: Text('取消'),
+                  child: Text(i18n('Cancel')),
                   onPressed: () {
                     Navigator.pop(context);
                   },
@@ -567,7 +567,7 @@ class _FilesState extends State<Files> {
                   builder: (context, callback) {
                     return FlatButton(
                       textColor: Theme.of(context).primaryColor,
-                      child: Text('去"设置"打开存储权限'),
+                      child: Text(i18n('Goto Open Storage Permission')),
                       onPressed: () async {
                         await PermissionHandler().openAppSettings();
                         Navigator.pop(context);
@@ -618,7 +618,10 @@ class _FilesState extends State<Files> {
                       );
                     } catch (e) {
                       print(e);
-                      showSnackBar(this.context, '操作失败，请确认是否给予了应用“存储权限”');
+                      showSnackBar(
+                        this.context,
+                        i18n('Pick Image Failed Text'),
+                      );
                     }
 
                     if (file != null) {
@@ -627,7 +630,7 @@ class _FilesState extends State<Files> {
                   },
                   Icon(Icons.image, color: Colors.white),
                   Colors.blue,
-                  '上传图片',
+                  i18n('Upload Photo'),
                 ),
                 navButton(
                   () async {
@@ -641,7 +644,10 @@ class _FilesState extends State<Files> {
                       );
                     } catch (e) {
                       print(e);
-                      showSnackBar(this.context, '操作失败，请确认是否给予了应用“存储权限”');
+                      showSnackBar(
+                        this.context,
+                        i18n('Pick Video Failed Text'),
+                      );
                     }
 
                     if (file != null) {
@@ -650,7 +656,7 @@ class _FilesState extends State<Files> {
                   },
                   Icon(Icons.videocam, color: Colors.white),
                   Colors.green,
-                  '上传视频',
+                  i18n('Upload Video'),
                 ),
                 // Platform.isIOS
                 //     ? Container()
@@ -665,7 +671,7 @@ class _FilesState extends State<Files> {
                           await FilePicker.getFilePath(type: FileType.ANY);
                     } catch (e) {
                       print(e);
-                      showSnackBar(this.context, '操作失败，请确认是否给予了应用“存储权限”');
+                      showSnackBar(this.context, i18n('Pick File Failed Text'));
                     }
 
                     if (filePath != null) {
@@ -674,7 +680,7 @@ class _FilesState extends State<Files> {
                   },
                   Icon(Icons.insert_drive_file, color: Colors.white),
                   Colors.lightBlue,
-                  '上传文件',
+                  i18n('Upload File'),
                 ),
                 navButton(
                   () async {
@@ -691,7 +697,7 @@ class _FilesState extends State<Files> {
                   },
                   Icon(Icons.create_new_folder, color: Colors.white),
                   Colors.lightGreen,
-                  '新建文件夹',
+                  i18n('New Folder'),
                 ),
               ],
             ),
@@ -728,7 +734,9 @@ class _FilesState extends State<Files> {
                         ? Icons.visibility_off
                         : Icons.visibility,
                   ),
-                  tooltip: state.config.showArchive ? '隐藏归档的文件' : '显示归档的文件',
+                  tooltip: state.config.showArchive
+                      ? i18n('Hide Archived')
+                      : i18n('Show Archived'),
                   onPressed: callback,
                 );
               },
@@ -752,7 +760,8 @@ class _FilesState extends State<Files> {
           return IconButton(
             icon: Icon(
                 state.config.gridView ? Icons.view_list : Icons.view_module),
-            tooltip: state.config.gridView ? '列表显示' : '网格显示',
+            tooltip:
+                state.config.gridView ? i18n('List View') : i18n('Grid View'),
             onPressed: callback,
           );
         },
@@ -778,7 +787,7 @@ class _FilesState extends State<Files> {
                         child: Container(
                           width: double.infinity,
                           padding: EdgeInsets.all(16),
-                          child: Text('选择'),
+                          child: Text(i18n('Select')),
                         ),
                       ),
                     ),
@@ -791,7 +800,7 @@ class _FilesState extends State<Files> {
                         child: Container(
                           width: double.infinity,
                           padding: EdgeInsets.all(16),
-                          child: Text('选择全部'),
+                          child: Text(i18n('Select All')),
                         ),
                       ),
                     ),
@@ -835,7 +844,7 @@ class _FilesState extends State<Files> {
               Icon(Icons.search),
               Container(width: 32),
               Text(
-                '搜索文件',
+                i18n('Search'),
                 style: TextStyle(
                   color: Colors.black54,
                   fontWeight: FontWeight.normal,
@@ -870,7 +879,7 @@ class _FilesState extends State<Files> {
           return Future.value(true);
         },
         child: Text(
-          '选择了$length项',
+          i18nPlural('Selected N Items', length),
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.normal,
@@ -930,9 +939,9 @@ class _FilesState extends State<Files> {
                     select.clearSelect();
 
                     if (success == true) {
-                      showSnackBar(ctx, '删除成功');
+                      showSnackBar(ctx, i18n('Delete Success'));
                     } else if (success == false) {
-                      showSnackBar(ctx, '删除失败');
+                      showSnackBar(ctx, i18n('Delete Failed'));
                     }
                     await refresh(state);
                   },
@@ -1112,7 +1121,9 @@ class _FilesState extends State<Files> {
                     ),
                   ),
                   Text(
-                    isHome ? '您还未上传任何文件' : '空文件夹',
+                    isHome
+                        ? i18n('Empty Folder in Home')
+                        : i18n('Empty Folder'),
                     style: TextStyle(color: Colors.black38),
                   ),
                   Expanded(flex: isHome ? 4 : 1, child: Container()),
@@ -1195,13 +1206,13 @@ class _FilesState extends State<Files> {
                                   ),
                                 ),
                                 Text(
-                                  '加载页面失败，请检查网络设置',
+                                  i18n('Failed to Load Page'),
                                   style: TextStyle(color: Colors.black38),
                                 ),
                                 FlatButton(
                                   padding: EdgeInsets.all(0),
                                   child: Text(
-                                    '重新加载',
+                                    i18n('Reload'),
                                     style: TextStyle(color: Colors.teal),
                                   ),
                                   onPressed: () =>

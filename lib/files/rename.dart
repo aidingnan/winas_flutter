@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 import '../redux/redux.dart';
+import '../common/utils.dart';
 
 class RenameDialog extends StatefulWidget {
   RenameDialog({Key key, this.entry}) : super(key: key);
@@ -32,13 +33,15 @@ class _RenameDialogState extends State<RenameDialog> {
         'driveUUID': entry.pdrv,
       });
     } catch (error) {
-      _error = '重命名失败';
+      _error = i18n('Rename Failed');
       if (error is DioError && error?.response?.data is Map) {
         final res = error.response.data;
         if (res['code'] == 'EEXIST') {
-          _error = res['xcode'] == 'EISFILE' ? '存在同名的文件' : '同名文件夹已经存在';
+          _error = res['xcode'] == 'EISFILE'
+              ? i18n('File Conflict')
+              : i18n('Directory Conflict');
         } else if (res['message'] == 'invalid name') {
-          _error = '名称不合法，如不能包含 \\/?<>*:"| 等字符';
+          _error = i18n('Invalid Name');
         }
       } else {
         print(error);
@@ -75,7 +78,7 @@ class _RenameDialogState extends State<RenameDialog> {
       converter: (store) => store.state,
       builder: (context, state) {
         return AlertDialog(
-          title: Text('重命名'),
+          title: Text(i18n('Rename')),
           content: TextField(
             autofocus: true,
             onChanged: (text) {
@@ -89,13 +92,13 @@ class _RenameDialogState extends State<RenameDialog> {
           actions: <Widget>[
             FlatButton(
                 textColor: Theme.of(context).primaryColor,
-                child: Text('取消'),
+                child: Text(i18n('Cancel')),
                 onPressed: () {
                   Navigator.pop(context);
                 }),
             FlatButton(
               textColor: Theme.of(context).primaryColor,
-              child: Text('确定'),
+              child: Text(i18n('Confirm')),
               onPressed: isEnabled() ? () => _onPressed(context, state) : null,
             )
           ],

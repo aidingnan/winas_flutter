@@ -5,6 +5,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import './photo.dart';
 import './detail.dart';
 import '../redux/redux.dart';
+import '../common/utils.dart';
 import '../common/renderIcon.dart';
 import '../common/taskManager.dart';
 
@@ -94,7 +95,7 @@ class TitleRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final title = Text(
-      type == 'file' ? '文件' : '文件夹',
+      type == 'file' ? i18n('File') : i18n('Folder'),
       style: TextStyle(fontSize: 12, color: Colors.black54),
     );
 
@@ -121,7 +122,7 @@ class TitleRow extends StatelessWidget {
           entrySort == null
               ? Container(
                   child: Text(
-                    '名称',
+                    i18n('Name'),
                     style: TextStyle(color: Colors.black38, fontSize: 14),
                   ),
                 )

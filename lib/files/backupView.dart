@@ -4,6 +4,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 
 import './file.dart';
 import '../redux/redux.dart';
+import '../common/utils.dart';
 import '../icons/winas_icons.dart';
 
 class BackupView extends StatefulWidget {
@@ -90,11 +91,11 @@ class _BackupViewState extends State<BackupView> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
                             Text(
-                              '备份设备',
+                              i18n('Backup Device'),
                               style: TextStyle(color: Colors.black54),
                             ),
                             Text(
-                              '已备容量',
+                              i18n('Backup Size'),
                               style: TextStyle(color: Colors.black54),
                             ),
                           ],
@@ -175,7 +176,7 @@ class _BackupViewState extends State<BackupView> {
                       Expanded(flex: 1, child: Container()),
                       Text(
                         drive.fileTotalSize == '0 B'
-                            ? '未备份'
+                            ? i18n('No Backup Size')
                             : drive.fileTotalSize,
                         style: TextStyle(color: Colors.black54),
                       ),
@@ -204,7 +205,10 @@ class _BackupViewState extends State<BackupView> {
             brightness: Brightness.light,
             backgroundColor: Colors.white,
             iconTheme: IconThemeData(color: Colors.black38),
-            title: Text('备份空间', style: TextStyle(color: Colors.black87)),
+            title: Text(
+              i18n('Backup Drive'),
+              style: TextStyle(color: Colors.black87),
+            ),
           ),
           body: loading
               ? Center(child: CircularProgressIndicator())
@@ -231,13 +235,13 @@ class _BackupViewState extends State<BackupView> {
                             ),
                           ),
                           Text(
-                            '加载页面失败，请检查网络设置',
+                            i18n('Failed to Load Page'),
                             style: TextStyle(color: Colors.black38),
                           ),
                           FlatButton(
                             padding: EdgeInsets.all(0),
                             child: Text(
-                              '重新加载',
+                              i18n('Reload'),
                               style: TextStyle(color: Colors.teal),
                             ),
                             onPressed: () => refresh(store),
@@ -256,7 +260,7 @@ class _BackupViewState extends State<BackupView> {
                               size: 84,
                             ),
                             Container(height: 16),
-                            Text('您尚未创建备份文件'),
+                            Text(i18n('No Backup Drive')),
                             Expanded(
                               flex: 2,
                               child: Container(),

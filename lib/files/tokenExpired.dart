@@ -17,12 +17,12 @@ class TokenExpired extends StatelessWidget {
         converter: (store) => store.state,
         builder: (context, state) {
           return AlertDialog(
-            title: Text('登录已过期'),
-            content: Text('请重新登录。'),
+            title: Text(i18n('Token Expired Title')),
+            content: Text(i18n('Token Expired Text')),
             actions: <Widget>[
               FlatButton(
                 textColor: Theme.of(context).primaryColor,
-                child: Text('确定'),
+                child: Text(i18n('Confirm')),
                 onPressed: () {
                   Navigator.pushNamedAndRemoveUntil(
                     context,
