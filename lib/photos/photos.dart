@@ -7,6 +7,7 @@ import './backup.dart';
 import './photoList.dart';
 import '../redux/redux.dart';
 import '../common/cache.dart';
+import '../common/utils.dart';
 import '../icons/winas_icons.dart';
 
 // TODO: HEIC in mediaTypes
@@ -139,9 +140,9 @@ class _PhotosState extends State<Photos> {
       }
 
       final allPhotosAlbum =
-          Album('照片', places, imageTypes, photosCount, drives);
+          Album(i18n('Photos'), places, imageTypes, photosCount, drives);
       final allVideosAlbum =
-          Album('视频', places, videoTypes, videosCount, drives);
+          Album(i18n('Videos'), places, videoTypes, videosCount, drives);
 
       albumList = [allPhotosAlbum, allVideosAlbum];
 
@@ -239,7 +240,7 @@ class _PhotosState extends State<Photos> {
                   padding: EdgeInsets.fromLTRB(0, 0, 0, 4),
                   width: double.infinity,
                   child: Text(
-                    '${album.count} 项内容',
+                    i18nPlural('Album Content Count', album.count),
                     style: TextStyle(color: Colors.black54, fontSize: 12),
                   ),
                 ),
@@ -252,18 +253,18 @@ class _PhotosState extends State<Photos> {
   }
 
   String backupStatus(Config config, BackupWorker worker) {
-    String text = '照片备份功能';
+    String text = i18n('Backup Photos');
     if (config.autoBackup == true) {
       if (worker.isFinished) {
-        text = '备份已经完成';
+        text = i18n('Backup Finished');
       } else if (worker.isPaused) {
-        text = '当前在使用移动数据流量，备份已暂停';
+        text = i18n('Backup Paused in Mobile Data Traffic');
       } else if (worker.isFailed) {
-        text = '备份未完成';
+        text = i18n('Backup Failed');
       } else if (worker.isDiffing) {
-        text = '正在准备备份';
+        text = i18n('Backup Preparing');
       } else if (worker.isRunning) {
-        text = '备份中';
+        text = i18n('Backup Working');
       }
     }
     return text;
@@ -298,7 +299,9 @@ class _PhotosState extends State<Photos> {
                       flex: 1,
                     ),
                     Text(
-                      store.state.config.autoBackup == true ? '' : '已关闭',
+                      store.state.config.autoBackup == true
+                          ? ''
+                          : i18n('Backup Disabled'),
                       style: TextStyle(color: Colors.white),
                     ),
                     Switch(
@@ -330,7 +333,7 @@ class _PhotosState extends State<Photos> {
                 padding: EdgeInsets.only(top: 16, left: 16, right: 8),
                 // padding: EdgeInsets.all(16),
                 child: Text(
-                  '全部',
+                  i18n('All'),
                   style: TextStyle(fontSize: 12, color: Colors.black54),
                 ),
               ),
@@ -364,7 +367,7 @@ class _PhotosState extends State<Photos> {
                 padding: EdgeInsets.only(top: 8, left: 16, right: 8),
                 // padding: EdgeInsets.all(16),
                 child: Text(
-                  '来自',
+                  i18n('From'),
                   style: TextStyle(fontSize: 12, color: Colors.black54),
                 ),
               ),
@@ -405,7 +408,7 @@ class _PhotosState extends State<Photos> {
             brightness: Brightness.light,
             backgroundColor: Colors.white,
             iconTheme: IconThemeData(color: Colors.black38),
-            title: Text('相簿', style: TextStyle(color: Colors.black87)),
+            title: Text(i18n('Album'), style: TextStyle(color: Colors.black87)),
             centerTitle: false,
           ),
           body: SafeArea(
@@ -436,13 +439,13 @@ class _PhotosState extends State<Photos> {
                               ),
                             ),
                             Text(
-                              '加载页面失败，请检查网络设置',
+                              i18n('Failed to Load Page'),
                               style: TextStyle(color: Colors.black38),
                             ),
                             FlatButton(
                               padding: EdgeInsets.all(0),
                               child: Text(
-                                '重新加载',
+                                i18n('Reload'),
                                 style: TextStyle(color: Colors.teal),
                               ),
                               onPressed: () => refresh(store, true),

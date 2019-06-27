@@ -135,7 +135,7 @@ class _DetailState extends State<Detail> {
                   Row(
                     children: <Widget>[
                       Text(
-                        '详情',
+                        i18n('Detail'),
                         style: TextStyle(color: Colors.black38),
                       ),
                       Container(width: 8),

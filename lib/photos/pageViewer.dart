@@ -76,15 +76,15 @@ class _PageViewerState extends State<PageViewer> {
 
     dialog.close();
     if (dialog.canceled) {
-      showSnackBar(ctx, '下载已取消');
+      showSnackBar(ctx, i18n('Download Canceled'));
     } else if (entryPath == null) {
-      showSnackBar(ctx, '下载失败');
+      showSnackBar(ctx, i18n('Download Failed'));
     } else {
       try {
         ShareExtend.share(entryPath, "file");
       } catch (error) {
         print(error);
-        showSnackBar(ctx, '分享失败');
+        showSnackBar(ctx, i18n('No Available App to Open This File'));
       }
     }
   }
@@ -92,7 +92,7 @@ class _PageViewerState extends State<PageViewer> {
   void _download(BuildContext ctx, Entry entry, AppState state) async {
     final cm = TransferManager.getInstance();
     cm.newDownload(entry, state);
-    showSnackBar(ctx, '该文件已加入下载任务');
+    showSnackBar(ctx, i18n('File Add to Transfer List'));
   }
 
   void _delete(BuildContext ctx, Entry entry, AppState state) async {
@@ -105,7 +105,7 @@ class _PageViewerState extends State<PageViewer> {
     );
 
     if (success == true) {
-      showSnackBar(ctx, '删除成功');
+      showSnackBar(ctx, i18n('Delete Success'));
       final isFirstPage = pageController.offset == 0.0;
 
       // is not FirstPage: return to previousPage
@@ -124,7 +124,7 @@ class _PageViewerState extends State<PageViewer> {
         Navigator.pop(ctx);
       }
     } else if (success == false) {
-      showSnackBar(ctx, '删除失败');
+      showSnackBar(ctx, i18n('Delete Failed'));
     }
   }
 

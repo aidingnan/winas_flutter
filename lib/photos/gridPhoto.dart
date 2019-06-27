@@ -528,7 +528,7 @@ class _GridPhotoState extends State<GridPhoto>
     final rowList = [
       Container(
         margin: EdgeInsets.all(16),
-        child: Text('详情', style: TextStyle(fontSize: 18)),
+        child: Text(i18n('Detail'), style: TextStyle(fontSize: 18)),
       ),
       detailRow(Icon(Icons.insert_drive_file), photo.name, size),
       detailRow(Icon(Icons.calendar_today), date, weekday),

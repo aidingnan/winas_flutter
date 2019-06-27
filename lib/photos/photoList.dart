@@ -160,7 +160,7 @@ class _PhotoListState extends State<PhotoList> {
           return Future.value(true);
         },
         child: Text(
-          '选择了$length项',
+          i18nPlural('Selected N Items', length),
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.normal,
@@ -189,12 +189,12 @@ class _PhotoListState extends State<PhotoList> {
                     );
 
                     if (success == true) {
-                      showSnackBar(ctx, '删除成功');
+                      showSnackBar(ctx, i18n('Delete Success'));
                       for (Entry entry in select.selectedEntry) {
                         widget.album.items.remove(entry);
                       }
                     } else if (success == false) {
-                      showSnackBar(ctx, '删除失败');
+                      showSnackBar(ctx, i18n('Delete Failed'));
                     }
                     select.clearSelect();
                     getList(widget.album, context, state);
@@ -239,7 +239,7 @@ class _PhotoListState extends State<PhotoList> {
                           child: Container(
                             width: double.infinity,
                             padding: EdgeInsets.all(16),
-                            child: Text('选择'),
+                            child: Text(i18n('Select')),
                           ),
                         ),
                       ),
@@ -252,7 +252,7 @@ class _PhotoListState extends State<PhotoList> {
                           child: Container(
                             width: double.infinity,
                             padding: EdgeInsets.all(16),
-                            child: Text('选择全部'),
+                            child: Text(i18n('Select All')),
                           ),
                         ),
                       ),
@@ -310,7 +310,7 @@ class _PhotoListState extends State<PhotoList> {
                               ),
                             ),
                             Text(
-                              '没有内容',
+                              i18n('No Content in Album'),
                               style: TextStyle(color: Colors.black38),
                             ),
                             Expanded(flex: 2, child: Container()),

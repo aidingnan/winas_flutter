@@ -127,8 +127,10 @@ class Worker {
     List<Entry> rawEntries = List.from(listNav.data['entries']
         .map((entry) => Entry.mixNode(entry, currentNode)));
 
-    final photosDir =
-        rawEntries.firstWhere((e) => e.name == '照片', orElse: () => null);
+    // Folder Name in Photos Backup: 照片 or Photos
+    final photosDir = rawEntries.firstWhere(
+        (e) => e.name == '照片' || e.name == 'Photos',
+        orElse: () => null);
     return photosDir;
   }
 
@@ -163,7 +165,7 @@ class Worker {
     if (photosDir == null) {
       // make backup root directory
       await apis.req('mkdir', {
-        'dirname': '照片',
+        'dirname': i18n('Folder Name in Photos Backup'),
         'dirUUID': backupDrive.uuid,
         'driveUUID': backupDrive.uuid,
       });

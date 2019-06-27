@@ -229,7 +229,7 @@
   "Invalid Name": "名称不合法，如不能包含 \\/?<>*:\"| 等字符';",
 
   "==== files/search.dart ====": "",
-  "Photos": "照片与图片",
+  "Photos": "照片",
   "Videos": "视频",
   "Audios": "音频",
   "File Types": "文件类型",
@@ -328,6 +328,29 @@
   "Device Model": "型号",
   "Device Serial Number": "序列号",
   "Bluetooth Address": "蓝牙地址",
+
+  "==== photos/gridPhoto.dart====": "",
+  "Detail": "详情",
+  "Album Content Count": {
+    "i-0": "{i}项内容",
+    "i-1": "{i}项内容",
+    "i-2": "{i}项内容"
+  },
+  "Backup Photos": "照片备份功能",
+  "Backup Finished": "备份已经完成",
+  "Backup Paused in Mobile Data Traffic": "当前在使用移动数据流量，备份已暂停",
+  "Backup Failed": "备份未完成",
+  "Backup Preparing": "正在准备备份",
+  "Backup Working": "备份中",
+  "Backup Disabled": "已关闭",
+  "All": "全部",
+  "From": "来自",
+
+  "==== photos/backup.dart ====": "",
+  "Folder Name in Photos Backup": "照片",
+
+  "==== photos/photoList.dart ====": "",
+  "No Content in Album": "没有内容",
 
   "====  ====": "",
   "": "",
