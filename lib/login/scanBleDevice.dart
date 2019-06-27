@@ -245,7 +245,7 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                                       loadingInstance.close();
                                       showSnackBar(
                                         ctx,
-                                        i18n('Request BLE Color Code Error'),
+                                        i18n('Request Color Code Error'),
                                       );
                                       return;
                                     }

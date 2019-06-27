@@ -79,7 +79,7 @@
   "Unknown Status in BLE": "设备异常",
   "Scan BLE Device Title": "蓝牙扫描设备",
   "Connect BLE Error": "连接设备失败",
-  "Request BLE Color Code Error": "请求设备验证失败",
+  "Request Color Code Error": "请求设备验证失败",
   "Product Name": "口袋网盘",
   "Product Number in BLE": "设备号: {deviceNumber}",
   "BLE Rescan": "重新扫描",
@@ -280,7 +280,56 @@
   "No Backup Size": "未备份",
   "No Backup Drive": "您尚未创建备份文件",
 
-  "==== dart ====": "",
+  "==== device/info.dart ====": "",
+  "Unknown Status in Info": "未知",
+
+  "==== device/newDeviceName.dart ====": "",
+  "Rename Device Failed": "重命名失败",
+
+  "==== device/resetDevice.dart ====": "",
+  "Reset Device Text 1": "该操作不可逆，请谨慎操作。",
+  "Reset Device Text 2": "重置设备需要手机与设备连至同一Wi-Fi网络。",
+  "Reset Device Text 3": "该操作将解除绑定用户，清除所有数据，恢复出厂设置。",
+  "Reset Device": "重置设备",
+  "Not LAN Network Error": "操作失败，手机与设备未连至同一Wi-Fi网络",
+  "Reseting Device": "重置中",
+  "Reset Device Success": "重置成功",
+  "Reset Device Failed": "重置失败",
+
+  "==== device/firmwareUpdate.dart ====": "",
+  "Firmware Update": "系统更新",
+  "Firmware Already Latest": "您的系统是最新版本。",
+  "Get Firmware Info Error": "获取系统版本信息失败",
+  "Updating Firmware": "正在安装更新",
+  "Update Firmware Now": "立即安装更新",
+
+  "==== device/network.dart ====": "",
+  "Network Detail": "网络详情",
+  "WiFi Id": "Wi-Fi名称",
+  "LAN Ip Address": "局域网IP地址",
+  "MAC Address": "MAC地址",
+
+  "==== device/system.dart ====": "",
+  "System Manage": "系统管理",
+  "System Update": "系统更新",
+
+  "==== device/myStation.dart ====": "",
+  "Storage Detail": "存储详情",
+  "Video": "视频",
+  "Picture": "图片",
+  "Music": "音乐",
+  "Document": "文档",
+  "Others": "其他",
+  "Storage Usage": "已使用{usage}",
+  "Device Title": "设备",
+
+  "==== device/deviceInfo.dart ====": "",
+  "Device Info": "设备信息",
+  "Device Model": "型号",
+  "Device Serial Number": "序列号",
+  "Bluetooth Address": "蓝牙地址",
+
+  "====  ====": "",
   "": "",
   "END": "END"
 }

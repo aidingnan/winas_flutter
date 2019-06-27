@@ -66,7 +66,7 @@ class _DeviceInfoState extends State<DeviceInfo> {
   }
 
   List<Widget> getSlivers() {
-    final String titleName = '设备信息';
+    final String titleName = i18n('Device Info');
     // title
     List<Widget> slivers = appBarSlivers(paddingLeft, titleName);
     if (loading) {
@@ -79,7 +79,7 @@ class _DeviceInfoState extends State<DeviceInfo> {
           child: Container(
             height: 256,
             child: Center(
-              child: Text('加载页面失败'),
+              child: Text(i18n('Failed to Load Page')),
             ),
           ),
         ),
@@ -88,17 +88,17 @@ class _DeviceInfoState extends State<DeviceInfo> {
       // actions
       slivers.addAll([
         sliverActionButton(
-          '型号',
+          i18n('Device Model'),
           () => {},
           _ellipsisText('Bacchus'),
         ),
         sliverActionButton(
-          '序列号',
+          i18n('Device Serial Number'),
           () => {},
           _ellipsisText(info.sn),
         ),
         sliverActionButton(
-          '蓝牙地址',
+          i18n('Bluetooth Address'),
           () => {},
           _ellipsisText(info.bleAddr),
         ),

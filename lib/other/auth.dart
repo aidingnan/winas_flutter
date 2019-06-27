@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import './info.dart';
+import '../device/info.dart';
 import '../common/utils.dart';
 import '../common/appBarSlivers.dart';
 

@@ -52,7 +52,7 @@ class _FirmwareState extends State<Firmware> {
   }
 
   List<Widget> getSlivers() {
-    final String titleName = '软件更新';
+    final String titleName = i18n('Firmware Update');
     // title
     List<Widget> slivers = appBarSlivers(paddingLeft, titleName);
     if (loading) {
@@ -60,10 +60,10 @@ class _FirmwareState extends State<Firmware> {
       slivers.add(SliverToBoxAdapter(child: Container(height: 16)));
     } else if (!lastest) {
       // lastest
-      slivers.add(renderText('您的软件是最新版本。'));
+      slivers.add(renderText(i18n('Firmware Already Latest')));
     } else if (info != null || failed) {
       // failed
-      slivers.add(renderText('获取软件版本信息失败'));
+      slivers.add(renderText(i18n('Get Firmware Info Error')));
     } else {
       // actions
       slivers.addAll([
@@ -106,7 +106,7 @@ class _FirmwareState extends State<Firmware> {
                 width: MediaQuery.of(context).size.width,
                 padding: EdgeInsets.all(16),
                 child: Text(
-                  'Winas 1.2.1 更新多个新功能， 提高了设备性能与稳定性，建议所有用户安装。',
+                  'Winas 1.1.2: Bugs fixed.',
                 ),
               )
             ],
@@ -122,7 +122,7 @@ class _FirmwareState extends State<Firmware> {
                     final model = Model();
                     showNormalDialog(
                       context: context,
-                      text: '正在安装更新',
+                      text: i18n('Updating Firmware'),
                       model: model,
                     );
                     await Future.delayed(Duration(seconds: 3));
@@ -131,7 +131,7 @@ class _FirmwareState extends State<Firmware> {
                         ctx, '/deviceList', (Route<dynamic> route) => false);
                   },
                   child: Text(
-                    '立即安装更新',
+                    i18n('Update Firmware Now'),
                     style: TextStyle(color: Colors.teal),
                   ),
                 );

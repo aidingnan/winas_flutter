@@ -1,6 +1,8 @@
-import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+
 import '../redux/redux.dart';
+import '../common/utils.dart';
 
 class NewDeviceName extends StatefulWidget {
   NewDeviceName({Key key, this.deviceName}) : super(key: key);
@@ -42,7 +44,7 @@ class _NewDeviceNameState extends State<NewDeviceName> {
       print(error.response.data);
       setState(() {
         loading = false;
-        _error = '重命名失败';
+        _error = i18n('Rename Device Failed');
       });
       return;
     }
@@ -108,7 +110,7 @@ class _NewDeviceNameState extends State<NewDeviceName> {
                 converter: (store) => () => _onPressed(ctx, store),
                 builder: (context, callback) => FloatingActionButton(
                       onPressed: disabled ? null : callback,
-                      tooltip: '确定',
+                      tooltip: i18n('Confirm'),
                       backgroundColor: disabled ? Colors.grey : Colors.teal,
                       elevation: 0.0,
                       child: Icon(

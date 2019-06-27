@@ -64,7 +64,7 @@ class _SystemState extends State<System> {
   }
 
   List<Widget> getSlivers() {
-    final String titleName = '系统管理';
+    final String titleName = i18n('System Manage');
     // title
     List<Widget> slivers = appBarSlivers(paddingLeft, titleName);
     if (loading) {
@@ -77,7 +77,7 @@ class _SystemState extends State<System> {
           child: Container(
             height: 256,
             child: Center(
-              child: Text('加载页面失败'),
+              child: Text(i18n('Failed to Load Page')),
             ),
           ),
         ),
@@ -86,7 +86,7 @@ class _SystemState extends State<System> {
       // actions
       slivers.addAll([
         sliverActionButton(
-          '系统更新',
+          i18n('Firmware Update'),
           () {
             Navigator.push(
               context,
@@ -98,7 +98,7 @@ class _SystemState extends State<System> {
           null,
         ),
         sliverActionButton(
-          '重置设备',
+          i18n('Reset Device'),
           () {
             Navigator.push(
               context,

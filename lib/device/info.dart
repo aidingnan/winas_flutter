@@ -1,7 +1,5 @@
 import '../common/utils.dart';
 
-const UNKNOWN = '未知';
-
 class Info {
   String bleAddr;
   String eccName;
@@ -21,10 +19,11 @@ class Info {
 
     this.eccName = device['ecc'];
     final ble = m['ble'];
+    final unknown = i18n('Unknown Status in Info');
     if (ble != null && ble['state'] == "Started") {
       bleAddr = ble['address'];
     } else {
-      bleAddr = UNKNOWN;
+      bleAddr = unknown;
     }
     this.sn = device['sn'];
     this.cert = device['cert'];
@@ -35,9 +34,9 @@ class Info {
       this.macAddress = detail['HwAddress'];
       this.ssid = detail['Ssid'];
     } else {
-      this.address = UNKNOWN;
-      this.macAddress = UNKNOWN;
-      this.ssid = UNKNOWN;
+      this.address = unknown;
+      this.macAddress = unknown;
+      this.ssid = unknown;
     }
 
     this.fingerprint = device['fingerprint'];

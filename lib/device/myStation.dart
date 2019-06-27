@@ -87,7 +87,8 @@ class StorageDetail extends StatelessWidget {
         backgroundColor: Colors.white10,
         brightness: Brightness.light,
         iconTheme: IconThemeData(color: Colors.black38),
-        title: Text('存储详情', style: TextStyle(color: Colors.black87)),
+        title: Text(i18n('Storage Detail'),
+            style: TextStyle(color: Colors.black87)),
       ),
       body: ListView(
         children: <Widget>[
@@ -167,7 +168,7 @@ class _MyStationState extends State<MyStation> {
       {
         'color': Color(0xFF2196f3),
         'flex': videoSize,
-        'title': '视频',
+        'title': i18n('Video'),
         'size': prettySize(videoRaw),
         'icon': Icons.folder,
         'count': stats['video']['count'],
@@ -175,7 +176,7 @@ class _MyStationState extends State<MyStation> {
       {
         'color': Color(0xFFaa00ff),
         'flex': imageSize,
-        'title': '图片',
+        'title': i18n('Picture'),
         'size': prettySize(imageRaw),
         'icon': Icons.image,
         'count': stats['image']['count'],
@@ -183,7 +184,7 @@ class _MyStationState extends State<MyStation> {
       {
         'color': Color(0xFFf2497d),
         'flex': audioSize,
-        'title': '音乐',
+        'title': i18n('Music'),
         'size': prettySize(audioRaw),
         'icon': Icons.music_note,
         'count': stats['audio']['count'],
@@ -191,7 +192,7 @@ class _MyStationState extends State<MyStation> {
       {
         'color': Color(0xFFffb300),
         'flex': documentSize,
-        'title': '文档',
+        'title': i18n('Document'),
         'size': prettySize(documentRaw),
         'icon': Icons.text_fields,
         'count': stats['document']['count'],
@@ -199,7 +200,7 @@ class _MyStationState extends State<MyStation> {
       {
         'color': Color(0xFF00c853),
         'flex': otherSize,
-        'title': '其他',
+        'title': i18n('Others'),
         'size': prettySize(othersRaw),
         'icon': Icons.insert_drive_file,
         'count': stats['others']['count'],
@@ -209,7 +210,8 @@ class _MyStationState extends State<MyStation> {
         'flex': restSize,
       },
     ];
-    usage = '已使用$used/$total';
+
+    usage = i18n('Storage Usage', {'usage': '$used/$total'});
 
     if (this.mounted) {
       // avoid calling setState after dispose()
@@ -296,7 +298,10 @@ class _MyStationState extends State<MyStation> {
             backgroundColor: Colors.white10,
             brightness: Brightness.light,
             iconTheme: IconThemeData(color: Colors.black38),
-            title: Text('设备', style: TextStyle(color: Colors.black87)),
+            title: Text(
+              i18n('Device Title'),
+              style: TextStyle(color: Colors.black87),
+            ),
             elevation: 0.0, // no shadow
             actions: _actions(state),
           ),
@@ -424,7 +429,7 @@ class _MyStationState extends State<MyStation> {
                           ),
                         ),
                         actionButton(
-                          '网络详情',
+                          i18n('Network Detail'),
                           () => Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) {
@@ -434,7 +439,7 @@ class _MyStationState extends State<MyStation> {
                           null,
                         ),
                         actionButton(
-                          '设备信息',
+                          i18n('Device Info'),
                           () => Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) {
@@ -444,7 +449,7 @@ class _MyStationState extends State<MyStation> {
                           null,
                         ),
                         actionButton(
-                          '系统管理',
+                          i18n('System Manage'),
                           () => Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) {

@@ -54,17 +54,6 @@ class _NetworkState extends State<Network> {
               backgroundColor: Colors.white10,
               brightness: Brightness.light,
               iconTheme: IconThemeData(color: Colors.black38),
-              // actions: <Widget>[
-              //   Builder(builder: (ctx) {
-              //     return FlatButton(
-              //       child: Text(
-              //         '切换Wi-Fi',
-              //         style: TextStyle(color: Colors.black54),
-              //       ),
-              //       onPressed: () {},
-              //     );
-              //   })
-              // ],
             ),
             body: loading
                 ? Container(
@@ -75,7 +64,7 @@ class _NetworkState extends State<Network> {
                     ? Container(
                         height: 256,
                         child: Center(
-                          child: Text('加载页面失败'),
+                          child: Text(i18n('Failed to Load Page')),
                         ),
                       )
                     : Column(
@@ -84,24 +73,24 @@ class _NetworkState extends State<Network> {
                           Container(
                             padding: EdgeInsets.all(16),
                             child: Text(
-                              '网络详情',
+                              i18n('Network Detail'),
                               style: TextStyle(
                                   color: Colors.black87, fontSize: 21),
                             ),
                           ),
                           Container(height: 16),
                           actionButton(
-                            'Wi-Fi名称',
+                            i18n('WiFi Id'),
                             () => {},
                             _ellipsisText(info.ssid),
                           ),
                           actionButton(
-                            '局域网IP地址',
+                            i18n('LAN Ip Address'),
                             () => {},
                             _ellipsisText(info.address),
                           ),
                           actionButton(
-                            'MAC地址',
+                            i18n('MAC Address'),
                             () => {},
                             _ellipsisText(info.macAddress),
                           ),

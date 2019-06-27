@@ -5,12 +5,6 @@ import 'package:flutter_redux/flutter_redux.dart';
 import '../redux/redux.dart';
 import '../common/utils.dart';
 
-const tips = """该操作不可逆，请谨慎操作。
-
-重置设备需要手机与设备连至同一Wi-Fi网络。
-
-该操作将解除绑定用户，清除所有数据，恢复出厂设置。""";
-
 enum Status {
   auth,
   authFailed,
@@ -40,14 +34,28 @@ class ResetDevice extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.all(16),
                   child: Text(
-                    '重置设备',
+                    i18n('Reset Device'),
                     style: TextStyle(color: Colors.black87, fontSize: 21),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                  child: Text(
+                    i18n('Reset Device Text 1'),
+                    style: TextStyle(color: Colors.black54),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                  child: Text(
+                    i18n('Reset Device Text 2'),
+                    style: TextStyle(color: Colors.black54),
                   ),
                 ),
                 Container(
                   padding: EdgeInsets.fromLTRB(16, 0, 16, 32),
                   child: Text(
-                    tips,
+                    i18n('Reset Device Text 3'),
                     style: TextStyle(color: Colors.black54),
                   ),
                 ),
@@ -74,7 +82,7 @@ class ResetDevice extends StatelessWidget {
                           } catch (e) {
                             print(e);
                             loadingInstance.close();
-                            showSnackBar(ctx, '请求设备验证失败');
+                            showSnackBar(ctx, i18n('Request Color Code Error'));
                             return;
                           }
                           loadingInstance.close();
@@ -85,14 +93,14 @@ class ResetDevice extends StatelessWidget {
                           );
                         } else {
                           loadingInstance.close();
-                          showSnackBar(ctx, '操作失败手机与设备未连至同一Wi-Fi网络');
+                          showSnackBar(ctx, i18n('Not LAN Network Error'));
                         }
                       },
                       child: Row(
                         children: <Widget>[
                           Expanded(child: Container()),
                           Text(
-                            '重置设备',
+                            i18n('Reset Device'),
                             style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
                           Expanded(child: Container()),
@@ -120,15 +128,21 @@ class _ResetDeviceState extends State<_ResetDevice> {
 
   Status status = Status.auth;
 
+  String get redLight => i18n('Red Light');
+  String get greenLight => i18n('Green Light');
+  String get blueLight => i18n('Blue Light');
+  String get alwaysOn => i18n('Always On');
+  String get breath => i18n('Breath');
+
   /// color codes
-  static const List<List<String>> colorCodes = [
-    ['红色灯', '常亮', '#ff0000', 'alwaysOn'],
-    ['红色灯', '闪烁', '#ff0000', 'breath'],
-    ['绿色灯', '常亮', '#00ff00', 'alwaysOn'],
-    ['绿色灯', '闪烁', '#00ff00', 'breath'],
-    ['蓝色灯', '常亮', '#0000ff', 'alwaysOn'],
-    ['蓝色灯', '闪烁', '#0000ff', 'breath'],
-  ];
+  List<List<String>> get colorCodes => [
+        [redLight, alwaysOn, '#ff0000', 'alwaysOn'],
+        [redLight, breath, '#ff0000', 'breath'],
+        [greenLight, alwaysOn, '#00ff00', 'alwaysOn'],
+        [greenLight, breath, '#00ff00', 'breath'],
+        [blueLight, alwaysOn, '#0000ff', 'alwaysOn'],
+        [blueLight, breath, '#0000ff', 'breath'],
+      ];
 
   /// '#ff0000' => Color(0xFF0000)
   Color _getColor(String color) {
@@ -195,14 +209,14 @@ class _ResetDeviceState extends State<_ResetDevice> {
       Container(
         padding: EdgeInsets.all(16),
         child: Text(
-          '身份确认',
+          i18n('Color Code Auth Title'),
           style: TextStyle(color: Colors.black87, fontSize: 28),
         ),
       ),
       Container(
         padding: EdgeInsets.all(16),
         child: Text(
-          '请您观察设备指示灯，并选择它的状态：',
+          i18n('Color Code Auth Text'),
           style: TextStyle(color: Colors.black54),
         ),
       ),
@@ -258,7 +272,7 @@ class _ResetDeviceState extends State<_ResetDevice> {
         Container(
           padding: EdgeInsets.all(64),
           child: Center(
-            child: Text('验证失败，请重启设备后再重试'),
+            child: Text(i18n('Color Code Auth Failed')),
           ),
         ),
         Container(
@@ -279,7 +293,7 @@ class _ResetDeviceState extends State<_ResetDevice> {
               children: <Widget>[
                 Expanded(child: Container()),
                 Text(
-                  '返回',
+                  i18n('Back'),
                   style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
                 Expanded(child: Container()),
@@ -297,18 +311,18 @@ class _ResetDeviceState extends State<_ResetDevice> {
     Widget icon = CircularProgressIndicator();
     switch (status) {
       case Status.reseting:
-        text = '重置中';
+        text = i18n('Reseting Device');
         break;
 
       case Status.success:
-        text = '重置成功';
-        buttonLabel = '返回';
+        text = i18n('Reset Device Success');
+        buttonLabel = i18n('Back');
         icon = Icon(Icons.check, color: Colors.teal, size: 96);
         break;
 
       case Status.resetFailed:
-        text = '重置失败';
-        buttonLabel = '返回';
+        text = i18n('Reset Device Failed');
+        buttonLabel = i18n('Back');
         icon = Icon(Icons.error_outline, color: Colors.redAccent, size: 96);
         break;
 
@@ -322,7 +336,7 @@ class _ResetDeviceState extends State<_ResetDevice> {
         Container(
           padding: EdgeInsets.all(16),
           child: Text(
-            '重置设备',
+            i18n('Reset Device'),
             style: TextStyle(color: Colors.black87, fontSize: 28),
           ),
         ),
@@ -417,7 +431,7 @@ class _ResetDeviceState extends State<_ResetDevice> {
                     builder: (context, state) {
                       return FloatingActionButton(
                         onPressed: !enabled ? null : () => nextStep(ctx, state),
-                        tooltip: '下一步',
+                        tooltip: i18n('Next Step'),
                         backgroundColor:
                             !enabled ? Colors.grey[200] : Colors.teal,
                         elevation: 0.0,
