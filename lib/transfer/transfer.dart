@@ -29,14 +29,6 @@ class _TransferState extends State<Transfer> {
   _autoRefresh({bool isFirst = false}) async {
     list = TransferManager.getList();
 
-    // order by status(paused/working/finisehd) and startTime
-    // list.sort((a, b) {
-    //   if (a.order == b.order) {
-    //     return b.startTime - a.startTime;
-    //   }
-    //   return b.order - a.order;
-    // });
-
     // only order by startTime
     list.sort((a, b) => b.startTime - a.startTime);
 
@@ -116,18 +108,18 @@ class _TransferState extends State<Transfer> {
               await showDialog(
                 context: this.context,
                 builder: (BuildContext context) => AlertDialog(
-                      title: Text('传输失败'),
+                      title: Text(i18n('Transfer Task Failed')),
                       content: Text('${item.error}'),
                       actions: <Widget>[
                         FlatButton(
                             textColor: Theme.of(context).primaryColor,
-                            child: Text('取消'),
+                            child: Text(i18n('Cancel')),
                             onPressed: () {
                               Navigator.pop(context);
                             }),
                         FlatButton(
                             textColor: Theme.of(context).primaryColor,
-                            child: Text('重试'),
+                            child: Text(i18n('Retry Transfer Task')),
                             onPressed: () {
                               Navigator.pop(context);
                               resumeTask(items, index, state);
@@ -152,8 +144,7 @@ class _TransferState extends State<Transfer> {
         setState(() {
           item.clean();
           items.removeAt(index);
-          print("showSnackBar");
-          showSnackBar(ctx, '删除成功');
+          showSnackBar(ctx, i18n('Delete Success'));
         });
       },
       child: Material(
@@ -237,7 +228,9 @@ class _TransferState extends State<Transfer> {
                       Text(
                         item.status == 'working'
                             ? item.speed
-                            : item.status == 'paused' ? '已暂停' : '',
+                            : item.status == 'paused'
+                                ? i18n('Transfer Task Paused')
+                                : '',
                         style: TextStyle(fontSize: 12),
                       ),
                       Container(
@@ -270,7 +263,10 @@ class _TransferState extends State<Transfer> {
             backgroundColor: Colors.white,
             brightness: Brightness.light,
             iconTheme: IconThemeData(color: Colors.black38),
-            title: Text('传输任务', style: TextStyle(color: Colors.black87)),
+            title: Text(
+              i18n('Transfer Tasks'),
+              style: TextStyle(color: Colors.black87),
+            ),
             actions: <Widget>[
               IconButton(
                 icon: Icon(Icons.more_horiz),
@@ -305,7 +301,7 @@ class _TransferState extends State<Transfer> {
                                 child: Container(
                                   width: double.infinity,
                                   padding: EdgeInsets.all(16),
-                                  child: Text('全部开始'),
+                                  child: Text(i18n('Start All Transfer Tasks')),
                                 ),
                               ),
                             ),
@@ -321,7 +317,7 @@ class _TransferState extends State<Transfer> {
                                 child: Container(
                                   width: double.infinity,
                                   padding: EdgeInsets.all(16),
-                                  child: Text('全部暂停'),
+                                  child: Text(i18n('Pause All Transfer Tasks')),
                                 ),
                               ),
                             ),
@@ -338,7 +334,9 @@ class _TransferState extends State<Transfer> {
                                 child: Container(
                                   width: double.infinity,
                                   padding: EdgeInsets.all(16),
-                                  child: Text('全部清除'),
+                                  child: Text(
+                                    i18n('Delete All Transfer Tasks'),
+                                  ),
                                 ),
                               ),
                             ),
@@ -364,7 +362,7 @@ class _TransferState extends State<Transfer> {
                             size: 84,
                           ),
                           Container(height: 16),
-                          Text('当前无传输任务'),
+                          Text(i18n('No Transfer Tasks')),
                           Expanded(
                             flex: 2,
                             child: Container(),

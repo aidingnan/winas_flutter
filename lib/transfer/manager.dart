@@ -374,7 +374,7 @@ class TransferManager {
       await _save();
 
       // get target dir
-      final targetDirName = '来自手机的文件';
+      final targetDirName = i18n('Folder Name For Shared Files From Other App');
 
       final Drive drive =
           state.drives.firstWhere((d) => d.tag == 'home', orElse: () => null);

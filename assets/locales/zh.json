@@ -352,6 +352,22 @@
   "==== photos/photoList.dart ====": "",
   "No Content in Album": "没有内容",
 
+  "==== transfer/removable.dart ====": "",
+  "Confirm To Delete": "确认删除",
+
+  "==== transfer/transfer.dart ====": "",
+  "Transfer Task Failed": "传输失败",
+  "Retry Transfer Task": "重试",
+  "Transfer Task Paused": "已暂停",
+  "Transfer Tasks": "传输任务",
+  "Start All Transfer Tasks": "全部开始",
+  "Pause All Transfer Tasks": "全部暂停",
+  "Delete All Transfer Tasks": "全部清除",
+  "No Transfer Tasks": "当前无传输任务",
+
+  "==== transfer/manager.dart ====": "",
+  "Folder Name For Shared Files From Other App": "来自手机的文件",
+
   "====  ====": "",
   "": "",
   "END": "END"

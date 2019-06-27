@@ -151,7 +151,7 @@ class TitleRow extends StatelessWidget {
                                   Container(width: 4),
                                   Container(
                                     child: Text(
-                                      entrySort.getName(type),
+                                      i18n(entrySort.getName(type)),
                                       style: TextStyle(
                                           color: Colors.black54, fontSize: 12),
                                     ),

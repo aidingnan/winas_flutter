@@ -596,15 +596,15 @@ class EntrySort {
     switch (value) {
       case SortTypes.sizeDown:
       case SortTypes.sizeUp:
-        return '大小';
+        return 'Size';
 
       case SortTypes.mtimeDown:
       case SortTypes.mtimeUp:
-        return '修改时间';
+        return 'Last Modified';
 
       case SortTypes.nameDown:
       case SortTypes.nameUp:
-        return '名称';
+        return 'Name';
 
       default:
         return '';

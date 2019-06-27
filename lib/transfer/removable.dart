@@ -1,6 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
+import '../common/utils.dart';
+
 const AnimationDuration = Duration(milliseconds: 300);
 
 enum Status { idle, confirm, working }
@@ -119,8 +121,9 @@ class _RemovableState extends State<Removable>
     setState(() {});
   }
 
-  String deleteText() =>
-      status == Status.idle ? '删除' : status == Status.confirm ? '确认删除' : '删除中';
+  String deleteText() => status == Status.idle
+      ? i18n('Delete')
+      : status == Status.confirm ? i18n('Confirm To Delete') : i18n('Deleting');
 
   Widget background() {
     return Material(
