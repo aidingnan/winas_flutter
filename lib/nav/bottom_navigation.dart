@@ -134,8 +134,8 @@ class _BottomNavigationState extends State<BottomNavigation>
   void initState() {
     super.initState();
 
-    // Intended for applications with a dark background.
-    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
+    /// cache context for i18n
+    cacheContext(this.context);
 
     _navigationViews = <NavigationIconView>[
       NavigationIconView(

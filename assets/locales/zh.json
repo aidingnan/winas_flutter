@@ -133,7 +133,7 @@
     "i-1": "{i} 像素",
     "i-2": "{i} 像素"
   },
-  "0.01 Million Pixels": "{count} 万像素",
+  "001 Million Pixels": "{count} 万像素",
   "100 Million Pixels": "{count} 亿像素",
   "Connection Refused Error": "未能连接到设备",
   "Connection Closed Error": "与设备的连接已断开",
@@ -258,6 +258,7 @@
   "==== files/detail.dart ====": "",
   "Type": "类型",
   "Size": "大小",
+  "Name": "名称",
   "File Path": "位置",
   "Files Count": "子文件数目",
   "Directories Count": "子文件夹数目",

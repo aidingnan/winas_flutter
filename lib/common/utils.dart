@@ -261,7 +261,7 @@ String getPixel(int p) {
   if (p < 10000) return i18nPlural('Pixels', p);
   if (p < 10000 * 10000)
     return i18n(
-      '0.01 Million Pixels',
+      '001 Million Pixels',
       {
         'count': (p / 10000).toStringAsFixed(2),
         'million': (p / 1000000).toStringAsFixed(2),

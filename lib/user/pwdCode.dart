@@ -219,7 +219,7 @@ class _SmsCodeState extends State<SmsCode> {
             // controller: TextEditingController(text: _password),
             focusNode: focusNode,
             decoration: InputDecoration(
-                labelText: i18n('Password '),
+                labelText: i18n('Password'),
                 prefixIcon: Icon(
                   Icons.lock,
                 ),
