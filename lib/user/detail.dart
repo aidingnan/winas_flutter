@@ -39,13 +39,13 @@ class _DetailState extends State<Detail> {
                 Container(
                   padding: EdgeInsets.all(16),
                   child: Text(
-                    '个人中心',
+                    i18n('Personal Info'),
                     style: TextStyle(color: Colors.black87, fontSize: 21),
                   ),
                 ),
                 Container(height: 16),
                 actionButton(
-                  '头像',
+                  i18n('Avatar'),
                   () async {
                     await Navigator.push(
                       context,
@@ -90,7 +90,7 @@ class _DetailState extends State<Detail> {
                   ),
                 ),
                 actionButton(
-                  '昵称',
+                  i18n('Nickname'),
                   () async {
                     await Navigator.push(
                       context,
@@ -115,7 +115,7 @@ class _DetailState extends State<Detail> {
                   ),
                 ),
                 actionButton(
-                  '账户名',
+                  i18n('Account Name'),
                   () => {},
                   Text(
                     account.username,
@@ -123,7 +123,7 @@ class _DetailState extends State<Detail> {
                   ),
                 ),
                 actionButton(
-                  '微信',
+                  i18n('WeChat'),
                   () {
                     Navigator.push(
                       context,

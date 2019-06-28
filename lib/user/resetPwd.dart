@@ -30,9 +30,9 @@ class _ResetPwdState extends State<ResetPwd> {
       print(error);
       if (this.mounted) {
         if ([60702, 60003].contains(error.response.data['code'])) {
-          showSnackBar(ctx, '验证码请求过于频繁，请稍后再试');
+          showSnackBar(ctx, i18n('Request Verification Code Too Frquent'));
         } else {
-          showSnackBar(ctx, '获取验证码失败，请稍后再试');
+          showSnackBar(ctx, i18n('Request Verification Code Failed'));
         }
         setState(() {
           loading = false;
@@ -73,14 +73,14 @@ class _ResetPwdState extends State<ResetPwd> {
             Container(
               padding: EdgeInsets.all(16),
               child: Text(
-                '修改密码',
+                i18n('Change Password'),
                 style: TextStyle(fontSize: 21),
               ),
             ),
             Container(
               padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
               child: Text(
-                '您可以通过绑定的手机号来修改密码',
+                i18n('Change Password Text'),
                 style: TextStyle(color: Colors.black54),
               ),
             ),
@@ -104,7 +104,10 @@ class _ResetPwdState extends State<ResetPwd> {
                         children: <Widget>[
                           Expanded(child: Container()),
                           Text(
-                            '发送验证码至：${state.account.username}',
+                            i18n(
+                              'Send Verification Code to Phone',
+                              {'phoneNumber': state.account.username},
+                            ),
                             style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
                           Expanded(child: Container()),

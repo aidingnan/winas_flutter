@@ -38,13 +38,13 @@ class _SecurityState extends State<Security> {
                 Container(
                   padding: EdgeInsets.all(16),
                   child: Text(
-                    '帐户与安全',
+                    i18n('Account And Security'),
                     style: TextStyle(color: Colors.black87, fontSize: 21),
                   ),
                 ),
                 Container(height: 16),
                 actionButton(
-                  '手机号',
+                  i18n('Phone Number'),
                   () {
                     Navigator.push(
                       context,
@@ -65,7 +65,7 @@ class _SecurityState extends State<Security> {
                   ),
                 ),
                 actionButton(
-                  '密码',
+                  i18n('Password'),
                   () {
                     Navigator.push(
                       context,
@@ -79,7 +79,7 @@ class _SecurityState extends State<Security> {
                   Row(
                     children: <Widget>[
                       Text(
-                        '去修改',
+                        i18n('Goto Modify Password'),
                         style: TextStyle(color: Colors.black38),
                       ),
                       Container(width: 8),
@@ -100,7 +100,7 @@ class _SecurityState extends State<Security> {
                       },
                   builder: (context, logout) {
                     return actionButton(
-                      '退出登录',
+                      i18n('Logout Account'),
                       () {
                         logout();
                         // pop all page

@@ -1,6 +1,8 @@
-import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+
 import '../redux/redux.dart';
+import '../common/utils.dart';
 
 class NewNickName extends StatefulWidget {
   NewNickName({Key key, this.nickName}) : super(key: key);
@@ -33,7 +35,7 @@ class _NewNickNameState extends State<NewNickName> {
       print(error.response.data);
       setState(() {
         loading = false;
-        _error = '操作失败';
+        _error = i18n('Change Nickname Failed');
       });
       return;
     }
@@ -71,14 +73,14 @@ class _NewNickNameState extends State<NewNickName> {
                 Container(
                   padding: EdgeInsets.all(16),
                   child: Text(
-                    '设置昵称',
+                    i18n('Change Nickname'),
                     style: TextStyle(fontSize: 21),
                   ),
                 ),
                 Container(
                   padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
                   child: Text(
-                    '设置专属个性昵称',
+                    i18n('Change Nickname Text'),
                     style: TextStyle(color: Colors.black54),
                   ),
                 ),
@@ -111,7 +113,7 @@ class _NewNickNameState extends State<NewNickName> {
                 converter: (store) => () => _onPressed(ctx, store),
                 builder: (context, callback) => FloatingActionButton(
                       onPressed: disabled ? null : callback,
-                      tooltip: '确定',
+                      tooltip: i18n('Confirm'),
                       backgroundColor: disabled ? Colors.grey : Colors.teal,
                       elevation: 0.0,
                       child: Icon(

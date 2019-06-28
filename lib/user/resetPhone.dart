@@ -30,9 +30,9 @@ class _ResetPhoneState extends State<ResetPhone> {
       print(error);
       if (this.mounted) {
         if ([60702, 60003].contains(error.response.data['code'])) {
-          showSnackBar(ctx, '验证码请求过于频繁，请稍后再试');
+          showSnackBar(ctx, i18n('Request Verification Code Too Frquent'));
         } else {
-          showSnackBar(ctx, '获取验证码失败，请稍后再试');
+          showSnackBar(ctx, i18n('Request Verification Code Failed'));
         }
         setState(() {
           loading = false;
@@ -78,14 +78,17 @@ class _ResetPhoneState extends State<ResetPhone> {
                 Container(
                   padding: EdgeInsets.all(16),
                   child: Text(
-                    '修改绑定手机',
+                    i18n('Change Phone Number'),
                     style: TextStyle(fontSize: 21),
                   ),
                 ),
                 Container(
                   padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
                   child: Text(
-                    '当前绑定的手机号为${state.account.username}',
+                    i18n(
+                      'Current Phone Number',
+                      {'phoneNumber': state.account.username},
+                    ),
                     style: TextStyle(color: Colors.black54),
                   ),
                 ),
@@ -104,7 +107,7 @@ class _ResetPhoneState extends State<ResetPhone> {
                       children: <Widget>[
                         Expanded(child: Container()),
                         Text(
-                          '更换绑定的手机号',
+                          i18n('Change Phone Number'),
                           style: TextStyle(color: Colors.white, fontSize: 16),
                         ),
                         Expanded(child: Container()),

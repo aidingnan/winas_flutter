@@ -52,7 +52,7 @@ class _WeChatState extends State<WeChat> {
     _wxlogin?.cancel();
 
     if (isWeChatInstalled != true) {
-      showSnackBar(ctx, '未检测到微信应用，请先安装微信');
+      showSnackBar(ctx, i18n('WeChat not Installed'));
       return;
     }
 
@@ -81,7 +81,7 @@ class _WeChatState extends State<WeChat> {
             state.cloud.req('bindWechat', {
               'wechatToken': res.data['wechat'],
             }).then((data) {
-              showSnackBar(ctx, '绑定成功');
+              showSnackBar(ctx, i18n('Bind WeChat Success'));
               if (this.mounted) {
                 this.setState(() {
                   _loading = true;
@@ -91,7 +91,7 @@ class _WeChatState extends State<WeChat> {
             });
           } else if (res.data['user'] == true && res.data['token'] != null) {
             // wechat has bind to other account
-            showSnackBar(ctx, '该微信已绑定其它账户');
+            showSnackBar(ctx, i18n('WeChat Bind to Another Account'));
           } else {
             print(res);
             throw res;
@@ -101,11 +101,11 @@ class _WeChatState extends State<WeChat> {
           if (err is DioError) {
             print(err.response.statusMessage);
           }
-          showSnackBar(ctx, '绑定微信失败');
+          showSnackBar(ctx, i18n('Bind WeChat Failed'));
         });
       } else {
         print(data);
-        showSnackBar(ctx, '绑定微信失败');
+        showSnackBar(ctx, i18n('Bind WeChat Failed'));
       }
     });
   }
@@ -123,7 +123,7 @@ class _WeChatState extends State<WeChat> {
       });
       await _refresh(state);
       loadingInstance.close();
-      showSnackBar(ctx, '解绑成功');
+      showSnackBar(ctx, i18n('Unbind WeChat Success'));
     } catch (error) {
       print(error);
       if (error is DioError) {
@@ -136,7 +136,7 @@ class _WeChatState extends State<WeChat> {
       }
 
       loadingInstance.close();
-      showSnackBar(ctx, '操作失败');
+      showSnackBar(ctx, i18n('Unbind WeChat Failed'));
     }
   }
 
@@ -174,14 +174,14 @@ class _WeChatState extends State<WeChat> {
               Container(
                 padding: EdgeInsets.all(16),
                 child: Text(
-                  '绑定微信',
+                  i18n('Bind WeChat Title'),
                   style: TextStyle(color: Colors.black87, fontSize: 21),
                 ),
               ),
               Container(
                 padding: EdgeInsets.fromLTRB(16, 0, 16, 32),
                 child: Text(
-                  '绑定微信，便捷登录',
+                  i18n('Bind WeChat Text'),
                   style: TextStyle(color: Colors.black54),
                 ),
               ),
@@ -192,8 +192,11 @@ class _WeChatState extends State<WeChat> {
                   _loading
                       ? ''
                       : hasWeChat
-                          ? '您已绑定微信：${wechatInfo[0]['nickname']}'
-                          : '您尚未绑定微信',
+                          ? i18n(
+                              'WeChat Already Bound',
+                              {'wechat': wechatInfo[0]['nickname']},
+                            )
+                          : i18n('No WeChat Bound'),
                   style: TextStyle(fontSize: 16),
                 ),
               ),
@@ -219,7 +222,9 @@ class _WeChatState extends State<WeChat> {
                             Icon(Winas.wechat, color: Colors.white),
                             Expanded(child: Container()),
                             Text(
-                              hasWeChat ? '解除微信绑定' : '立即绑定微信',
+                              hasWeChat
+                                  ? i18n('Unbind WeChat')
+                                  : i18n('Bind WeChat Now'),
                               style:
                                   TextStyle(color: Colors.white, fontSize: 16),
                             ),

@@ -28,7 +28,7 @@ class _AvatarViewState extends State<AvatarView> {
     if (rawFile == null) return;
     final cropFile = await ImageCropper.cropImage(
       toolbarColor: Colors.black,
-      toolbarTitle: '照片编辑',
+      toolbarTitle: i18n('Edit Photo Toolbar Title'),
       sourcePath: rawFile.path,
       ratioX: 1.0,
       ratioY: 1.0,
@@ -58,11 +58,11 @@ class _AvatarViewState extends State<AvatarView> {
         throw Error();
       }
       loadingInstance.close();
-      showSnackBar(ctx, '头像修改成功');
+      showSnackBar(ctx, i18n('Change Avatar Success'));
     } catch (error) {
       print(error);
       loadingInstance.close();
-      showSnackBar(ctx, '上传头像失败');
+      showSnackBar(ctx, i18n('Change Avatar Failed'));
     }
   }
 
@@ -86,7 +86,7 @@ class _AvatarViewState extends State<AvatarView> {
             brightness: Brightness.dark,
             iconTheme: IconThemeData(color: Colors.white),
             title: Text(
-              '个人头像',
+              i18n('User Avatar Title'),
               style: TextStyle(color: Colors.white),
             ),
             actions: <Widget>[
@@ -112,7 +112,9 @@ class _AvatarViewState extends State<AvatarView> {
                                     child: Container(
                                       width: double.infinity,
                                       padding: EdgeInsets.all(16),
-                                      child: Text('拍照'),
+                                      child: Text(
+                                        i18n('Pick Image From Camera'),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -125,7 +127,9 @@ class _AvatarViewState extends State<AvatarView> {
                                     child: Container(
                                       width: double.infinity,
                                       padding: EdgeInsets.all(16),
-                                      child: Text('从相册选取'),
+                                      child: Text(
+                                        i18n('Pick Image From Gallery'),
+                                      ),
                                     ),
                                   ),
                                 ),

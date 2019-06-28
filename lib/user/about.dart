@@ -40,7 +40,7 @@ class _AboutState extends State<About> {
           Container(
             padding: EdgeInsets.all(16),
             child: Text(
-              '口袋网盘 版本$version',
+              i18n('App Version', {'version': version}),
               style: TextStyle(color: Colors.black87, fontSize: 21),
             ),
           ),
@@ -61,7 +61,7 @@ class _AboutState extends State<About> {
           Container(
             padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
             child: Text(
-              '多设备，跨平台，让您随时随地，\n方便快捷地管理您的数据',
+              i18n('App Description'),
               style: TextStyle(color: Colors.black54),
             ),
           ),
@@ -90,10 +90,10 @@ class _AboutState extends State<About> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      Text('升级'),
+                      Text(i18n('Client Update')),
                       Expanded(child: Container()),
                       Text(
-                        '查看最新版本',
+                        i18n('Check Latest'),
                         style: TextStyle(color: Colors.black54),
                       ),
                       Icon(Icons.chevron_right, color: Colors.black38)
@@ -113,7 +113,7 @@ class _AboutState extends State<About> {
                     builder: (context) {
                       return Scaffold(
                         appBar: AppBar(
-                          title: Text('用户使用许可协议'),
+                          title: Text(i18n('User Agreement')),
                           elevation: 1.0,
                         ),
                         body: ListView(
@@ -121,7 +121,7 @@ class _AboutState extends State<About> {
                             Container(
                               padding: EdgeInsets.fromLTRB(8, 32, 8, 8),
                               child: Text(
-                                '口袋网盘系列产品 用户使用许可协议',
+                                i18n('User Agreement Title'),
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w500),
                               ),
@@ -140,7 +140,7 @@ class _AboutState extends State<About> {
                   ));
             },
             child: Text(
-              '用户使用协议',
+              i18n('User Agreement'),
               style: TextStyle(color: Colors.teal),
             ),
           )

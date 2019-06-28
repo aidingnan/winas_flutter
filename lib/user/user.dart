@@ -96,7 +96,7 @@ class _AccountInfoState extends State<AccountInfo> {
                                 maxLines: 1,
                               ),
                               Text(
-                                '查看并编辑个人资料',
+                                i18n('Account Detail'),
                                 style: TextStyle(fontSize: 14),
                                 textAlign: TextAlign.start,
                                 overflow: TextOverflow.fade,
@@ -141,7 +141,7 @@ class _AccountInfoState extends State<AccountInfo> {
                 ),
                 Container(height: 16),
                 actionButton(
-                  '帐户与安全',
+                  i18n('Account And Security'),
                   () => Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -154,7 +154,7 @@ class _AccountInfoState extends State<AccountInfo> {
                   null,
                 ),
                 actionButton(
-                  '设置',
+                  i18n('Settings'),
                   () => Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -168,23 +168,23 @@ class _AccountInfoState extends State<AccountInfo> {
                   null,
                 ),
                 actionButton(
-                  '清除缓存',
+                  i18n('Clean Cache'),
                   () async {
                     await showDialog(
                       context: this.context,
                       builder: (BuildContext context) => AlertDialog(
-                            title: Text('清除缓存'),
-                            content: Text('该操作将清除所有缓存的文件、照片原图和视频'),
+                            title: Text(i18n('Clean Cache')),
+                            content: Text(i18n('Clean Cache Text')),
                             actions: <Widget>[
                               FlatButton(
                                   textColor: Theme.of(context).primaryColor,
-                                  child: Text('取消'),
+                                  child: Text(i18n('Cancel')),
                                   onPressed: () {
                                     Navigator.pop(context);
                                   }),
                               FlatButton(
                                 textColor: Theme.of(context).primaryColor,
-                                child: Text('确定'),
+                                child: Text(i18n('Confirm')),
                                 onPressed: () => clearCache(context),
                               )
                             ],
@@ -194,7 +194,7 @@ class _AccountInfoState extends State<AccountInfo> {
                   Text(cacheSize != null ? prettySize(cacheSize) : ''),
                 ),
                 actionButton(
-                  '关于',
+                  i18n('About'),
                   () => Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) {
@@ -203,7 +203,7 @@ class _AccountInfoState extends State<AccountInfo> {
                       ),
                   Row(
                     children: <Widget>[
-                      Text('版本$version'),
+                      Text(i18n('Client Version', {'version': version})),
                       Icon(Icons.chevron_right),
                     ],
                   ),

@@ -40,13 +40,13 @@ class _SettingsState extends State<Settings> {
               Container(
                 padding: EdgeInsets.all(16),
                 child: Text(
-                  '设置',
+                  i18n('Settings'),
                   style: TextStyle(color: Colors.black87, fontSize: 21),
                 ),
               ),
               Container(height: 16),
               actionButton(
-                '自动备份照片',
+                i18n('Backup Photos'),
                 () {},
                 Switch(
                   activeColor: Colors.teal,
@@ -56,7 +56,7 @@ class _SettingsState extends State<Settings> {
                 ),
               ),
               actionButton(
-                '允许使用移动数据流量备份照片',
+                i18n('All Mobile Data to Backup Photos'),
                 () {},
                 Switch(
                   activeColor: Colors.teal,
@@ -78,7 +78,7 @@ class _SettingsState extends State<Settings> {
                 ),
               ),
               actionButton(
-                '允许使用移动数据流量传输文件',
+                i18n('All Mobile Data to Transfer Files'),
                 () {},
                 Switch(
                   activeColor: Colors.teal,
@@ -94,9 +94,9 @@ class _SettingsState extends State<Settings> {
                 ),
               ),
               actionButton(
-                '语言',
+                i18n('Language'),
                 () => {},
-                Text('中文'),
+                Text(i18n('Current Language')),
               ),
             ],
           ),
