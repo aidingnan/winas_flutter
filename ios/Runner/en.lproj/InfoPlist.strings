@@ -1,0 +1,13 @@
+/* 
+  InfoPlist.strings
+  Runner
+
+  Created by wisnuc-imac on 2019/7/1.
+  Copyright © 2019 The Chromium Authors. All rights reserved.
+*/
+CFBundleDisplayName="Pocket Drive";
+NSAppleMusicUsageDescription="App need your agree to access to Music";
+NSBluetoothPeripheralUsageDescription="App need to use Bluetooth to scan device";
+NSCameraUsageDescription="App need your agree to use your Camera";
+NSMicrophoneUsageDescription="App need your agree to use your Microphone";
+NSPhotoLibraryUsageDescription="Backup photos need the access to your Photo Library";

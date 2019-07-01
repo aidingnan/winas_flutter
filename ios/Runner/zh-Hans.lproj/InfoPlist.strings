@@ -1,0 +1,13 @@
+/* 
+  InfoPlist.strings
+  Runner
+
+  Created by wisnuc-imac on 2019/7/1.
+  Copyright © 2019 The Chromium Authors. All rights reserved.
+*/
+CFBundleDisplayName="口袋网盘";
+NSAppleMusicUsageDescription="应用需要读取本地音乐的权限";
+NSBluetoothPeripheralUsageDescription="应用需要使用蓝牙来扫描和发现设备";
+NSCameraUsageDescription="应用需要相机权限来拍摄照片";
+NSMicrophoneUsageDescription="应用需要使用您的手机的麦克风";
+NSPhotoLibraryUsageDescription="备份照片功能需要应用拥有获取相册访问权限";
