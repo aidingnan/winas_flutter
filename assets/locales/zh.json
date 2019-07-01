@@ -32,7 +32,7 @@
   "Sign Up Failed": "注册失败",
   "Send Verification Code Success": "验证码发送成功",
   "Bind Phone Number Title": "绑定手机号",
-  "Bind Phone Number Text": "手机号码是您忘记密码时，找回面的唯一途径请慎重填写",
+  "Bind Phone Number Text": "手机号码是您忘记密码时找回密码的唯一途径，请慎重填写",
   "Set Password": "创建密码",
   "Sign Up Success": "账号创建成功",
   "Resend": "重新发送",

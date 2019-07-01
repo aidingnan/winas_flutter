@@ -463,7 +463,7 @@ BuildContext cachedBuildContext;
 /// cacheContext in `login/login.dart`, `login/stationList.dart` and `nav/bottom_navigation.dart`
 void cacheContext(BuildContext ctx) {
   cachedBuildContext = ctx;
-  print('currentLocale ${FlutterI18n.currentLocale(ctx)}');
+  // print('currentLocale ${FlutterI18n.currentLocale(ctx)}');
 }
 
 String i18n(String key, [Map<String, String> params]) {

@@ -42,52 +42,52 @@ class NavigationIconView {
   final BottomNavigationBarItem item;
 }
 
-List<FileNavView> fileNavViews = [
-  FileNavView(
-    icon: Icon(Icons.people, color: Colors.white),
-    title: i18n('Public Drive'),
-    nav: 'public',
-    color: Colors.orange,
-    onTap: (context) => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return Files(
-                node: Node(
-                  name: i18n('Public Drive'),
-                  tag: 'built-in',
-                  location: 'built-in',
-                ),
-              );
-            },
-          ),
-        ),
-  ),
-  FileNavView(
-    icon: Icon(Icons.refresh, color: Colors.white),
-    title: i18n('Backup Drive'),
-    nav: 'backup',
-    color: Colors.blue,
-    onTap: (context) => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BackupView(),
-          ),
-        ),
-  ),
-  FileNavView(
-    icon: Icon(Icons.swap_vert, color: Colors.white),
-    title: i18n('Transfer'),
-    nav: 'transfer',
-    color: Colors.purple,
-    onTap: (context) => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Transfer(),
-          ),
-        ),
-  ),
-];
+List<FileNavView> get fileNavViews => [
+      FileNavView(
+        icon: Icon(Icons.people, color: Colors.white),
+        title: i18n('Public Drive'),
+        nav: 'public',
+        color: Colors.orange,
+        onTap: (context) => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return Files(
+                    node: Node(
+                      name: i18n('Public Drive'),
+                      tag: 'built-in',
+                      location: 'built-in',
+                    ),
+                  );
+                },
+              ),
+            ),
+      ),
+      FileNavView(
+        icon: Icon(Icons.refresh, color: Colors.white),
+        title: i18n('Backup Drive'),
+        nav: 'backup',
+        color: Colors.blue,
+        onTap: (context) => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BackupView(),
+              ),
+            ),
+      ),
+      FileNavView(
+        icon: Icon(Icons.swap_vert, color: Colors.white),
+        title: i18n('Transfer'),
+        nav: 'transfer',
+        color: Colors.purple,
+        onTap: (context) => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Transfer(),
+              ),
+            ),
+      ),
+    ];
 
 class BottomNavigation extends StatefulWidget {
   @override
