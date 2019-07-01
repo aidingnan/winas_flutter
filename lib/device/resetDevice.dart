@@ -39,14 +39,14 @@ class ResetDevice extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                  padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
                   child: Text(
                     i18n('Reset Device Text 1'),
                     style: TextStyle(color: Colors.black54),
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                  padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
                   child: Text(
                     i18n('Reset Device Text 2'),
                     style: TextStyle(color: Colors.black54),

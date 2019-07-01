@@ -79,10 +79,7 @@ class _LoginPageState extends State<LoginPage> {
       state: "winas_login",
     );
 
-    _wxlogin = fluwx.responseFromAuth.listen((data) {
-      print('responseFromAuth>>>>');
-      print(data);
-      print('<<<<<');
+    _wxlogin = fluwx.responseFromAuth.listen((fluwx.WeChatAuthResponse data) {
       code = data?.code;
       if (code != null) {
         final args = {
@@ -112,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
           showSnackBar(ctx, i18n('WeChat Login Failed'));
         });
       } else {
-        print(data);
+        print(data?.errCode);
         showSnackBar(ctx, i18n('WeChat Login Failed'));
       }
     });
