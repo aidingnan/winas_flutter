@@ -324,8 +324,10 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                           color: Colors.pinkAccent,
                           size: 72,
                         ),
-                        Container(height: 16),
-                        Text(error),
+                        Container(
+                          padding: EdgeInsets.all(16),
+                          child: Text(error),
+                        ),
                         FlatButton(
                           padding: EdgeInsets.all(0),
                           child: Text(

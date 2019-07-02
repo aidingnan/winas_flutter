@@ -501,38 +501,41 @@ class _FilesState extends State<Files> {
   }
 
   Widget navButton(Function onTap, Widget icon, Color color, String title) {
-    return Container(
-      width: 71,
-      height: 79,
-      margin: EdgeInsets.fromLTRB(8, 12, 8, 0),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          child: Column(
-            children: <Widget>[
-              Container(
-                height: 48,
-                width: 48,
-                child: icon,
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.all(
-                    const Radius.circular(24),
+    return Expanded(
+      flex: 1,
+      child: Container(
+        width: double.infinity,
+        height: 80,
+        margin: EdgeInsets.all(8),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            child: Column(
+              children: <Widget>[
+                Container(height: 8),
+                Container(
+                  height: 48,
+                  width: 48,
+                  child: icon,
+                  decoration: BoxDecoration(
+                    color: color,
+                    borderRadius: BorderRadius.all(
+                      const Radius.circular(24),
+                    ),
                   ),
                 ),
-              ),
-              Container(
-                height: 31,
-                width: 71,
-                child: Center(
-                  child: Text(
-                    title,
-                    style: TextStyle(fontSize: 14),
+                Container(
+                  height: 32,
+                  child: Center(
+                    child: Text(
+                      title,
+                      style: TextStyle(fontSize: 12),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -658,9 +661,6 @@ class _FilesState extends State<Files> {
                   Colors.green,
                   i18n('Upload Video'),
                 ),
-                // Platform.isIOS
-                //     ? Container()
-                //     :
                 navButton(
                   () async {
                     // close showModalBottomSheet

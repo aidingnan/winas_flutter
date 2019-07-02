@@ -212,9 +212,9 @@
   "Select All": "Select all",
   "Search": "Search",
   "Selected N Items": {
-    "i-0": "No items selected",
-    "i-1": "selected {i} item",
-    "i-2": "selected {i} items"
+    "i-0": "{i} selected",
+    "i-1": "{i} selected",
+    "i-2": "{i} selected"
   },
   "Empty Folder in Home": "You have not uploaded any files yet.",
   "Empty Folder": "Empty folder",
@@ -405,7 +405,7 @@
   "==== user/resetPwd.dart ====": "",
   "Change Password": "Change password",
   "Change Password Text": "You can change the password by your bound phone number.",
-  "Send Verification Code to Phone": "Verification code has sent to: {phoneNumber}",
+  "Send Verification Code to Phone": "Send verification code to: {phoneNumber}",
 
   "==== user/security.dart ====": "",
   "Goto Modify Password": "Modify",
@@ -425,8 +425,8 @@
   "Change Nickname Text": "Set a cool nickname as you like",
 
   "==== user/settings.dart ====": "",
-  "All Mobile Data to Backup Photos": "Allow backup photos using mobile data",
-  "All Mobile Data to Transfer Files": "Allow transfer using mobile data",
+  "All Mobile Data to Backup Photos": "Backup photos using mobile data",
+  "All Mobile Data to Transfer Files": "Transfer using mobile data",
   "Language": "Language",
   "Current Language": "English",
 
