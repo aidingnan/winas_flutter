@@ -70,7 +70,7 @@ class _AboutState extends State<About> {
               onTap: () async {
                 bool isIOS = !Platform.isAndroid;
                 String url = isIOS
-                    ? 'itms-apps://itunes.apple.com/cn/app/wisnuc/id1132191394?mt=8'
+                    ? 'itms-apps://apps.apple.com/cn/app/id1465080320'
                     : 'https://www.aidingnan.com/download';
                 if (await canLaunch(url)) {
                   await launch(url);
