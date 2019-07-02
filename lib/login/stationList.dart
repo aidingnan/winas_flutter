@@ -332,7 +332,6 @@ class _StationListState extends State<StationList> {
 
   @override
   Widget build(BuildContext context) {
-    cacheContext(context);
     return StoreConnector<AppState, Function>(
       converter: (store) =>
           (BuildContext ctx, Station s) => login(ctx, s, store),

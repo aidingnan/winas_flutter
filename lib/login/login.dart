@@ -29,6 +29,10 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
+
+    /// cache context for i18n
+    cacheContext(this.context);
+
     _initFluwx().catchError(print);
     // set SystemUiStyle to dark
     if (Platform.isAndroid) {
@@ -124,7 +128,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    cacheContext(context);
     return Scaffold(
       backgroundColor: Colors.teal,
       appBar: AppBar(

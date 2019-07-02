@@ -200,6 +200,8 @@ class _BottomNavigationState extends State<BottomNavigation>
       stationNotOnlineListener.cancel();
       stationNotOnlineListener = null;
     });
+
+    cacheContext(context);
   }
 
   @override
@@ -351,8 +353,6 @@ class _BottomNavigationState extends State<BottomNavigation>
 
   @override
   Widget build(BuildContext context) {
-    cacheContext(context);
-
     // set SystemUiStyle to dark
     if (Platform.isAndroid) {
       SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
