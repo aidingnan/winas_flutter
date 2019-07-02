@@ -325,8 +325,9 @@ class _FilesState extends State<Files> {
     } else {
       try {
         // TODO: handle open apk file
-        final ext = entryPath.split('.').last;
-        if (share || ext?.toLowerCase() == 'apk') {
+        // final ext = entryPath.split('.').last;
+        // if (share || ext?.toLowerCase() == 'apk') {
+        if (share) {
           await ShareExtend.share(entryPath, "file");
         } else {
           await OpenFile.open(entryPath);
