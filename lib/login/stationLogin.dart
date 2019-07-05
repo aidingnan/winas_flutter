@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import './loginFailed.dart';
 import './stationList.dart';
 import '../redux/redux.dart';
 import '../common/request.dart';
@@ -18,18 +19,32 @@ stationLogin(BuildContext context, Request request, Station currentDevice,
   final deviceSN = currentDevice.sn;
   final lanIp = currentDevice.lanIp;
   final deviceName = currentDevice.name;
+  final boot = await request.req('localBoot', {'deviceSN': deviceSN});
+  final state = boot.data['state'];
+  if (state != 'STARTED') {
+    // ProbeFailed, EMBEDVOLUMEFAILED
+    if (state == 'EMBEDVOLUMEFAILED') {
+      final code = boot.data['error']['code'];
+      // EVOLUMEFILE, EVOLUMENOTFOUND, EVOLUMEFORMAT, EVOLUMEMISS
+      print('EMBEDVOLUMEFAILED $code');
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => LoginFailed(code: code),
+      );
+      throw 'EMBEDVOLUMEFAILED $code';
+    }
+  }
 
   List results = await Future.wait([
-    request.req('localBoot', {'deviceSN': deviceSN}),
     request.req('localUsers', {'deviceSN': deviceSN}),
     request.req('localToken', {'deviceSN': deviceSN}),
     request.req('localDrives', {'deviceSN': deviceSN}),
     request.testLAN(lanIp, deviceSN),
   ]);
 
-  bool isCloud = !results[4];
+  bool isCloud = !results[3];
 
-  final lanToken = results[2].data['token'];
+  final lanToken = results[1].data['token'];
 
   assert(lanToken != null);
 
@@ -44,10 +59,10 @@ stationLogin(BuildContext context, Request request, Station currentDevice,
       ),
     ),
   );
-  assert(results[1].data is List);
+  assert(results[0].data is List);
 
   // get current user data
-  final user = results[1].data.firstWhere(
+  final user = results[0].data.firstWhere(
         (s) => s['winasUserId'] == account.id,
         orElse: () => null,
       );
@@ -60,7 +75,7 @@ stationLogin(BuildContext context, Request request, Station currentDevice,
 
   // get current drives data
   List<Drive> drives = List.from(
-    results[3].data.map((drive) => Drive.fromMap(drive)),
+    results[2].data.map((drive) => Drive.fromMap(drive)),
   );
 
   store.dispatch(
