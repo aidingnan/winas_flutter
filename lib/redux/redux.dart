@@ -506,6 +506,34 @@ class LocalAlbum {
   }
 }
 
+/// storage blocks
+class Block {
+  String name;
+  int size;
+  String model;
+  String serial;
+  bool isUSB;
+  Block.fromMap(Map m) {
+    this.name = m['name'];
+    this.size = m['size'];
+    this.model = m['model'];
+    this.serial = m['serial'];
+    this.isUSB = m['isUSB'] == true;
+  }
+
+  @override
+  String toString() {
+    Map<String, dynamic> m = {
+      'name': name,
+      'size': size,
+      'model': model,
+      'serial': serial,
+      'isUSB': isUSB,
+    };
+    return jsonEncode(m);
+  }
+}
+
 /// update Selection, and refresh(setState)
 class Select {
   Function update;

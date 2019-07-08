@@ -280,6 +280,7 @@ class Request {
       case 'stations':
         r = tget('station', null);
         break;
+
       case 'localBoot':
         r = command(args['deviceSN'], {'verb': 'GET', 'urlPath': '/boot'});
         break;
@@ -298,6 +299,15 @@ class Request {
           'urlPath': '/winasd/device',
           'body': {
             'name': args['name'],
+          },
+        });
+        break;
+      case 'formatDisk':
+        r = command(args['deviceSN'], {
+          'verb': 'POST',
+          'urlPath': '/boot',
+          'body': {
+            'target': args['target'],
           },
         });
         break;

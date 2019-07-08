@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import './loginFailed.dart';
+
 import './stationList.dart';
+import './loginDeviceFailed.dart';
+
 import '../redux/redux.dart';
 import '../common/request.dart';
 import '../transfer/manager.dart';
@@ -8,7 +10,8 @@ import '../common/stationApis.dart';
 
 /// Login to device
 stationLogin(BuildContext context, Request request, Station currentDevice,
-    Account account, store) async {
+    Account account, store,
+    {bool shouldShowDialog = false}) async {
   assert(currentDevice != null);
 
   // cancel network monitor
@@ -21,15 +24,27 @@ stationLogin(BuildContext context, Request request, Station currentDevice,
   final deviceName = currentDevice.name;
   final boot = await request.req('localBoot', {'deviceSN': deviceSN});
   final state = boot.data['state'];
-  if (state != 'STARTED') {
+  if (state != 'STARTED' && shouldShowDialog) {
     // ProbeFailed, EMBEDVOLUMEFAILED
     if (state == 'EMBEDVOLUMEFAILED') {
       final code = boot.data['error']['code'];
       // EVOLUMEFILE, EVOLUMENOTFOUND, EVOLUMEFORMAT, EVOLUMEMISS
-      print('EMBEDVOLUMEFAILED $code');
+
+      List<Block> blks = [];
+      if (boot.data['storage'] != null) {
+        blks = List.from(
+          boot.data['storage']['blocks'].map((b) => Block.fromMap(b)),
+        );
+      }
+      print('EMBEDVOLUMEFAILED $code $blks');
       showDialog(
         context: context,
-        builder: (BuildContext context) => LoginFailed(code: code),
+        builder: (BuildContext context) => LoginDeviceFailed(
+              code: code,
+              blks: blks,
+              request: request,
+              deviceSN: deviceSN,
+            ),
       );
       throw 'EMBEDVOLUMEFAILED $code';
     }

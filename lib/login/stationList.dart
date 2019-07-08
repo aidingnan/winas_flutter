@@ -61,11 +61,19 @@ class _StationListState extends State<StationList> {
     final loadingInstance = showLoading(context);
     try {
       await stationLogin(
-          ctx, widget.request, station, store.state.account, store);
+        ctx,
+        widget.request,
+        station,
+        store.state.account,
+        store,
+        shouldShowDialog: true,
+      );
     } catch (error) {
       print(error);
       loadingInstance.close();
-      showSnackBar(ctx, i18n('Connect to Device Failed'));
+      if (error is! String || !error.startsWith('EMBEDVOLUMEFAILED')) {
+        showSnackBar(ctx, i18n('Connect to Device Failed'));
+      }
       return;
     }
     // pop all page
@@ -97,6 +105,7 @@ class _StationListState extends State<StationList> {
   @override
   void initState() {
     super.initState();
+    cacheContext(this.context);
     stationList = widget.stationList;
     if (widget.currentDevSN != null ||
         stationList == null ||
