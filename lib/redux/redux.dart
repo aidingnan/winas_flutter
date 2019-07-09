@@ -648,6 +648,9 @@ class Config {
   bool cellularBackup = false;
   bool cellularTransfer = true;
 
+  /// `auto` `en` `zh`
+  String language = 'auto';
+
   Config({
     this.gridView,
     this.autoBackup,
@@ -655,6 +658,7 @@ class Config {
     this.showArchive,
     this.cellularBackup,
     this.cellularTransfer,
+    this.language,
   });
 
   factory Config.initial() => Config(
@@ -664,6 +668,7 @@ class Config {
         showArchive: false,
         cellularBackup: false,
         cellularTransfer: true,
+        language: 'auto',
       );
 
   Config.combine(Config oldConfig, Config newConfig) {
@@ -675,6 +680,7 @@ class Config {
     this.cellularBackup = newConfig.cellularBackup ?? oldConfig.cellularBackup;
     this.cellularTransfer =
         newConfig.cellularTransfer ?? oldConfig.cellularTransfer;
+    this.language = newConfig.language ?? oldConfig.language ?? 'auto';
   }
 
   Config.fromMap(Map m) {
@@ -684,6 +690,7 @@ class Config {
     this.showArchive = m['showArchive'] == true;
     this.cellularBackup = m['cellularBackup'] == true;
     this.cellularTransfer = m['cellularTransfer'] == true;
+    this.language = m['language'] ?? 'auto';
   }
 
   @override
@@ -695,6 +702,7 @@ class Config {
       'showTaskFab': showTaskFab,
       'cellularBackup': cellularBackup,
       'cellularTransfer': cellularTransfer,
+      'language': language,
     };
     return jsonEncode(m);
   }

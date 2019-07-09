@@ -1,3 +1,4 @@
+import 'dart:ui' as ui;
 import 'package:redux/redux.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -22,7 +23,7 @@ class _SettingsState extends State<Settings> {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, Store>(
+    return StoreConnector<AppState, Store<AppState>>(
       onInit: (store) => {},
       onDispose: (store) => {},
       converter: (store) => store,
@@ -95,8 +96,92 @@ class _SettingsState extends State<Settings> {
               ),
               actionButton(
                 i18n('Language'),
-                () => {},
-                Text(i18n('Current Language')),
+                () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext c) {
+                      return SafeArea(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Material(
+                              child: InkWell(
+                                onTap: () async {
+                                  String code = ui.window.locale.languageCode;
+                                  if (code == 'en') {
+                                    await i18nRefresh(Locale('en'));
+                                  } else {
+                                    await i18nRefresh(Locale('zh'));
+                                  }
+
+                                  await i18nRefresh(getCurrentLocale());
+                                  print('>>>>>>>>>>>>>>>>>>>>>>>> $code');
+                                  store.dispatch(UpdateConfigAction(
+                                    Config.combine(
+                                      store.state.config,
+                                      Config(language: 'auto'),
+                                    ),
+                                  ));
+                                  Navigator.pop(c);
+                                },
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.all(16),
+                                  child: Text(i18n('System Default Language')),
+                                ),
+                              ),
+                            ),
+                            Material(
+                              child: InkWell(
+                                onTap: () async {
+                                  await i18nRefresh(Locale('zh'));
+
+                                  store.dispatch(UpdateConfigAction(
+                                    Config.combine(
+                                      store.state.config,
+                                      Config(language: 'zh'),
+                                    ),
+                                  ));
+                                  Navigator.pop(c);
+                                },
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.all(16),
+                                  child: Text('中文'),
+                                ),
+                              ),
+                            ),
+                            Material(
+                              child: InkWell(
+                                onTap: () async {
+                                  await i18nRefresh(Locale('en'));
+                                  store.dispatch(UpdateConfigAction(
+                                    Config.combine(
+                                      store.state.config,
+                                      Config(language: 'en'),
+                                    ),
+                                  ));
+                                  Navigator.pop(c);
+                                },
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.all(16),
+                                  child: Text('English'),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
+                Text(
+                  store.state.config.language == 'auto'
+                      ? i18n('System Default Language')
+                      : i18n('Current Language'),
+                ),
               ),
             ],
           ),

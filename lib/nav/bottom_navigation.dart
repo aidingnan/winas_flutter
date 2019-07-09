@@ -98,7 +98,6 @@ class _BottomNavigationState extends State<BottomNavigation>
     with TickerProviderStateMixin {
   int _currentIndex = 0;
   BottomNavigationBarType _type = BottomNavigationBarType.fixed;
-  List<NavigationIconView> _navigationViews;
   BackupWorker backupWorker;
   StreamSubscription<String> intentListener;
   StreamSubscription<TokenExpiredEvent> tokenExpiredListener;
@@ -130,51 +129,51 @@ class _BottomNavigationState extends State<BottomNavigation>
     });
   }
 
+  List<NavigationIconView> get _navigationViews => <NavigationIconView>[
+        NavigationIconView(
+          icon: Icon(Icons.folder_open),
+          activeIcon: Icon(Icons.folder),
+          title: i18n('My Drive'),
+          nav: 'files',
+          view: () => Files(
+              node: Node(tag: 'home', location: 'home'),
+              fileNavViews: fileNavViews),
+          color: Colors.teal,
+        ),
+        NavigationIconView(
+          activeIcon: Icon(Icons.photo_library),
+          icon: Icon(OMIcons.photoLibrary),
+          title: i18n('Album'),
+          nav: 'photos',
+          view: () =>
+              Photos(backupWorker: backupWorker, toggleBackup: toggleBackup),
+          color: Colors.indigo,
+        ),
+        NavigationIconView(
+          activeIcon: Icon(Icons.router),
+          icon: Icon(OMIcons.router),
+          title: i18n('Device'),
+          nav: 'device',
+          view: () => MyStation(),
+          color: Colors.deepPurple,
+        ),
+        NavigationIconView(
+          activeIcon: Icon(Icons.person),
+          icon: Icon(Icons.person_outline),
+          title: i18n('Me'),
+          nav: 'user',
+          view: () => AccountInfo(
+              backupWorker: backupWorker, toggleBackup: toggleBackup),
+          color: Colors.deepOrange,
+        ),
+      ];
+
   @override
   void initState() {
     super.initState();
 
     /// cache context for i18n
     cacheContext(this.context);
-
-    _navigationViews = <NavigationIconView>[
-      NavigationIconView(
-        icon: Icon(Icons.folder_open),
-        activeIcon: Icon(Icons.folder),
-        title: i18n('My Drive'),
-        nav: 'files',
-        view: () => Files(
-            node: Node(tag: 'home', location: 'home'),
-            fileNavViews: fileNavViews),
-        color: Colors.teal,
-      ),
-      NavigationIconView(
-        activeIcon: Icon(Icons.photo_library),
-        icon: Icon(OMIcons.photoLibrary),
-        title: i18n('Album'),
-        nav: 'photos',
-        view: () =>
-            Photos(backupWorker: backupWorker, toggleBackup: toggleBackup),
-        color: Colors.indigo,
-      ),
-      NavigationIconView(
-        activeIcon: Icon(Icons.router),
-        icon: Icon(OMIcons.router),
-        title: i18n('Device'),
-        nav: 'device',
-        view: () => MyStation(),
-        color: Colors.deepPurple,
-      ),
-      NavigationIconView(
-        activeIcon: Icon(Icons.person),
-        icon: Icon(Icons.person_outline),
-        title: i18n('Me'),
-        nav: 'user',
-        view: () =>
-            AccountInfo(backupWorker: backupWorker, toggleBackup: toggleBackup),
-        color: Colors.deepOrange,
-      ),
-    ];
 
     // add tokenExpiredListener (asynchronous)
     tokenExpiredListener = eventBus.on<TokenExpiredEvent>().listen((event) {

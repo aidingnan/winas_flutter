@@ -443,6 +443,7 @@
   "All Mobile Data to Transfer Files": "允许使用移动数据流量传输文件",
   "Language": "语言",
   "Current Language": "中文",
+  "System Default Language": "跟随系统",
 
   "==== user/detail.dart ====": "",
   "Personal Info": "个人信息",

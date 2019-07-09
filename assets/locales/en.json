@@ -443,6 +443,7 @@
   "All Mobile Data to Transfer Files": "Transfer using cellular data",
   "Language": "Language",
   "Current Language": "English",
+  "System Default Language": "System Default",
 
   "==== user/detail.dart ====": "",
   "Personal Info": "Personal Informations",

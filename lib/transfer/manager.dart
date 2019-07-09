@@ -226,7 +226,7 @@ class TransferManager {
         }
       }
     } catch (error) {
-      print('load TransferItem error: $error');
+      // print('load TransferItem error: $error');
       transferList = [];
     }
     return;

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:redux/redux.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl_standalone.dart';
 import 'package:redux_persist/redux_persist.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:path_provider/path_provider.dart';
@@ -31,7 +32,7 @@ void main() async {
   try {
     initialState = await persistor.load(); // AppState.initial(); //
   } catch (error) {
-    print('load initialState error: $error');
+    // print('load initialState error: $error');
     initialState = AppState.initial();
   }
   if (initialState?.localUser?.uuid != null) {
@@ -45,14 +46,45 @@ void main() async {
     middleware: [persistor.createMiddleware()],
   );
 
-  runApp(MyApp(initialState, store));
+  // init language
+  String lan = store?.state?.config?.language;
+  if (lan != 'en' && lan != 'zh') {
+    // load system locale
+    try {
+      final String systemLocale = await findSystemLocale();
+      final List<String> systemLocaleSplitted = systemLocale.split('_');
+      lan = systemLocaleSplitted[0];
+    } catch (e) {
+      lan = 'zh';
+    }
+  }
+
+  // only support `en` and `zh`, default is `zh`
+  Locale locale = lan == 'en' ? Locale('en') : Locale('zh');
+
+  final FlutterI18nDelegate flutterI18nDelegate = FlutterI18nDelegate(
+    useCountryCode: false,
+    fallbackFile: 'zh',
+    path: 'assets/locales',
+    defaultLocale: locale,
+  );
+
+  // preload to avoid black screen
+  try {
+    await flutterI18nDelegate.load(null);
+  } catch (e) {
+    print('flutterI18nDelegate load failed $e');
+  }
+
+  runApp(MyApp(initialState, store, flutterI18nDelegate));
 }
 
 class MyApp extends StatelessWidget {
   final Store<AppState> store;
   final AppState initialState;
+  final FlutterI18nDelegate flutterI18nDelegate;
 
-  MyApp(this.initialState, this.store);
+  MyApp(this.initialState, this.store, this.flutterI18nDelegate);
 
   @override
   Widget build(BuildContext context) {
@@ -87,11 +119,7 @@ class MyApp extends StatelessWidget {
             ? BottomNavigation()
             : LoginPage(),
         localizationsDelegates: [
-          FlutterI18nDelegate(
-            useCountryCode: false,
-            fallbackFile: 'zh',
-            path: 'assets/locales',
-          ),
+          flutterI18nDelegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate
         ],
