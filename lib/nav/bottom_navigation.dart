@@ -283,7 +283,12 @@ class _BottomNavigationState extends State<BottomNavigation>
                       ),
                       FlatButton(
                         textColor: Theme.of(context).primaryColor,
-                        child: Text(i18n('Use Previous Backup')),
+                        child: Text(
+                          i18n(
+                            'Use Previous Backup',
+                            {'deviceName': deviceName},
+                          ),
+                        ),
                         onPressed: () async {
                           AppState state = store.state;
 
