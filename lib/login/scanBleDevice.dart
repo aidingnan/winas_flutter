@@ -284,8 +284,9 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                                                     'Product Number in BLE',
                                                     {
                                                       'deviceNumber': scanResult
-                                                          .advertisementData
-                                                          .localName
+                                                              .advertisementData
+                                                              .localName ??
+                                                          'A1'
                                                     },
                                                   ),
                                                   style:
