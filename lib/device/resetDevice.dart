@@ -127,22 +127,19 @@ class _ResetDeviceState extends State<_ResetDevice> {
   List<String> selected;
 
   Status status = Status.auth;
-
-  String get redLight => i18n('Red Light');
-  String get greenLight => i18n('Green Light');
-  String get blueLight => i18n('Blue Light');
-  String get alwaysOn => i18n('Always On');
-  String get breath => i18n('Breath');
-
-  /// color codes
-  List<List<String>> get colorCodes => [
-        [redLight, alwaysOn, '#ff0000', 'alwaysOn'],
-        [redLight, breath, '#ff0000', 'breath'],
-        [greenLight, alwaysOn, '#00ff00', 'alwaysOn'],
-        [greenLight, breath, '#00ff00', 'breath'],
-        [blueLight, alwaysOn, '#0000ff', 'alwaysOn'],
-        [blueLight, breath, '#0000ff', 'breath'],
-      ];
+  List<List<String>> colorCodes;
+  @override
+  void initState() {
+    super.initState();
+    colorCodes = [
+      [i18n('Red Light'), i18n('Always On'), '#ff0000', 'alwaysOn'],
+      [i18n('Red Light'), i18n('Breath'), '#ff0000', 'breath'],
+      [i18n('Green Light'), i18n('Always On'), '#00ff00', 'alwaysOn'],
+      [i18n('Green Light'), i18n('Breath'), '#00ff00', 'breath'],
+      [i18n('Blue Light'), i18n('Always On'), '#0000ff', 'alwaysOn'],
+      [i18n('Blue Light'), i18n('Breath'), '#0000ff', 'breath'],
+    ];
+  }
 
   /// '#ff0000' => Color(0xFF0000)
   Color _getColor(String color) {

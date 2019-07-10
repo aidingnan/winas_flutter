@@ -271,7 +271,7 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                                       child: Row(
                                         children: <Widget>[
                                           Expanded(
-                                            flex: 2,
+                                            flex: 10,
                                             child: Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
