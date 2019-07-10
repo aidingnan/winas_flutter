@@ -69,10 +69,22 @@ class _StationListState extends State<StationList> {
         shouldShowDialog: true,
       );
     } catch (error) {
-      print(error);
+      print('login failed >>>>>');
+      if (error is DioError) {
+        print(error.message);
+        print(error.response.statusCode);
+        print(error.response.statusMessage);
+      } else {
+        print(error);
+      }
+      print('<<<<<<<<<>>>>>>>>>');
       loadingInstance.close();
       if (error is! String || !error.startsWith('EMBEDVOLUMEFAILED')) {
-        showSnackBar(ctx, i18n('Connect to Device Failed'));
+        showSnackBar(
+          ctx,
+          i18n('Connect to Device Failed',
+              {'errorCode': error?.response?.statusMessage ?? ''}),
+        );
       }
       return;
     }

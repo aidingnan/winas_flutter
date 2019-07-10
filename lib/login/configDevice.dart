@@ -177,6 +177,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
       final bindRes = await request.deviceBind(ip, encrypted);
       print('bindRes $bindRes');
     } catch (e) {
+      print('bind device error $e');
       setState(() {
         status = Status.bindFailed;
       });

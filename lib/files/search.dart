@@ -49,7 +49,7 @@ List<_FileType> get fileTypes => List.from([
         // 'JPEG.PNG.JPG.GIF.BMP.RAW.HEIC', TODO: HEIC in search
       ],
       [
-        i18n('Vidoes'),
+        i18n('Videos'),
         iconFromName('a.mkv'),
         'RM.RMVB.WMV.AVI.MP4.3GP.MKV.MOV.FLV.MPEG',
       ],
