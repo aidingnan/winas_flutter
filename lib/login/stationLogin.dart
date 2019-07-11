@@ -185,7 +185,7 @@ deviceLogin(
     return;
   } else {
     // no availiable last device
-    Navigator.pushReplacement(
+    Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
         settings: RouteSettings(name: 'stationList'),
@@ -196,6 +196,7 @@ deviceLogin(
           );
         },
       ),
+      (Route<dynamic> route) => false,
     );
   }
 }

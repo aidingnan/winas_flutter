@@ -117,7 +117,12 @@ class _StationListState extends State<StationList> {
   @override
   void initState() {
     super.initState();
-    cacheContext(this.context);
+
+    // not after logout or change device
+    if (widget.currentDevSN == null) {
+      cacheContext(this.context);
+    }
+
     stationList = widget.stationList;
     if (widget.currentDevSN != null ||
         stationList == null ||

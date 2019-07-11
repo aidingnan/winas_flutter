@@ -469,12 +469,26 @@ void cacheContext(BuildContext ctx) {
 Locale getCurrentLocale() => FlutterI18n.currentLocale(cachedBuildContext);
 
 String i18n(String key, [Map<String, String> params]) {
-  return FlutterI18n.translate(cachedBuildContext, key, params);
+  String result = '';
+  try {
+    result = FlutterI18n.translate(cachedBuildContext, key, params);
+  } catch (e) {
+    print(e);
+    result = '';
+  }
+  return result;
 }
 
 String i18nPlural(String key, int count) {
   String translationKey = '$key.i';
-  return FlutterI18n.plural(cachedBuildContext, translationKey, count);
+  String result = '';
+  try {
+    result = FlutterI18n.plural(cachedBuildContext, translationKey, count);
+  } catch (e) {
+    print(e);
+    result = '';
+  }
+  return result;
 }
 
 Future<void> i18nRefresh(Locale languageCode) async {
