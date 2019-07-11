@@ -302,6 +302,7 @@ class Worker {
   }
 
   /// get Hash from hashViaIsolate or shared_preferences
+  ///
   /// use AssetEntity.id + createTime as the photo's identity
   Future<String> getHash(String id, AssetEntity entity) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -315,6 +316,14 @@ class Worker {
       await prefs.setString(id, hash);
     }
     return hash;
+  }
+
+  /// remove cached Hash in shared_preferences
+  ///
+  /// use AssetEntity.id + createTime as the photo's identity
+  Future<void> cleanHash(String id) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(id, null);
   }
 
   Future<void> uploadSingle(
@@ -427,6 +436,11 @@ class Worker {
         } catch (e) {
           print('backup failed: ${entity.id}');
           print(e);
+          String id = entity.id;
+          int mtime = entity.createTime;
+
+          /// clean hash cache
+          cleanHash('$id+$mtime').catchError(print);
         }
       } else {
         return;
