@@ -324,9 +324,6 @@ class _FilesState extends State<Files> {
       showSnackBar(ctx, i18n('Download Failed'));
     } else {
       try {
-        // TODO: handle open apk file
-        // final ext = entryPath.split('.').last;
-        // if (share || ext?.toLowerCase() == 'apk') {
         if (share) {
           await ShareExtend.share(entryPath, "file");
         } else {
