@@ -193,8 +193,8 @@
   "Finshed": "完成",
 
   "==== files/file.dart ====": "",
-  "Using Mobile Data Traffic Warning": "当前正在使用移动数据流量，点击继续可传输，但可能产生流量资费。",
-  "Open Mobile Data Traffic Switch": "打开”使用移动数据“开关",
+  "Using Mobile Data Traffic Warning": "当前正在使用移动数据流量，点击'继续'可传输，但可能产生流量资费。",
+  "Continue": "继续",
   "Download Canceled": "下载已取消",
   "Download Failed": "下载失败",
   "No Available App to Open This File": "没有打开该类型文件的应用",

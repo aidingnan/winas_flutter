@@ -284,7 +284,7 @@ class _FilesState extends State<Files> {
                       builder: (context, callback) {
                         return FlatButton(
                           textColor: Theme.of(context).primaryColor,
-                          child: Text(i18n('Open Mobile Data Traffic Switch')),
+                          child: Text(i18n('Continue')),
                           onPressed: () {
                             callback();
                             Navigator.pop(context, true);
@@ -487,8 +487,12 @@ class _FilesState extends State<Files> {
   /// upload new file to current directroy
   upload(String filePath, AppState state) {
     final cm = TransferManager.getInstance();
-    Entry targetDir =
-        Entry(uuid: currentNode.dirUUID, pdrv: currentNode.driveUUID);
+    Entry targetDir = Entry(
+      uuid: currentNode.dirUUID,
+      pdrv: currentNode.driveUUID,
+      name: currentNode.name,
+      location: currentNode.location,
+    );
     cm.newUploadFile(filePath, targetDir, state);
     Navigator.push(
       context,

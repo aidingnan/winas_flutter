@@ -344,7 +344,15 @@ class Entry {
   List namepath;
   Metadata metadata;
   bool selected = false;
-  Entry({this.name, this.uuid, this.type, this.pdir, this.pdrv, this.size});
+  Entry(
+      {this.name,
+      this.uuid,
+      this.type,
+      this.pdir,
+      this.pdrv,
+      this.size,
+      this.location});
+
   Entry.fromMap(Map m) {
     this.size = m['size'] ?? 0;
     this.ctime = m['ctime'] ?? 0;

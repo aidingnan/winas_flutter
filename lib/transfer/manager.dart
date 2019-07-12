@@ -391,6 +391,8 @@ class TransferManager {
         // retry getPhotosDir
         targetDir = await getTargetDir(state, drive, targetDirName);
       }
+      // update targetDir
+      item.targetDir = targetDir;
 
       // hash
       final hash = await hashViaIsolate(filePath);

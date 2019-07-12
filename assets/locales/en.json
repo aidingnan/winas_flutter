@@ -193,8 +193,8 @@
   "Finshed": "Finshed",
 
   "==== files/file.dart ====": "",
-  "Using Mobile Data Traffic Warning": "You are using cellular data. Open 'allow transfer using cellular data' switch to start transfer which may casue charges.",
-  "Open Mobile Data Traffic Switch": "Open 'allow transfer using cellular data' switch",
+  "Using Mobile Data Traffic Warning": "You are using cellular data. Click 'Continue' to start transfer which may casue charges.",
+  "Continue": "Continue",
   "Download Canceled": "Download cancelled",
   "Download Failed": "Download failed",
   "No Available App to Open This File": "No available app to open this file.",

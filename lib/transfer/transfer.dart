@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+
 import './manager.dart';
 import './removable.dart';
+import '../files/file.dart';
 import '../redux/redux.dart';
 import '../common/utils.dart';
 import '../common/renderIcon.dart';
@@ -152,7 +154,27 @@ class _TransferState extends State<Transfer> {
           onTap: () async {
             if (item.status == 'finished') {
               // open file
-              await OpenFile.open(item.filePath);
+              if (item.transType == TransType.download) {
+                await OpenFile.open(item.filePath);
+              } else {
+                Entry entry = item.targetDir;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return Files(
+                        node: Node(
+                          name: entry.name,
+                          driveUUID: entry.pdrv,
+                          dirUUID: entry.uuid,
+                          location: entry.location,
+                          tag: 'dir',
+                        ),
+                      );
+                    },
+                  ),
+                );
+              }
             } else if (item.status == 'working') {
               // pause task
               item.pause();
