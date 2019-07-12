@@ -181,7 +181,7 @@ class _GridPhotoState extends State<GridPhoto>
       setState(() {});
     } else {
       setState(() {
-        _scale = (_previousScale * details.scale).clamp(1.0, 4.0);
+        _scale = (_previousScale * details.scale).clamp(1.0, 8.0);
         // Ensure that image location under the focal point stays in the same place despite scaling.
         _offset = _clampOffset(details.focalPoint - _normalizedOffset * _scale);
         showDetails = false;
@@ -397,7 +397,7 @@ class _GridPhotoState extends State<GridPhoto>
       double scaleEnd;
       Offset offsetEnd;
       if (_scale == 1.0) {
-        scaleEnd = 2.0;
+        scaleEnd = scaleRate;
         offsetEnd = Offset(context.size.width / -2, context.size.height / -2);
       } else {
         scaleEnd = 1.0;

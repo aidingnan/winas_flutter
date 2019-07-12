@@ -178,7 +178,8 @@ class FileRow extends StatefulWidget {
       this.onPress,
       this.onLongPress,
       this.select,
-      this.isGrid})
+      this.isGrid,
+      this.isLast})
       : super(key: key);
   final Entry entry;
   final String type;
@@ -187,6 +188,7 @@ class FileRow extends StatefulWidget {
   final Function onLongPress;
   final Select select;
   final bool isGrid;
+  final bool isLast;
 
   @override
   _FileRowState createState() => _FileRowState(
@@ -197,6 +199,7 @@ class FileRow extends StatefulWidget {
         onLongPress: onLongPress,
         isGrid: isGrid,
         select: select,
+        isLast: isLast,
       );
 }
 
@@ -208,7 +211,8 @@ class _FileRowState extends State<FileRow> {
       Function onPress,
       Function onLongPress,
       bool isGrid,
-      Select select})
+      Select select,
+      bool isLast})
       : name = entry.name,
         type = type,
         onPress = onPress,
@@ -219,7 +223,8 @@ class _FileRowState extends State<FileRow> {
         entry = entry,
         metadata = entry.metadata,
         actions = actions,
-        select = select;
+        select = select,
+        isLast = isLast;
 
   final String name;
   final String type;
@@ -231,7 +236,9 @@ class _FileRowState extends State<FileRow> {
   final Metadata metadata;
   final List actions;
   final bool isGrid;
+  final bool isLast;
   final Select select;
+
   ThumbTask task;
 
   Uint8List thumbData;
@@ -443,11 +450,13 @@ class _FileRowState extends State<FileRow> {
         Expanded(
           flex: 1,
           child: Container(
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(width: 1.0, color: Colors.grey[300]),
-              ),
-            ),
+            decoration: isLast
+                ? null
+                : BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(width: 1.0, color: Colors.grey[300]),
+                    ),
+                  ),
             child: Row(
               children: <Widget>[
                 Expanded(

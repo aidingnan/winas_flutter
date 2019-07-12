@@ -33,6 +33,7 @@ Widget _buildItem(
   Function download,
   Select select,
   bool isGrid,
+  bool isLast,
 ) {
   final entry = entries[index];
   switch (entry.type) {
@@ -49,6 +50,7 @@ Widget _buildItem(
         actions: actions,
         isGrid: isGrid,
         select: select,
+        isLast: isLast,
       );
     case 'directory':
       return FileRow(
@@ -74,6 +76,7 @@ Widget _buildItem(
         actions: actions,
         isGrid: isGrid,
         select: select,
+        isLast: isLast,
       );
   }
   return null;
@@ -1003,6 +1006,7 @@ class _FilesState extends State<Files> {
             (entry) => _download(context, entry, state),
             select,
             true,
+            index == dirs.length - 1,
           );
         },
         childCount: dirs.length,
@@ -1023,6 +1027,7 @@ class _FilesState extends State<Files> {
             (entry) => _download(context, entry, state),
             select,
             false,
+            index == dirs.length - 1,
           );
         },
         childCount: dirs.length,
@@ -1048,6 +1053,7 @@ class _FilesState extends State<Files> {
             (entry) => _download(context, entry, state),
             select,
             true,
+            index == files.length - 1,
           );
         },
         childCount: files.length,
@@ -1068,6 +1074,7 @@ class _FilesState extends State<Files> {
             (entry) => _download(context, entry, state),
             select,
             false,
+            index == files.length - 1,
           );
         },
         childCount: files.length,
