@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:async';
 import 'package:redux/redux.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Intent;
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 

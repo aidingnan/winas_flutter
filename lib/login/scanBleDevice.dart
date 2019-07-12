@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart' hide Action;
+import 'package:flutter/cupertino.dart' hide Action;
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:pocket_drive/login/bleHelp.dart';
 

@@ -224,13 +224,17 @@ class _GridVideoState extends State<GridVideo>
 
   Future<ImageInfo> _getImage(imageProvider) {
     final Completer completer = Completer<ImageInfo>();
+
     final ImageStream stream =
         imageProvider.resolve(const ImageConfiguration());
-    final listener = (ImageInfo info, bool synchronousCall) {
-      if (!completer.isCompleted) {
-        completer.complete(info);
-      }
-    };
+    final ImageStreamListener listener = ImageStreamListener(
+      (ImageInfo info, bool synchronousCall) {
+        if (!completer.isCompleted) {
+          completer.complete(info);
+        }
+      },
+    );
+
     stream.addListener(listener);
     completer.future.then((_) {
       stream.removeListener(listener);
