@@ -43,11 +43,11 @@ class _NetworkState extends State<Network> {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, Account>(
+    return StoreConnector<AppState, AppState>(
         onInit: (store) => refresh(store.state),
         onDispose: (store) => {},
-        converter: (store) => store.state.account,
-        builder: (context, account) {
+        converter: (store) => store.state,
+        builder: (context, state) {
           return Scaffold(
             appBar: AppBar(
               elevation: 0.0, // no shadow
@@ -87,7 +87,7 @@ class _NetworkState extends State<Network> {
                           actionButton(
                             i18n('LAN Ip Address'),
                             () => {},
-                            _ellipsisText(info.address),
+                            _ellipsisText(state.apis.lanIp),
                           ),
                           actionButton(
                             i18n('MAC Address'),

@@ -61,11 +61,12 @@ class Apis {
       onResponse: (Response response) {
         bool isCloud = false;
         try {
-          if (response.data['data'] != null) {
+          if (response.data is Map && response.data['data'] != null) {
             isCloud = true;
           }
         } catch (e) {
-          print(e);
+          print('interceptDio get data.data failed: $e');
+          print(response.data);
           isCloud = false;
         }
 

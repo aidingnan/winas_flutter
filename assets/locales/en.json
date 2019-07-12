@@ -442,11 +442,13 @@
   "Change Nickname Text": "Set a cool nickname as you like",
 
   "==== user/settings.dart ====": "",
-  "All Mobile Data to Backup Photos": "Backup photos using cellular data",
-  "All Mobile Data to Transfer Files": "Transfer using cellular data",
+  "Transfer Files": "Transfer Files",
   "Language": "Language",
   "Current Language": "English",
   "System Default Language": "System Default",
+  "Both Wi-Fi and Cellular": "Both Wi-Fi and Cellular",
+  "Only Wi-Fi": "Only Wi-Fi",
+  "Close": "Close",
 
   "==== user/detail.dart ====": "",
   "Personal Info": "Personal Informations",

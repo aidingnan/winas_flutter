@@ -48,51 +48,164 @@ class _SettingsState extends State<Settings> {
               Container(height: 16),
               actionButton(
                 i18n('Backup Photos'),
-                () {},
-                Switch(
-                  activeColor: Colors.teal,
-                  value: store.state.config.autoBackup == true,
-                  onChanged: (bool value) =>
-                      widget.toggleBackup(context, store, value),
+                () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext c) {
+                      return SafeArea(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Material(
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.pop(c);
+                                  store.dispatch(UpdateConfigAction(
+                                    Config.combine(
+                                      store.state.config,
+                                      Config(
+                                        cellularBackup: true,
+                                        autoBackup: true,
+                                      ),
+                                    ),
+                                  ));
+                                  // update backupWorker setting
+                                  widget.backupWorker.updateConfig(
+                                    shouldBackupViaCellular: true,
+                                    autoBackup: true,
+                                  );
+                                },
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.all(16),
+                                  child: Text(i18n('Both Wi-Fi and Cellular')),
+                                ),
+                              ),
+                            ),
+                            Material(
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.pop(c);
+                                  store.dispatch(UpdateConfigAction(
+                                    Config.combine(
+                                      store.state.config,
+                                      Config(
+                                        cellularBackup: false,
+                                        autoBackup: true,
+                                      ),
+                                    ),
+                                  ));
+                                  // update backupWorker setting
+                                  widget.backupWorker.updateConfig(
+                                    shouldBackupViaCellular: false,
+                                    autoBackup: true,
+                                  );
+                                },
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.all(16),
+                                  child: Text('Only Wi-Fi'),
+                                ),
+                              ),
+                            ),
+                            Material(
+                              child: InkWell(
+                                onTap: () async {
+                                  Navigator.pop(c);
+                                  store.dispatch(UpdateConfigAction(
+                                    Config.combine(
+                                      store.state.config,
+                                      Config(
+                                        cellularBackup: false,
+                                        autoBackup: false,
+                                      ),
+                                    ),
+                                  ));
+                                  await widget.toggleBackup(
+                                    context,
+                                    store,
+                                    false,
+                                  );
+                                },
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.all(16),
+                                  child: Text(i18n('Close')),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
+                Text(
+                  store.state.config.autoBackup &&
+                          store.state.config.cellularBackup
+                      ? i18n('Both Wi-Fi and Cellular')
+                      : store.state.config.autoBackup
+                          ? i18n('Only Wi-Fi')
+                          : i18n('Close'),
                 ),
               ),
               actionButton(
-                i18n('All Mobile Data to Backup Photos'),
-                () {},
-                Switch(
-                  activeColor: Colors.teal,
-                  value: store.state.config.cellularBackup == true,
-                  onChanged: (value) {
-                    store.dispatch(UpdateConfigAction(
-                      Config.combine(
-                        store.state.config,
-                        Config(cellularBackup: value),
-                      ),
-                    ));
-
-                    // update backupWorker setting
-                    widget.backupWorker.updateConfig(
-                      shouldBackupViaCellular: value,
-                      autoBackup: store.state.config.autoBackup,
-                    );
-                  },
-                ),
-              ),
-              actionButton(
-                i18n('All Mobile Data to Transfer Files'),
-                () {},
-                Switch(
-                  activeColor: Colors.teal,
-                  value: store.state.config.cellularTransfer == true,
-                  onChanged: (value) {
-                    store.dispatch(UpdateConfigAction(
-                      Config.combine(
-                        store.state.config,
-                        Config(cellularTransfer: value),
-                      ),
-                    ));
-                  },
-                ),
+                i18n('Transfer Files'),
+                () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext c) {
+                      return SafeArea(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Material(
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.pop(c);
+                                  store.dispatch(UpdateConfigAction(
+                                    Config.combine(
+                                      store.state.config,
+                                      Config(cellularTransfer: true),
+                                    ),
+                                  ));
+                                },
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.all(16),
+                                  child: Text(i18n('Both Wi-Fi and Cellular')),
+                                ),
+                              ),
+                            ),
+                            Material(
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.pop(c);
+                                  store.dispatch(UpdateConfigAction(
+                                    Config.combine(
+                                      store.state.config,
+                                      Config(cellularTransfer: false),
+                                    ),
+                                  ));
+                                },
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.all(16),
+                                  child: Text(i18n('Only Wi-Fi')),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
+                Text(store.state.config.cellularTransfer
+                    ? i18n('Both Wi-Fi and Cellular')
+                    : i18n('Only Wi-Fi')),
               ),
               actionButton(
                 i18n('Language'),

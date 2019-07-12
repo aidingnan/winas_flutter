@@ -442,11 +442,13 @@
   "Change Nickname Text": "设置专属个性昵称",
 
   "==== user/settings.dart ====": "",
-  "All Mobile Data to Backup Photos": "允许使用移动数据流量备份照片",
-  "All Mobile Data to Transfer Files": "允许使用移动数据流量传输文件",
+  "Transfer Files": "传输文件",
   "Language": "语言",
   "Current Language": "中文",
   "System Default Language": "跟随系统",
+  "Both Wi-Fi and Cellular": "Wi-Fi和数据流量",
+  "Only Wi-Fi": "仅Wi-Fi",
+  "Close": "关闭",
 
   "==== user/detail.dart ====": "",
   "Personal Info": "个人信息",
