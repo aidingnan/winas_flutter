@@ -140,6 +140,7 @@ class _TransferState extends State<Transfer> {
       BuildContext ctx, List<TransferItem> items, int index, AppState state) {
     TransferItem item = items[index];
     Entry entry = item.entry;
+    bool isLast = index == items.length - 1;
     return Removable(
       key: Key(item.uuid),
       onDismissed: () {
@@ -196,11 +197,14 @@ class _TransferState extends State<Transfer> {
               Expanded(
                 flex: 1,
                 child: Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(width: 1.0, color: Colors.grey[300]),
-                    ),
-                  ),
+                  decoration: isLast
+                      ? null
+                      : BoxDecoration(
+                          border: Border(
+                            bottom:
+                                BorderSide(width: 1.0, color: Colors.grey[300]),
+                          ),
+                        ),
                   child: Row(
                     children: <Widget>[
                       Expanded(

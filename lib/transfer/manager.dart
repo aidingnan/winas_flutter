@@ -54,7 +54,9 @@ class TransferItem {
     this.startTime = m['startTime'];
     this.finishedSize = m['finishedSize'] ?? 0;
     this.filePath = m['filePath'];
-    this.targetDir = Entry.fromMap(jsonDecode(m['targetDir']));
+    this.targetDir = m['targetDir'] is String
+        ? Entry.fromMap(jsonDecode(m['targetDir']))
+        : null;
     switch (m['transType']) {
       case 'TransType.shared':
         this.transType = TransType.shared;
@@ -208,7 +210,6 @@ class TransferManager {
 
     try {
       transferList = await _instance._load();
-
       // reload transferItem
       for (TransferItem item in transferList) {
         if (item.transType == TransType.download) {
@@ -226,7 +227,7 @@ class TransferManager {
         }
       }
     } catch (error) {
-      // print('load TransferItem error: $error');
+      print('load TransferItem error: $error');
       transferList = [];
     }
     return;
@@ -246,8 +247,11 @@ class TransferManager {
     String path = _downloadDir() + 'list.json';
     File file = File(path);
     String json = await file.readAsString();
+
     List<TransferItem> list = List.from(
-        jsonDecode(json).map((item) => TransferItem.fromMap(jsonDecode(item))));
+      jsonDecode(json).map((item) => TransferItem.fromMap(jsonDecode(item))),
+    );
+
     return list;
   }
 
