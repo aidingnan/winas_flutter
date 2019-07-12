@@ -436,7 +436,20 @@ class _MyStationState extends State<MyStation> {
                                   return Network();
                                 }),
                               ),
-                          null,
+                          Row(
+                            children: <Widget>[
+                              Text(
+                                state.apis.isCloud
+                                    ? i18n('Connected Via Cloud')
+                                    : i18n('Connected Via LAN'),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                              Icon(Icons.chevron_right),
+                            ],
+                          ),
                         ),
                         actionButton(
                           i18n('Device Info'),

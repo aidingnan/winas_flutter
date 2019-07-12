@@ -253,7 +253,7 @@ class _StationListState extends State<StationList> {
             Station station = list[index];
             bool isCurrent =
                 station.sn != null && widget.currentDevSN == station.sn;
-            bool selectAble = station.isOnline && !isCurrent;
+            bool selectAble = station.isOnline;
             bool isSelected =
                 selected == index || (isCurrent && selected == -2);
             bool isLast = index == list.length - 1;
@@ -330,10 +330,21 @@ class _StationListState extends State<StationList> {
                   elevation: 1.0,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(48)),
-                  onPressed:
-                      selected < 0 ? null : () => callback(ctx, list[selected]),
+                  onPressed: selected == -2
+                      ? () => callback(
+                            ctx,
+                            list.firstWhere((s) => s.sn == widget.currentDevSN),
+                          )
+                      : selected < 0
+                          ? null
+                          : () => callback(ctx, list[selected]),
                   child: Text(
-                    i18n('Connect to Device'),
+                    (widget.currentDevSN != null &&
+                            (selected == -2 ||
+                                (selected > -1 &&
+                                    list[selected].sn == widget.currentDevSN)))
+                        ? i18n('Reconnect')
+                        : i18n('Connect to Device'),
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),

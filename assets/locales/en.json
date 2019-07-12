@@ -66,6 +66,7 @@
   "Logout": "Sign out",
   "Configuring Device WiFi": "Configure device Wi-Fi",
   "Bind NEW Device": "Bind a new PocketDrive",
+  "Reconnect": "Reconnect",
 
   "==== login/scanBleDevice.dart ====": "",
   "Bluetooth Not Available Error": "Bluetooth is not available, please turn on Buletooth.",
@@ -318,7 +319,7 @@
   "Update Firmware Now": "Update Now",
 
   "==== device/network.dart ====": "",
-  "Network Detail": "Network Details",
+  "Network Detail": "Network",
   "WiFi Id": "Wi-Fi SSID",
   "LAN Ip Address": "LAN IP Address",
   "MAC Address": "MAC Address",
@@ -336,6 +337,8 @@
   "Others": "Others",
   "Storage Usage": "Usage: {usage}",
   "Device Title": "Device",
+  "Connected Via Cloud":"Connected via cloud",
+  "Connected Via LAN":"Connected via Wi-Fi (High Speed)",
 
   "==== device/deviceInfo.dart ====": "",
   "Device Info": "Device Info",

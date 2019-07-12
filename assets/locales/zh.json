@@ -66,6 +66,7 @@
   "Logout": "退出登录",
   "Configuring Device WiFi": "配置口袋网盘的Wi-Fi",
   "Bind NEW Device": "绑定新的口袋网盘",
+  "Reconnect": "重新连接",
 
   "==== login/scanBleDevice.dart ====": "",
   "Bluetooth Not Available Error": "蓝牙不可用，请确认已打开蓝牙",
@@ -336,6 +337,8 @@
   "Others": "其他",
   "Storage Usage": "已使用{usage}",
   "Device Title": "设备",
+  "Connected Via Cloud":"外网连接中",
+  "Connected Via LAN":"Wi-Fi直连中（高速）",
 
   "==== device/deviceInfo.dart ====": "",
   "Device Info": "设备信息",
