@@ -105,7 +105,7 @@ class _SettingsState extends State<Settings> {
                                 child: Container(
                                   width: double.infinity,
                                   padding: EdgeInsets.all(16),
-                                  child: Text('Only Wi-Fi'),
+                                  child: Text(i18n('Only Wi-Fi')),
                                 ),
                               ),
                             ),

@@ -322,33 +322,40 @@ class _StationListState extends State<StationList> {
       SliverFixedExtentList(
         itemExtent: 96,
         delegate: SliverChildBuilderDelegate(
-          (context, index) => Container(
-                height: 96,
-                padding: EdgeInsets.all(16),
-                child: RaisedButton(
-                  color: pColor,
-                  elevation: 1.0,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(48)),
-                  onPressed: selected == -2
-                      ? () => callback(
-                            ctx,
-                            list.firstWhere((s) => s.sn == widget.currentDevSN),
-                          )
-                      : selected < 0
-                          ? null
-                          : () => callback(ctx, list[selected]),
-                  child: Text(
-                    (widget.currentDevSN != null &&
-                            (selected == -2 ||
-                                (selected > -1 &&
-                                    list[selected].sn == widget.currentDevSN)))
-                        ? i18n('Reconnect')
-                        : i18n('Connect to Device'),
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
+          (context, index) {
+            // current selected
+            final current = selected == -2
+                ? list.firstWhere((s) => s.sn == widget.currentDevSN,
+                    orElse: () => null)
+                : selected == -1 ? null : list[selected];
+
+            // label
+            String text = i18n('Connect to Device');
+            if (current?.sn == widget.currentDevSN &&
+                widget.currentDevSN != null) {
+              text = i18n('Reconnect');
+            }
+            // onPress callback
+            Function onPressed =
+                current?.isOnline == true ? () => callback(ctx, current) : null;
+
+            return Container(
+              height: 96,
+              padding: EdgeInsets.all(16),
+              child: RaisedButton(
+                color: pColor,
+                elevation: 1.0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(48),
+                ),
+                onPressed: onPressed,
+                child: Text(
+                  text,
+                  style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
               ),
+            );
+          },
           childCount: 1,
         ),
       ),
