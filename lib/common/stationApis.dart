@@ -403,4 +403,8 @@ class Apis {
         .then((value) => callback(null, value))
         .catchError((error) => callback(error, null));
   }
+
+  updateToken(String newToken) {
+    this.token = newToken;
+  }
 }

@@ -8,15 +8,17 @@ class Request {
   bool isIOS = !Platform.isAndroid;
   final cloudAddress = 'https://test.aidingnan.com/c/v1';
   String token;
+  String refreshToken;
   String cookie;
   Dio dio = Dio();
   bool tokenExpired = false;
 
-  Request({this.token});
+  Request({this.token, this.refreshToken});
 
   Request.fromMap(Map m) {
     this.token = m['token'];
     this.cookie = m['cookie'];
+    this.refreshToken = m['refreshToken'];
   }
 
   @override
@@ -24,6 +26,7 @@ class Request {
     Map<String, dynamic> m = {
       'token': token,
       'cookie': cookie,
+      'refreshToken': refreshToken,
     };
     return jsonEncode(m);
   }
@@ -39,6 +42,7 @@ class Request {
         // save cloud token not lanToken
         if (res is Map && res['token'] != null && res['id'] != null) {
           token = res['token'];
+          refreshToken = res['refreshToken'];
         }
         if (response.data is Map && response.data['url'] == '/c/v1/station') {
           cookie = response.headers['set-cookie']?.first;
@@ -211,6 +215,15 @@ class Request {
           'password': args['password']
         });
         break;
+
+      case 'refreshToken':
+        r = apost('user/refreshToken', {
+          'clientId': args['clientId'],
+          'type': isIOS ? 'iOS' : 'Android',
+          'refreshToken': refreshToken,
+        });
+        break;
+
       // get user encrypted info, used in bind or unbind device
       case 'encrypted':
         r = tpost('user/encrypted', null);

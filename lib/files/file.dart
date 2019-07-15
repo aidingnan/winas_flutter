@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:redux/redux.dart';
 import 'package:flutter/material.dart' hide Intent;
 import 'package:open_file/open_file.dart';
 import 'package:file_picker/file_picker.dart';
@@ -57,21 +58,21 @@ Widget _buildItem(
         key: Key(entry.name + entry.uuid + entry.selected.toString()),
         type: 'directory',
         onPress: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return Files(
-                    node: Node(
-                      name: entry.name,
-                      driveUUID: entry.pdrv,
-                      dirUUID: entry.uuid,
-                      location: entry.location,
-                      tag: 'dir',
-                    ),
-                  );
-                },
-              ),
-            ),
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return Files(
+                node: Node(
+                  name: entry.name,
+                  driveUUID: entry.pdrv,
+                  dirUUID: entry.uuid,
+                  location: entry.location,
+                  tag: 'dir',
+                ),
+              );
+            },
+          ),
+        ),
         entry: entry,
         actions: actions,
         isGrid: isGrid,
@@ -211,6 +212,34 @@ class _FilesState extends State<Files> {
     return;
   }
 
+  Future firstRefresh(Store<AppState> store) async {
+    final state = store.state;
+    // refresh token
+    try {
+      String clientId = await getClientId();
+      final res = await state.cloud.req('refreshToken', {'clientId': clientId});
+      if (res?.data != null && res.data['token'] != null) {
+        print('new Token ${res.data['token']}');
+        state.apis.updateToken(res.data['token']);
+
+        // cloud apis
+        store.dispatch(UpdateCloudAction(state.cloud));
+
+        // stations apis
+        store.dispatch(UpdateApisAction(state.apis));
+      }
+      await refresh(store.state);
+    } catch (e) {
+      print(e);
+      loading = false;
+      _error = e;
+      if (this.mounted) {
+        setState(() {});
+      }
+      return;
+    }
+  }
+
   /// sort entries, update dirs, files
   void parseEntries(List<Entry> rawEntries, List<DirPath> rawPath) {
     // sort by type
@@ -264,40 +293,40 @@ class _FilesState extends State<Files> {
           context: ctx,
           barrierDismissible: false,
           builder: (BuildContext context) => WillPopScope(
-                onWillPop: () => Future.value(false),
-                child: AlertDialog(
-                  content: Text(i18n('Using Mobile Data Traffic Warning')),
-                  actions: <Widget>[
-                    FlatButton(
-                      textColor: Theme.of(context).primaryColor,
-                      child: Text(i18n('Cancel')),
-                      onPressed: () {
-                        Navigator.pop(context, false);
-                      },
-                    ),
-                    StoreConnector<AppState, VoidCallback>(
-                      converter: (store) => () => store.dispatch(
-                            UpdateConfigAction(
-                              Config.combine(
-                                store.state.config,
-                                Config(cellularTransfer: true),
-                              ),
-                            ),
-                          ),
-                      builder: (context, callback) {
-                        return FlatButton(
-                          textColor: Theme.of(context).primaryColor,
-                          child: Text(i18n('Continue')),
-                          onPressed: () {
-                            callback();
-                            Navigator.pop(context, true);
-                          },
-                        );
-                      },
-                    ),
-                  ],
+            onWillPop: () => Future.value(false),
+            child: AlertDialog(
+              content: Text(i18n('Using Mobile Data Traffic Warning')),
+              actions: <Widget>[
+                FlatButton(
+                  textColor: Theme.of(context).primaryColor,
+                  child: Text(i18n('Cancel')),
+                  onPressed: () {
+                    Navigator.pop(context, false);
+                  },
                 ),
-              ),
+                StoreConnector<AppState, VoidCallback>(
+                  converter: (store) => () => store.dispatch(
+                        UpdateConfigAction(
+                          Config.combine(
+                            store.state.config,
+                            Config(cellularTransfer: true),
+                          ),
+                        ),
+                      ),
+                  builder: (context, callback) {
+                    return FlatButton(
+                      textColor: Theme.of(context).primaryColor,
+                      child: Text(i18n('Continue')),
+                      onPressed: () {
+                        callback();
+                        Navigator.pop(context, true);
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
         );
 
         return shouldContinue;
@@ -361,8 +390,8 @@ class _FilesState extends State<Files> {
               showDialog(
                 context: ctx,
                 builder: (BuildContext context) => RenameDialog(
-                      entry: entry,
-                    ),
+                  entry: entry,
+                ),
               ).then((success) => refresh(state));
             },
           },
@@ -552,40 +581,40 @@ class _FilesState extends State<Files> {
       context: ctx,
       barrierDismissible: false,
       builder: (BuildContext context) => WillPopScope(
-            onWillPop: () => Future.value(false),
-            child: AlertDialog(
-              content: Text(i18n('No Storage Permission Warning')),
-              actions: <Widget>[
-                FlatButton(
+        onWillPop: () => Future.value(false),
+        child: AlertDialog(
+          content: Text(i18n('No Storage Permission Warning')),
+          actions: <Widget>[
+            FlatButton(
+              textColor: Theme.of(context).primaryColor,
+              child: Text(i18n('Cancel')),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            StoreConnector<AppState, VoidCallback>(
+              converter: (store) => () => store.dispatch(
+                    UpdateConfigAction(
+                      Config.combine(
+                        store.state.config,
+                        Config(cellularTransfer: true),
+                      ),
+                    ),
+                  ),
+              builder: (context, callback) {
+                return FlatButton(
                   textColor: Theme.of(context).primaryColor,
-                  child: Text(i18n('Cancel')),
-                  onPressed: () {
+                  child: Text(i18n('Goto Open Storage Permission')),
+                  onPressed: () async {
+                    await PermissionHandler().openAppSettings();
                     Navigator.pop(context);
                   },
-                ),
-                StoreConnector<AppState, VoidCallback>(
-                  converter: (store) => () => store.dispatch(
-                        UpdateConfigAction(
-                          Config.combine(
-                            store.state.config,
-                            Config(cellularTransfer: true),
-                          ),
-                        ),
-                      ),
-                  builder: (context, callback) {
-                    return FlatButton(
-                      textColor: Theme.of(context).primaryColor,
-                      child: Text(i18n('Goto Open Storage Permission')),
-                      onPressed: () async {
-                        await PermissionHandler().openAppSettings();
-                        Navigator.pop(context);
-                      },
-                    );
-                  },
-                ),
-              ],
+                );
+              },
             ),
-          ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -1174,7 +1203,7 @@ class _FilesState extends State<Files> {
   /// 2. file nav view
   Widget mainView(bool isHome) {
     return StoreConnector<AppState, AppState>(
-      onInit: (store) => refresh(store.state).catchError(print),
+      onInit: (store) => firstRefresh(store).catchError(print),
       onDispose: (store) => {},
       converter: (store) => store.state,
       builder: (context, state) {
