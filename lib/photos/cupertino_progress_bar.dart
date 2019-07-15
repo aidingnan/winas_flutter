@@ -76,6 +76,10 @@ class _VideoProgressBarState extends State<CupertinoVideoProgressBar> {
       controller.seekTo(position);
     }
 
+    if (controller.value.hasError) {
+      print(controller.value.errorDescription);
+    }
+
     return GestureDetector(
       child: (controller.value.hasError)
           ? Text(controller.value.errorDescription)
