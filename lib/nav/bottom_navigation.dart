@@ -104,6 +104,9 @@ class _BottomNavigationState extends State<BottomNavigation>
   StreamSubscription<StationNotOnlineEvent> stationNotOnlineListener;
   Timer refreshTimer;
 
+  /// only refresh token at first just once
+  Justonce justonce = Justonce();
+
   /// init works onStart:
   /// 1. autoBackup
   /// 2. add intent Listener
@@ -131,8 +134,8 @@ class _BottomNavigationState extends State<BottomNavigation>
       }
     });
 
-    // refresh token every 1 hour
-    refreshTimer = Timer.periodic(Duration(hours: 24), (Timer timer) {
+    // refresh token every 24 hour
+    refreshTimer = Timer.periodic(Duration(minutes: 1), (Timer timer) {
       if (this.mounted) {
         refreshAndSaveToken(store);
       } else {
@@ -143,18 +146,19 @@ class _BottomNavigationState extends State<BottomNavigation>
 
   Future refreshAndSaveToken(Store<AppState> store) async {
     print('refreshAndSaveToken');
-    final state = store.state;
     String clientId = await getClientId();
-    final res = await state.cloud.req('refreshToken', {'clientId': clientId});
+    final res =
+        await store.state.cloud.req('refreshToken', {'clientId': clientId});
     if (res?.data != null && res.data['token'] != null) {
       print('new Token ${res.data['token']}');
-      state.apis.updateToken(res.data['token']);
+      store.state.apis
+          .updateToken(store.state.cloud.token, store.state.cloud.cookie);
 
       // cloud apis
-      store.dispatch(UpdateCloudAction(state.cloud));
+      store.dispatch(UpdateCloudAction(store.state.cloud));
 
       // stations apis
-      store.dispatch(UpdateApisAction(state.apis));
+      store.dispatch(UpdateApisAction(store.state.apis));
     }
   }
 
@@ -165,8 +169,10 @@ class _BottomNavigationState extends State<BottomNavigation>
           title: i18n('My Drive'),
           nav: 'files',
           view: () => Files(
-              node: Node(tag: 'home', location: 'home'),
-              fileNavViews: fileNavViews),
+            node: Node(tag: 'home', location: 'home'),
+            fileNavViews: fileNavViews,
+            justonce: justonce,
+          ),
           color: Colors.teal,
         ),
         NavigationIconView(

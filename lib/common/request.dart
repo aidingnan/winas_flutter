@@ -43,11 +43,14 @@ class Request {
         if (res is Map && res['token'] != null && res['id'] != null) {
           token = res['token'];
           refreshToken = res['refreshToken'];
-        }
-        if (response.data is Map && response.data['url'] == '/c/v1/station') {
+          print('get cookie');
+          print(response.headers['set-cookie']?.first);
           cookie = response.headers['set-cookie']?.first;
-          assert(cookie != null);
         }
+        // if (response.data is Map && response.data['url'] == '/c/v1/station') {
+        //   cookie = response.headers['set-cookie']?.first;
+        //   assert(cookie != null);
+        // }
         if (res != null) return res;
         return response.data;
       },
@@ -71,18 +74,21 @@ class Request {
   }
 
   aget(String ep, args) {
+    dio.options.headers['cookie'] = cookie;
     return args == null
         ? dio.get('$cloudAddress/$ep')
         : dio.get('$cloudAddress/$ep', queryParameters: args);
   }
 
   apost(String ep, args) {
+    dio.options.headers['cookie'] = cookie;
     return args == null
         ? dio.post('$cloudAddress/$ep')
         : dio.post('$cloudAddress/$ep', data: args);
   }
 
   apatch(String ep, args) {
+    dio.options.headers['cookie'] = cookie;
     return args == null
         ? dio.patch('$cloudAddress/$ep')
         : dio.patch('$cloudAddress/$ep', data: args);
@@ -92,6 +98,7 @@ class Request {
   tget(String ep, args) {
     assert(token != null);
     dio.options.headers['Authorization'] = token;
+    dio.options.headers['cookie'] = cookie;
     return dio.get('$cloudAddress/$ep', queryParameters: args);
   }
 
@@ -108,6 +115,7 @@ class Request {
   tpatch(String ep, args) {
     assert(token != null);
     dio.options.headers['Authorization'] = token;
+    dio.options.headers['cookie'] = cookie;
     return dio.patch('$cloudAddress/$ep', data: args);
   }
 
@@ -115,6 +123,7 @@ class Request {
   tdel(String ep, args) {
     assert(token != null);
     dio.options.headers['Authorization'] = token;
+    dio.options.headers['cookie'] = cookie;
     return dio.delete('$cloudAddress/$ep', queryParameters: args);
   }
 

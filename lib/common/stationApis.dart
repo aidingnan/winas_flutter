@@ -405,7 +405,8 @@ class Apis {
         .catchError((error) => callback(error, null));
   }
 
-  updateToken(String newToken) {
+  updateToken(String newToken, String newCookie) {
     this.token = newToken;
+    this.cookie = newCookie;
   }
 }

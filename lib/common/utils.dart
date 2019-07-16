@@ -61,6 +61,21 @@ class Model {
   bool get shouldClose => close;
 }
 
+/// fire just once
+/// ```
+/// if (justonce?.fired == false) {
+///   // dosomething
+///   // ...
+///   justonce.fire();
+/// }
+/// ```
+class Justonce {
+  bool fired = false;
+  void fire() {
+    this.fired = true;
+  }
+}
+
 void showNormalDialog<T>({BuildContext context, String text, Model model}) {
   showDialog<T>(
     context: context,
