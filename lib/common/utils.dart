@@ -71,8 +71,12 @@ class Model {
 /// ```
 class Justonce {
   bool fired = false;
-  void fire() {
+  Function callback;
+  Future<void> fire(props) async {
     this.fired = true;
+    if (callback is Function) {
+      await callback(props);
+    }
   }
 }
 

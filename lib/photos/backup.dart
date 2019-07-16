@@ -482,6 +482,7 @@ class Worker {
     ignored = 0;
     total = 0;
     this.startAsync().catchError((e) {
+      print('backup failed, retry ${retry * retry} minutes later');
       print(e);
       retryLater();
     });

@@ -102,166 +102,32 @@ class _BottomNavigationState extends State<BottomNavigation>
   StreamSubscription<String> intentListener;
   StreamSubscription<TokenExpiredEvent> tokenExpiredListener;
   StreamSubscription<StationNotOnlineEvent> stationNotOnlineListener;
+
+  /// Timer to refresh token
   Timer refreshTimer;
 
-  /// only refresh token at first just once
+  /// only refresh token at first just once (in `../files/file.dart`)
   Justonce justonce = Justonce();
 
-  /// init works onStart:
-  /// 1. autoBackup
-  /// 2. add intent Listener
-  /// 3. refresh token
-  initWorks(Store<AppState> store) {
-    final state = store.state;
-    backupWorker = BackupWorker(state.apis, state.config.cellularBackup);
-
-    // start autoBackup
-    if (state.config.autoBackup == true) {
-      backupWorker.start();
-    }
-    // add listener of new intent
-    intentListener = Intent.listenToOnNewIntent().listen((filePath) {
-      print('newIntent: $filePath');
-      if (filePath != null) {
-        final cm = TransferManager.getInstance();
-        cm.newUploadSharedFile(filePath, state);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Transfer(),
-          ),
-        );
-      }
-    });
-
-    // refresh token every 24 hour
-    refreshTimer = Timer.periodic(Duration(minutes: 1), (Timer timer) {
-      if (this.mounted) {
-        refreshAndSaveToken(store);
-      } else {
-        timer.cancel();
-      }
-    });
-  }
-
-  Future refreshAndSaveToken(Store<AppState> store) async {
-    print('refreshAndSaveToken');
+  Future<void> refreshAndSaveToken(Store<AppState> store) async {
     String clientId = await getClientId();
     final res =
         await store.state.cloud.req('refreshToken', {'clientId': clientId});
     if (res?.data != null && res.data['token'] != null) {
-      print('new Token ${res.data['token']}');
       store.state.apis
           .updateToken(store.state.cloud.token, store.state.cloud.cookie);
 
+      /// update apis in backup apis
+      if (backupWorker?.apis != null) {
+        backupWorker.apis
+            .updateToken(store.state.cloud.token, store.state.cloud.cookie);
+      }
       // cloud apis
       store.dispatch(UpdateCloudAction(store.state.cloud));
 
       // stations apis
       store.dispatch(UpdateApisAction(store.state.apis));
     }
-  }
-
-  List<NavigationIconView> get _navigationViews => <NavigationIconView>[
-        NavigationIconView(
-          icon: Icon(Icons.folder_open),
-          activeIcon: Icon(Icons.folder),
-          title: i18n('My Drive'),
-          nav: 'files',
-          view: () => Files(
-            node: Node(tag: 'home', location: 'home'),
-            fileNavViews: fileNavViews,
-            justonce: justonce,
-          ),
-          color: Colors.teal,
-        ),
-        NavigationIconView(
-          activeIcon: Icon(Icons.photo_library),
-          icon: Icon(OMIcons.photoLibrary),
-          title: i18n('Album'),
-          nav: 'photos',
-          view: () =>
-              Photos(backupWorker: backupWorker, toggleBackup: toggleBackup),
-          color: Colors.indigo,
-        ),
-        NavigationIconView(
-          activeIcon: Icon(Icons.router),
-          icon: Icon(OMIcons.router),
-          title: i18n('Device'),
-          nav: 'device',
-          view: () => MyStation(),
-          color: Colors.deepPurple,
-        ),
-        NavigationIconView(
-          activeIcon: Icon(Icons.person),
-          icon: Icon(Icons.person_outline),
-          title: i18n('Me'),
-          nav: 'user',
-          view: () => AccountInfo(
-              backupWorker: backupWorker, toggleBackup: toggleBackup),
-          color: Colors.deepOrange,
-        ),
-      ];
-
-  @override
-  void initState() {
-    super.initState();
-
-    /// cache context for i18n
-    cacheContext(this.context);
-
-    // add tokenExpiredListener (asynchronous)
-    tokenExpiredListener = eventBus.on<TokenExpiredEvent>().listen((event) {
-      print('TokenExpiredEvent ${event.text}');
-      showDialog(
-        context: context,
-        builder: (_) => TokenExpired(),
-      );
-      // only listen once, cancel listener
-      tokenExpiredListener.cancel();
-      tokenExpiredListener = null;
-    });
-
-    // add tokenExpiredListener (asynchronous)
-    stationNotOnlineListener =
-        eventBus.on<StationNotOnlineEvent>().listen((event) {
-      print('StationNotOnlineEvent ${event.text}');
-      showDialog(
-        context: context,
-        builder: (_) => DeviceNotOnline(),
-      );
-      // only listen once, cancel listener
-      stationNotOnlineListener.cancel();
-      stationNotOnlineListener = null;
-    });
-
-    cacheContext(context);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    backupWorker?.abort();
-    refreshTimer?.cancel();
-    intentListener?.cancel();
-    tokenExpiredListener?.cancel();
-    stationNotOnlineListener?.cancel();
-  }
-
-  BottomNavigationBar botNavBar() {
-    return BottomNavigationBar(
-      items: _navigationViews
-          .map<BottomNavigationBarItem>(
-              (NavigationIconView navigationView) => navigationView.item)
-          .toList(),
-      currentIndex: _currentIndex,
-      type: _type,
-      onTap: (int index) {
-        setState(() {
-          _currentIndex = index;
-        });
-      },
-    );
   }
 
   void toggleBackup(BuildContext ctx, Store<AppState> store, bool value) async {
@@ -391,6 +257,145 @@ class _BottomNavigationState extends State<BottomNavigation>
     }
   }
 
+  /// init works onStart:
+  /// 1. autoBackup
+  /// 2. add intent Listener
+  /// 3. refresh token
+  void initWorks(Store<AppState> store) {
+    final state = store.state;
+    backupWorker = BackupWorker(state.apis, state.config.cellularBackup);
+
+    // start autoBackup
+    if (state.config.autoBackup == true) {
+      backupWorker.start();
+    }
+    // add listener of new intent
+    intentListener = Intent.listenToOnNewIntent().listen((filePath) {
+      print('newIntent: $filePath');
+      if (filePath != null) {
+        final cm = TransferManager.getInstance();
+        cm.newUploadSharedFile(filePath, state);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Transfer(),
+          ),
+        );
+      }
+    });
+
+    // refresh token every 24 hour
+    refreshTimer = Timer.periodic(Duration(hours: 2), (Timer timer) {
+      if (this.mounted) {
+        refreshAndSaveToken(store).catchError(print);
+      } else {
+        timer.cancel();
+      }
+    });
+
+    justonce.callback = refreshAndSaveToken;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    /// cache context for i18n
+    cacheContext(this.context);
+
+    // add tokenExpiredListener (asynchronous)
+    tokenExpiredListener = eventBus.on<TokenExpiredEvent>().listen((event) {
+      print('TokenExpiredEvent ${event.text}');
+      showDialog(
+        context: context,
+        builder: (_) => TokenExpired(),
+      );
+      // only listen once, cancel listener
+      tokenExpiredListener.cancel();
+      tokenExpiredListener = null;
+    });
+
+    // add tokenExpiredListener (asynchronous)
+    stationNotOnlineListener =
+        eventBus.on<StationNotOnlineEvent>().listen((event) {
+      print('StationNotOnlineEvent ${event.text}');
+      showDialog(
+        context: context,
+        builder: (_) => DeviceNotOnline(),
+      );
+      // only listen once, cancel listener
+      stationNotOnlineListener.cancel();
+      stationNotOnlineListener = null;
+    });
+
+    cacheContext(context);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    backupWorker?.abort();
+    refreshTimer?.cancel();
+    intentListener?.cancel();
+    tokenExpiredListener?.cancel();
+    stationNotOnlineListener?.cancel();
+  }
+
+  BottomNavigationBar get _botNavBar => BottomNavigationBar(
+        items: _navigationViews
+            .map<BottomNavigationBarItem>(
+                (NavigationIconView navigationView) => navigationView.item)
+            .toList(),
+        currentIndex: _currentIndex,
+        type: _type,
+        onTap: (int index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+      );
+
+  List<NavigationIconView> get _navigationViews => <NavigationIconView>[
+        NavigationIconView(
+          icon: Icon(Icons.folder_open),
+          activeIcon: Icon(Icons.folder),
+          title: i18n('My Drive'),
+          nav: 'files',
+          view: () => Files(
+            node: Node(tag: 'home', location: 'home'),
+            fileNavViews: fileNavViews,
+            justonce: justonce,
+          ),
+          color: Colors.teal,
+        ),
+        NavigationIconView(
+          activeIcon: Icon(Icons.photo_library),
+          icon: Icon(OMIcons.photoLibrary),
+          title: i18n('Album'),
+          nav: 'photos',
+          view: () =>
+              Photos(backupWorker: backupWorker, toggleBackup: toggleBackup),
+          color: Colors.indigo,
+        ),
+        NavigationIconView(
+          activeIcon: Icon(Icons.router),
+          icon: Icon(OMIcons.router),
+          title: i18n('Device'),
+          nav: 'device',
+          view: () => MyStation(),
+          color: Colors.deepPurple,
+        ),
+        NavigationIconView(
+          activeIcon: Icon(Icons.person),
+          icon: Icon(Icons.person_outline),
+          title: i18n('Me'),
+          nav: 'user',
+          view: () => AccountInfo(
+              backupWorker: backupWorker, toggleBackup: toggleBackup),
+          color: Colors.deepOrange,
+        ),
+      ];
+
   @override
   Widget build(BuildContext context) {
     // set SystemUiStyle to dark
@@ -406,7 +411,7 @@ class _BottomNavigationState extends State<BottomNavigation>
         // Future.delayed(Duration.zero, () => checkTokenState(ctx, state));
         return Scaffold(
           body: Center(child: _navigationViews[_currentIndex].view()),
-          bottomNavigationBar: botNavBar(),
+          bottomNavigationBar: _botNavBar,
         );
       },
     );

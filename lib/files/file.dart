@@ -213,29 +213,10 @@ class _FilesState extends State<Files> {
     return;
   }
 
-  Future refreshAndSaveToken(Store<AppState> store) async {
-    String clientId = await getClientId();
-    final res =
-        await store.state.cloud.req('refreshToken', {'clientId': clientId});
-    if (res?.data != null && res.data['token'] != null) {
-      print('new Token ${res.data['token']}');
-      store.state.apis
-          .updateToken(store.state.cloud.token, store.state.cloud.cookie);
-
-      // cloud apis
-      store.dispatch(UpdateCloudAction(store.state.cloud));
-
-      // stations apis
-      store.dispatch(UpdateApisAction(store.state.apis));
-    }
-  }
-
   Future firstRefresh(Store<AppState> store) async {
     try {
       if (widget?.justonce?.fired == false) {
-        // refresh token
-        await refreshAndSaveToken(store);
-        widget.justonce.fire();
+        await widget.justonce.fire(store);
       }
       await refresh(store.state);
     } catch (e) {

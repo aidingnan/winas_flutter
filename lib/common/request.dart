@@ -43,8 +43,6 @@ class Request {
         if (res is Map && res['token'] != null && res['id'] != null) {
           token = res['token'];
           refreshToken = res['refreshToken'];
-          print('get cookie');
-          print(response.headers['set-cookie']?.first);
           cookie = response.headers['set-cookie']?.first;
         }
         // if (response.data is Map && response.data['url'] == '/c/v1/station') {
