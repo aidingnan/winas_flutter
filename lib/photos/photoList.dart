@@ -335,9 +335,9 @@ class _PhotoListState extends State<PhotoList> {
                                       itemExtent: headerHeight,
                                       delegate: SliverChildBuilderDelegate(
                                         (context, index) => Container(
-                                              padding: EdgeInsets.all(8),
-                                              child: Text(line),
-                                            ),
+                                          padding: EdgeInsets.all(8),
+                                          child: Text(line),
+                                        ),
                                         childCount: 1,
                                       ),
                                     );

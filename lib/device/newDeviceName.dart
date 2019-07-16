@@ -109,16 +109,16 @@ class _NewDeviceNameState extends State<NewDeviceName> {
               return StoreConnector<AppState, VoidCallback>(
                 converter: (store) => () => _onPressed(ctx, store),
                 builder: (context, callback) => FloatingActionButton(
-                      onPressed: disabled ? null : callback,
-                      tooltip: i18n('Confirm'),
-                      backgroundColor: disabled ? Colors.grey : Colors.teal,
-                      elevation: 0.0,
-                      child: Icon(
-                        Icons.chevron_right,
-                        color: Colors.white,
-                        size: 48,
-                      ),
-                    ),
+                  onPressed: disabled ? null : callback,
+                  tooltip: i18n('Confirm'),
+                  backgroundColor: disabled ? Colors.grey : Colors.teal,
+                  elevation: 0.0,
+                  child: Icon(
+                    Icons.chevron_right,
+                    color: Colors.white,
+                    size: 48,
+                  ),
+                ),
               );
             },
           ),

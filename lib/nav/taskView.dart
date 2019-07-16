@@ -70,8 +70,8 @@ class _TaskViewState extends State<TaskView> {
                     bool success = await showDialog(
                       context: ctx,
                       builder: (BuildContext context) => DeleteDialog(
-                            xCopyTasks: instance,
-                          ),
+                        xCopyTasks: instance,
+                      ),
                     );
                     if (success == true) {
                       showSnackBar(ctx, i18n('Clear All Xcopy Tasks Success'));
@@ -169,9 +169,9 @@ class _TaskViewState extends State<TaskView> {
                                       context: ctx,
                                       builder: (BuildContext context) =>
                                           DeleteDialog(
-                                            task: task,
-                                            xCopyTasks: instance,
-                                          ),
+                                        task: task,
+                                        xCopyTasks: instance,
+                                      ),
                                     );
 
                                     if (success == true) {

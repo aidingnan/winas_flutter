@@ -99,9 +99,9 @@ class _PageViewerState extends State<PageViewer> {
     bool success = await showDialog(
       context: this.context,
       builder: (BuildContext context) => DeleteDialog(
-            entries: [entry],
-            isMedia: true,
-          ),
+        entries: [entry],
+        isMedia: true,
+      ),
     );
 
     if (success == true) {

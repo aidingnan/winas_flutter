@@ -40,11 +40,11 @@ stationLogin(BuildContext context, Request request, Station currentDevice,
       showDialog(
         context: context,
         builder: (BuildContext context) => LoginDeviceFailed(
-              code: code,
-              blks: blks,
-              request: request,
-              deviceSN: deviceSN,
-            ),
+          code: code,
+          blks: blks,
+          request: request,
+          deviceSN: deviceSN,
+        ),
       );
       throw 'EMBEDVOLUMEFAILED $code';
     }

@@ -416,16 +416,16 @@ class _SmsCodeState extends State<SmsCode> {
           return StoreConnector<AppState, VoidCallback>(
             converter: (store) => () => _nextStep(ctx, store.state),
             builder: (context, callback) => FloatingActionButton(
-                  onPressed: callback,
-                  tooltip: i18n('Next Step'),
-                  backgroundColor: pColor,
-                  elevation: 0.0,
-                  child: Icon(
-                    Icons.chevron_right,
-                    color: Colors.white,
-                    size: 48,
-                  ),
-                ),
+              onPressed: callback,
+              tooltip: i18n('Next Step'),
+              backgroundColor: pColor,
+              elevation: 0.0,
+              child: Icon(
+                Icons.chevron_right,
+                color: Colors.white,
+                size: 48,
+              ),
+            ),
           );
         },
       ),

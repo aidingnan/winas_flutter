@@ -344,34 +344,34 @@ class _ConfigDeviceState extends State<ConfigDevice> {
     List<Widget> options = List.from(
       colorCodes.map(
         (code) => Material(
-              child: InkWell(
-                child: Container(
-                  height: 56,
-                  width: double.infinity,
-                  child: RadioListTile(
-                    activeColor: Colors.teal,
-                    groupValue: selected,
-                    onChanged: (value) {
-                      print('on tap $code');
-                      setState(() {
-                        selected = value;
-                      });
-                    },
-                    value: code,
-                    title: Text.rich(
-                      TextSpan(children: [
-                        TextSpan(
-                          text: code[0],
-                          style: TextStyle(color: _getColor(code[2])),
-                        ),
-                        TextSpan(text: ' '),
-                        TextSpan(text: code[1]),
-                      ]),
+          child: InkWell(
+            child: Container(
+              height: 56,
+              width: double.infinity,
+              child: RadioListTile(
+                activeColor: Colors.teal,
+                groupValue: selected,
+                onChanged: (value) {
+                  print('on tap $code');
+                  setState(() {
+                    selected = value;
+                  });
+                },
+                value: code,
+                title: Text.rich(
+                  TextSpan(children: [
+                    TextSpan(
+                      text: code[0],
+                      style: TextStyle(color: _getColor(code[2])),
                     ),
-                  ),
+                    TextSpan(text: ' '),
+                    TextSpan(text: code[1]),
+                  ]),
                 ),
               ),
             ),
+          ),
+        ),
       ),
     );
     widgets.addAll(options);

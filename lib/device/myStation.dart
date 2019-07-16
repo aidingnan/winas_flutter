@@ -227,42 +227,42 @@ class _MyStationState extends State<MyStation> {
       // add device
       Builder(
         builder: (ctx) => IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return ScanBleDevice(
-                        request: state.cloud,
-                        action: Action.bind,
-                      );
-                    },
-                  ),
-                );
-              },
-            ),
+          icon: Icon(Icons.add),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return ScanBleDevice(
+                    request: state.cloud,
+                    action: Action.bind,
+                  );
+                },
+              ),
+            );
+          },
+        ),
       ),
       // switch device
       Builder(
         builder: (ctx) => IconButton(
-              icon: Icon(Icons.swap_horiz),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    fullscreenDialog: true,
-                    builder: (context) {
-                      return StationList(
-                        request: state.cloud,
-                        stationList: null,
-                        currentDevSN: state.device.deviceSN,
-                      );
-                    },
-                  ),
-                );
-              },
-            ),
+          icon: Icon(Icons.swap_horiz),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                fullscreenDialog: true,
+                builder: (context) {
+                  return StationList(
+                    request: state.cloud,
+                    stationList: null,
+                    currentDevSN: state.device.deviceSN,
+                  );
+                },
+              ),
+            );
+          },
+        ),
       ),
     ];
   }
@@ -403,14 +403,14 @@ class _MyStationState extends State<MyStation> {
                           color: Colors.transparent,
                           child: InkWell(
                             onTap: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return StorageDetail(usageData);
-                                    },
-                                    fullscreenDialog: true,
-                                  ),
-                                ),
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return StorageDetail(usageData);
+                                },
+                                fullscreenDialog: true,
+                              ),
+                            ),
                             child: Container(
                               height: 64,
                               padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
@@ -431,11 +431,11 @@ class _MyStationState extends State<MyStation> {
                         actionButton(
                           i18n('Network Detail'),
                           () => Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) {
-                                  return Network();
-                                }),
-                              ),
+                            context,
+                            MaterialPageRoute(builder: (context) {
+                              return Network();
+                            }),
+                          ),
                           Row(
                             children: <Widget>[
                               Text(
@@ -454,21 +454,21 @@ class _MyStationState extends State<MyStation> {
                         actionButton(
                           i18n('Device Info'),
                           () => Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) {
-                                  return DeviceInfo();
-                                }),
-                              ),
+                            context,
+                            MaterialPageRoute(builder: (context) {
+                              return DeviceInfo();
+                            }),
+                          ),
                           null,
                         ),
                         actionButton(
                           i18n('System Manage'),
                           () => Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) {
-                                  return System();
-                                }),
-                              ),
+                            context,
+                            MaterialPageRoute(builder: (context) {
+                              return System();
+                            }),
+                          ),
                           null,
                         ),
                       ],

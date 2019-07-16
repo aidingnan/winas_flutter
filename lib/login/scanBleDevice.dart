@@ -255,12 +255,12 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                                       ctx,
                                       MaterialPageRoute(
                                         builder: (context) => ConfigDevice(
-                                              device: device,
-                                              request: widget.request,
-                                              action: widget.action,
-                                              onClose: () =>
-                                                  deviceConnection?.cancel(),
-                                            ),
+                                          device: device,
+                                          request: widget.request,
+                                          action: widget.action,
+                                          onClose: () =>
+                                              deviceConnection?.cancel(),
+                                        ),
                                       ),
                                     );
                                   },
@@ -351,12 +351,12 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
               height: 64,
               child: FlatButton(
                 onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (ctx) => BleHelp(),
-                        fullscreenDialog: true,
-                      ),
-                    ),
+                  context,
+                  MaterialPageRoute(
+                    builder: (ctx) => BleHelp(),
+                    fullscreenDialog: true,
+                  ),
+                ),
                 child: Text(
                   i18n('BLE No Results Text'),
                   style: TextStyle(color: Colors.blue, fontSize: 12),

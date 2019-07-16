@@ -150,8 +150,8 @@ class _SearchState extends State<Search> {
               showDialog(
                 context: ctx,
                 builder: (BuildContext context) => RenameDialog(
-                      entry: entry,
-                    ),
+                  entry: entry,
+                ),
               ).then((success) => _onSearch(state));
             },
           },

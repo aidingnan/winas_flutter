@@ -41,14 +41,14 @@ LoadingInstance showLoading(
 ) {
   final router = TransparentPageRoute(
     builder: (_) => WillPopScope(
-          onWillPop: () => Future.value(false),
-          child: Container(
-            constraints: BoxConstraints.expand(),
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
-          ),
+      onWillPop: () => Future.value(false),
+      child: Container(
+        constraints: BoxConstraints.expand(),
+        child: Center(
+          child: CircularProgressIndicator(),
         ),
+      ),
+    ),
   );
   final loadingInstance = LoadingInstance(context, router);
   Navigator.push(context, router);
@@ -65,25 +65,25 @@ void showNormalDialog<T>({BuildContext context, String text, Model model}) {
   showDialog<T>(
     context: context,
     builder: (BuildContext context) => WillPopScope(
-          onWillPop: () => Future.value(model.shouldClose),
-          child: SimpleDialog(
-            elevation: 2.0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            children: <Widget>[
-              Container(height: 16),
-              Center(
-                child: CircularProgressIndicator(),
-              ),
-              Container(height: 16),
-              Center(
-                child: Text(text),
-              ),
-              Container(height: 16),
-            ],
-          ),
+      onWillPop: () => Future.value(model.shouldClose),
+      child: SimpleDialog(
+        elevation: 2.0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
         ),
+        children: <Widget>[
+          Container(height: 16),
+          Center(
+            child: CircularProgressIndicator(),
+          ),
+          Container(height: 16),
+          Center(
+            child: Text(text),
+          ),
+          Container(height: 16),
+        ],
+      ),
+    ),
   ).then<void>((T value) {});
 }
 
@@ -168,20 +168,20 @@ class DownloadingDialog {
     showDialog<T>(
       context: ctx,
       builder: (BuildContext context) => WillPopScope(
-            onWillPop: () => Future.value(model.shouldClose),
-            child: SimpleDialog(
-              elevation: 2.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              children: <Widget>[
-                Progress(
-                  ctrl: ctrl,
-                  onCancel: cancel,
-                ),
-              ],
-            ),
+        onWillPop: () => Future.value(model.shouldClose),
+        child: SimpleDialog(
+          elevation: 2.0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
+          children: <Widget>[
+            Progress(
+              ctrl: ctrl,
+              onCancel: cancel,
+            ),
+          ],
+        ),
+      ),
     ).then<void>((T value) {});
   }
 

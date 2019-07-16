@@ -72,11 +72,11 @@ class _AccountInfoState extends State<AccountInfo> {
               children: <Widget>[
                 GestureDetector(
                   onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) {
-                          return Detail();
-                        }),
-                      ),
+                    context,
+                    MaterialPageRoute(builder: (context) {
+                      return Detail();
+                    }),
+                  ),
                   child: Container(
                     height: 72,
                     padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
@@ -143,28 +143,28 @@ class _AccountInfoState extends State<AccountInfo> {
                 actionButton(
                   i18n('Account And Security'),
                   () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return Security();
-                          },
-                          settings: RouteSettings(name: 'security'),
-                        ),
-                      ),
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return Security();
+                      },
+                      settings: RouteSettings(name: 'security'),
+                    ),
+                  ),
                   null,
                 ),
                 actionButton(
                   i18n('Settings'),
                   () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Settings(
-                                backupWorker: widget.backupWorker,
-                                toggleBackup: widget.toggleBackup,
-                              ),
-                          settings: RouteSettings(name: 'settings'),
-                        ),
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Settings(
+                        backupWorker: widget.backupWorker,
+                        toggleBackup: widget.toggleBackup,
                       ),
+                      settings: RouteSettings(name: 'settings'),
+                    ),
+                  ),
                   null,
                 ),
                 actionButton(
@@ -173,22 +173,22 @@ class _AccountInfoState extends State<AccountInfo> {
                     await showDialog(
                       context: this.context,
                       builder: (BuildContext context) => AlertDialog(
-                            title: Text(i18n('Clean Cache')),
-                            content: Text(i18n('Clean Cache Text')),
-                            actions: <Widget>[
-                              FlatButton(
-                                  textColor: Theme.of(context).primaryColor,
-                                  child: Text(i18n('Cancel')),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  }),
-                              FlatButton(
-                                textColor: Theme.of(context).primaryColor,
-                                child: Text(i18n('Confirm')),
-                                onPressed: () => clearCache(context),
-                              )
-                            ],
-                          ),
+                        title: Text(i18n('Clean Cache')),
+                        content: Text(i18n('Clean Cache Text')),
+                        actions: <Widget>[
+                          FlatButton(
+                              textColor: Theme.of(context).primaryColor,
+                              child: Text(i18n('Cancel')),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              }),
+                          FlatButton(
+                            textColor: Theme.of(context).primaryColor,
+                            child: Text(i18n('Confirm')),
+                            onPressed: () => clearCache(context),
+                          )
+                        ],
+                      ),
                     );
                   },
                   Text(cacheSize != null ? prettySize(cacheSize) : ''),
@@ -196,11 +196,11 @@ class _AccountInfoState extends State<AccountInfo> {
                 actionButton(
                   i18n('About'),
                   () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) {
-                          return About();
-                        }),
-                      ),
+                    context,
+                    MaterialPageRoute(builder: (context) {
+                      return About();
+                    }),
+                  ),
                   Row(
                     children: <Widget>[
                       Text(i18n('Client Version', {'version': version})),

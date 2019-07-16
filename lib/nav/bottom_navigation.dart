@@ -49,19 +49,19 @@ List<FileNavView> get fileNavViews => [
         nav: 'public',
         color: Colors.orange,
         onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return Files(
-                    node: Node(
-                      name: i18n('Public Drive'),
-                      tag: 'built-in',
-                      location: 'built-in',
-                    ),
-                  );
-                },
-              ),
-            ),
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return Files(
+                node: Node(
+                  name: i18n('Public Drive'),
+                  tag: 'built-in',
+                  location: 'built-in',
+                ),
+              );
+            },
+          ),
+        ),
       ),
       FileNavView(
         icon: Icon(Icons.refresh, color: Colors.white),
@@ -69,11 +69,11 @@ List<FileNavView> get fileNavViews => [
         nav: 'backup',
         color: Colors.blue,
         onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => BackupView(),
-              ),
-            ),
+          context,
+          MaterialPageRoute(
+            builder: (context) => BackupView(),
+          ),
+        ),
       ),
       FileNavView(
         icon: Icon(Icons.swap_vert, color: Colors.white),
@@ -81,11 +81,11 @@ List<FileNavView> get fileNavViews => [
         nav: 'transfer',
         color: Colors.purple,
         onTap: (context) => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => Transfer(),
-              ),
-            ),
+          context,
+          MaterialPageRoute(
+            builder: (context) => Transfer(),
+          ),
+        ),
       ),
     ];
 
@@ -264,68 +264,68 @@ class _BottomNavigationState extends State<BottomNavigation>
             context: ctx,
             barrierDismissible: false,
             builder: (BuildContext context) => WillPopScope(
-                  onWillPop: () => Future.value(false),
-                  child: AlertDialog(
-                    content: Text(
+              onWillPop: () => Future.value(false),
+              child: AlertDialog(
+                content: Text(
+                  i18n(
+                    'Preivous Backup Detected',
+                    {'deviceName': deviceName},
+                  ),
+                ),
+                actions: <Widget>[
+                  FlatButton(
+                    textColor: Theme.of(context).primaryColor,
+                    child: Text(i18n('Use New Backup')),
+                    onPressed: () {
+                      Navigator.pop(context, true);
+                    },
+                  ),
+                  FlatButton(
+                    textColor: Theme.of(context).primaryColor,
+                    child: Text(
                       i18n(
-                        'Preivous Backup Detected',
+                        'Use Previous Backup',
                         {'deviceName': deviceName},
                       ),
                     ),
-                    actions: <Widget>[
-                      FlatButton(
-                        textColor: Theme.of(context).primaryColor,
-                        child: Text(i18n('Use New Backup')),
-                        onPressed: () {
-                          Navigator.pop(context, true);
-                        },
-                      ),
-                      FlatButton(
-                        textColor: Theme.of(context).primaryColor,
-                        child: Text(
-                          i18n(
-                            'Use Previous Backup',
-                            {'deviceName': deviceName},
-                          ),
-                        ),
-                        onPressed: () async {
-                          AppState state = store.state;
+                    onPressed: () async {
+                      AppState state = store.state;
 
-                          try {
-                            final res = await state.apis.req(
-                              'drive',
-                              {'uuid': sameLabelDrive.uuid},
-                            );
-                            final client = res.data['client'];
-                            List idList = client['idList'] ?? [client['id']];
-                            idList.add(machineId);
-                            final props = {
-                              'op': 'backup',
-                              'client': {
-                                'status': 'Idle',
-                                'lastBackupTime': client['lastBackupTime'],
-                                'id': client['id'],
-                                'idList': idList,
-                                'disabled': false,
-                                'type': client['type'],
-                              }
-                            };
-
-                            await state.apis.req('updateDrive', {
-                              'uuid': sameLabelDrive.uuid,
-                              'props': props,
-                            });
-                          } catch (e) {
-                            print(e);
-                            Navigator.pop(context, false);
-                            return;
+                      try {
+                        final res = await state.apis.req(
+                          'drive',
+                          {'uuid': sameLabelDrive.uuid},
+                        );
+                        final client = res.data['client'];
+                        List idList = client['idList'] ?? [client['id']];
+                        idList.add(machineId);
+                        final props = {
+                          'op': 'backup',
+                          'client': {
+                            'status': 'Idle',
+                            'lastBackupTime': client['lastBackupTime'],
+                            'id': client['id'],
+                            'idList': idList,
+                            'disabled': false,
+                            'type': client['type'],
                           }
-                          Navigator.pop(context, true);
-                        },
-                      )
-                    ],
-                  ),
-                ),
+                        };
+
+                        await state.apis.req('updateDrive', {
+                          'uuid': sameLabelDrive.uuid,
+                          'props': props,
+                        });
+                      } catch (e) {
+                        print(e);
+                        Navigator.pop(context, false);
+                        return;
+                      }
+                      Navigator.pop(context, true);
+                    },
+                  )
+                ],
+              ),
+            ),
           );
           if (success == false) {
             throw 'update backup drive id list failed';

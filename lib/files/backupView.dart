@@ -141,21 +141,21 @@ class _BackupViewState extends State<BackupView> {
             return Material(
               child: InkWell(
                 onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return Files(
-                            node: Node(
-                              name: drive.label,
-                              driveUUID: drive.uuid,
-                              dirUUID: drive.uuid,
-                              tag: 'dir',
-                              location: 'backup',
-                            ),
-                          );
-                        },
-                      ),
-                    ),
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return Files(
+                        node: Node(
+                          name: drive.label,
+                          driveUUID: drive.uuid,
+                          dirUUID: drive.uuid,
+                          tag: 'dir',
+                          location: 'backup',
+                        ),
+                      );
+                    },
+                  ),
+                ),
                 child: Container(
                   constraints: BoxConstraints.expand(),
                   padding: EdgeInsets.fromLTRB(16, 12, 16, 12),

@@ -201,13 +201,13 @@ class _PhotosState extends State<Photos> {
       child: Material(
         child: InkWell(
           onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return PhotoList(album: album);
-                  },
-                ),
-              ),
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return PhotoList(album: album);
+              },
+            ),
+          ),
           child: Container(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,

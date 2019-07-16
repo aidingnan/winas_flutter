@@ -179,28 +179,28 @@ class _DetailState extends State<Detail> {
                     children: rowList
                         .map(
                           (row) => Container(
-                                // height: 48,
-                                padding: EdgeInsets.fromLTRB(0, 12, 16, 12),
-                                child: Row(
-                                  children: <Widget>[
-                                    Container(width: 56),
-                                    Expanded(
-                                      flex: 2,
-                                      child: Text(row[0]),
-                                    ),
-                                    Expanded(
-                                      flex: 4,
-                                      child: Container(
-                                        padding: EdgeInsets.only(left: 24),
-                                        child: Text(
-                                          row[1],
-                                          softWrap: true,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                            // height: 48,
+                            padding: EdgeInsets.fromLTRB(0, 12, 16, 12),
+                            child: Row(
+                              children: <Widget>[
+                                Container(width: 56),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(row[0]),
                                 ),
-                              ),
+                                Expanded(
+                                  flex: 4,
+                                  child: Container(
+                                    padding: EdgeInsets.only(left: 24),
+                                    child: Text(
+                                      row[1],
+                                      softWrap: true,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         )
                         .toList(),
                   )

@@ -204,21 +204,21 @@ class _StationListState extends State<StationList> {
         itemExtent: 256,
         delegate: SliverChildBuilderDelegate(
           (context, index) => Column(
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.all(64),
-                    child: Icon(
-                      Icons.error_outline,
-                      color: Colors.redAccent,
-                      size: 72,
-                    ),
-                  ),
-                  Text(
-                    i18n('Pull to Refresh Device List'),
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.all(64),
+                child: Icon(
+                  Icons.error_outline,
+                  color: Colors.redAccent,
+                  size: 72,
+                ),
               ),
+              Text(
+                i18n('Pull to Refresh Device List'),
+                style: TextStyle(fontSize: 16),
+              ),
+            ],
+          ),
           childCount: 1,
         ),
       ),

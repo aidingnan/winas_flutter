@@ -110,24 +110,24 @@ class _TransferState extends State<Transfer> {
               await showDialog(
                 context: this.context,
                 builder: (BuildContext context) => AlertDialog(
-                      title: Text(i18n('Transfer Task Failed')),
-                      content: Text('${item.error}'),
-                      actions: <Widget>[
-                        FlatButton(
-                            textColor: Theme.of(context).primaryColor,
-                            child: Text(i18n('Cancel')),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            }),
-                        FlatButton(
-                            textColor: Theme.of(context).primaryColor,
-                            child: Text(i18n('Retry Transfer Task')),
-                            onPressed: () {
-                              Navigator.pop(context);
-                              resumeTask(items, index, state);
-                            })
-                      ],
-                    ),
+                  title: Text(i18n('Transfer Task Failed')),
+                  content: Text('${item.error}'),
+                  actions: <Widget>[
+                    FlatButton(
+                        textColor: Theme.of(context).primaryColor,
+                        child: Text(i18n('Cancel')),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        }),
+                    FlatButton(
+                        textColor: Theme.of(context).primaryColor,
+                        child: Text(i18n('Retry Transfer Task')),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          resumeTask(items, index, state);
+                        })
+                  ],
+                ),
               );
             },
           ),

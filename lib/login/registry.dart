@@ -572,16 +572,16 @@ class _RegistryState extends State<Registry> {
                 ? _nextStep(ctx, store)
                 : _wechatNextStep(ctx, store),
             builder: (context, callback) => FloatingActionButton(
-                  onPressed: callback,
-                  tooltip: i18n('Next Step'),
-                  backgroundColor: Colors.white70,
-                  elevation: 0.0,
-                  child: Icon(
-                    Icons.chevron_right,
-                    color: Colors.teal,
-                    size: 48,
-                  ),
-                ),
+              onPressed: callback,
+              tooltip: i18n('Next Step'),
+              backgroundColor: Colors.white70,
+              elevation: 0.0,
+              child: Icon(
+                Icons.chevron_right,
+                color: Colors.teal,
+                size: 48,
+              ),
+            ),
           );
         },
       ),
