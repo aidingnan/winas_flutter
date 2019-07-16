@@ -212,21 +212,27 @@ class _FilesState extends State<Files> {
     return;
   }
 
-  Future firstRefresh(Store<AppState> store) async {
+  Future refreshAndSaveToken(Store<AppState> store) async {
     final state = store.state;
-    // refresh token
+    String clientId = await getClientId();
+    final res = await state.cloud.req('refreshToken', {'clientId': clientId});
+    if (res?.data != null && res.data['token'] != null) {
+      print('new Token ${res.data['token']}');
+      state.apis.updateToken(res.data['token']);
+
+      // cloud apis
+      store.dispatch(UpdateCloudAction(state.cloud));
+
+      // stations apis
+      store.dispatch(UpdateApisAction(state.apis));
+    }
+  }
+
+  Future firstRefresh(Store<AppState> store) async {
     try {
-      String clientId = await getClientId();
-      final res = await state.cloud.req('refreshToken', {'clientId': clientId});
-      if (res?.data != null && res.data['token'] != null) {
-        print('new Token ${res.data['token']}');
-        state.apis.updateToken(res.data['token']);
-
-        // cloud apis
-        store.dispatch(UpdateCloudAction(state.cloud));
-
-        // stations apis
-        store.dispatch(UpdateApisAction(state.apis));
+      if (widget.node.tag == 'home') {
+        // refresh token
+        await refreshAndSaveToken(store);
       }
       await refresh(store.state);
     } catch (e) {

@@ -102,11 +102,14 @@ class _BottomNavigationState extends State<BottomNavigation>
   StreamSubscription<String> intentListener;
   StreamSubscription<TokenExpiredEvent> tokenExpiredListener;
   StreamSubscription<StationNotOnlineEvent> stationNotOnlineListener;
+  Timer refreshTimer;
 
   /// init works onStart:
   /// 1. autoBackup
   /// 2. add intent Listener
-  initWorks(AppState state) {
+  /// 3. refresh token
+  initWorks(Store<AppState> store) {
+    final state = store.state;
     backupWorker = BackupWorker(state.apis, state.config.cellularBackup);
 
     // start autoBackup
@@ -127,6 +130,32 @@ class _BottomNavigationState extends State<BottomNavigation>
         );
       }
     });
+
+    // refresh token every 1 hour
+    refreshTimer = Timer.periodic(Duration(hours: 24), (Timer timer) {
+      if (this.mounted) {
+        refreshAndSaveToken(store);
+      } else {
+        timer.cancel();
+      }
+    });
+  }
+
+  Future refreshAndSaveToken(Store<AppState> store) async {
+    print('refreshAndSaveToken');
+    final state = store.state;
+    String clientId = await getClientId();
+    final res = await state.cloud.req('refreshToken', {'clientId': clientId});
+    if (res?.data != null && res.data['token'] != null) {
+      print('new Token ${res.data['token']}');
+      state.apis.updateToken(res.data['token']);
+
+      // cloud apis
+      store.dispatch(UpdateCloudAction(state.cloud));
+
+      // stations apis
+      store.dispatch(UpdateApisAction(state.apis));
+    }
   }
 
   List<NavigationIconView> get _navigationViews => <NavigationIconView>[
@@ -207,6 +236,7 @@ class _BottomNavigationState extends State<BottomNavigation>
   void dispose() {
     super.dispose();
     backupWorker?.abort();
+    refreshTimer?.cancel();
     intentListener?.cancel();
     tokenExpiredListener?.cancel();
     stationNotOnlineListener?.cancel();
@@ -363,7 +393,7 @@ class _BottomNavigationState extends State<BottomNavigation>
     }
 
     return StoreConnector<AppState, AppState>(
-      onInit: (store) => initWorks(store.state),
+      onInit: (store) => initWorks(store),
       onDispose: (store) => {},
       converter: (store) => store.state,
       builder: (ctx, state) {
