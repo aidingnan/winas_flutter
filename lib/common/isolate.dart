@@ -108,6 +108,7 @@ void isolateUpload(SendPort sendPort) {
     final apisJson = message[4] as String;
     final isCloud = message[5] as bool;
     final answerSend = message[6] as SendPort;
+    final progressSend = message[7] as SendPort;
 
     final dir = Entry.fromMap(jsonDecode(entryJson));
 
@@ -138,13 +139,19 @@ void isolateUpload(SendPort sendPort) {
       'file': UploadFileInfo(file, jsonEncode(formDataOptions)),
     };
 
-    apis.upload(args, (error, value) {
-      if (error != null) {
-        answerSend.send(error.toString());
-      } else {
-        answerSend.send(null);
-      }
-    });
+    apis.upload(
+      args,
+      (error, value) {
+        if (error != null) {
+          answerSend.send(error.toString());
+        } else {
+          answerSend.send(null);
+        }
+      },
+      onProgress: (int count, int total) {
+        progressSend.send([count, total]);
+      },
+    );
 
     port.close();
   });
@@ -172,7 +179,7 @@ Future<String> hashViaIsolate(String filePath,
 /// upload file in Isolate
 Future<void> uploadViaIsolate(
     Apis apis, Entry targetDir, String filePath, String hash, int mtime,
-    {CancelIsolate cancelIsolate}) async {
+    {CancelIsolate cancelIsolate, Function updateSpeed}) async {
   final response = ReceivePort();
 
   final work = await Isolate.spawn(isolateUpload, response.sendPort);
@@ -184,6 +191,7 @@ Future<void> uploadViaIsolate(
   // sendPort from isolateHash
   final sendPort = await response.first as SendPort;
   final answer = ReceivePort();
+  final progressRes = ReceivePort();
 
   // send filePath and sendPort(to get answer) to isolateHash
   // Object in params need to convert to String
@@ -194,6 +202,7 @@ Future<void> uploadViaIsolate(
   // final apisJson = message[4] as String;
   // final isCloud = message[5] as bool;
   // final answerSend = message[6] as SendPort;
+  // final progressSend = message[7] as SendPort;
 
   sendPort.send([
     targetDir.toString(),
@@ -202,8 +211,33 @@ Future<void> uploadViaIsolate(
     mtime,
     apis.toString(),
     apis.isCloud,
-    answer.sendPort
+    answer.sendPort,
+    progressRes.sendPort,
   ]);
+  List<int> uploadedList = [];
+  List<int> timeList = [];
+
+  progressRes.listen((res) {
+    // print('progressRes.listen res ${res[0]}, ${res[1]}');
+    int uploaded = res[0];
+    int now = DateTime.now().millisecondsSinceEpoch;
+    uploadedList.insert(0, uploaded);
+    timeList.insert(0, now);
+    final deltaSize = uploadedList.first - uploadedList.last;
+    final deltaTime = timeList.first - timeList.last + 1;
+    final speed = deltaSize / deltaTime * 1000;
+    updateSpeed(speed);
+    if (deltaTime > 4 * 1000 || uploadedList.length > 256) {
+      uploadedList.removeLast();
+      timeList.removeLast();
+    }
+  });
+
   final error = await answer.first;
+
+  progressRes.close();
+  uploadedList.length = 0;
+  timeList.length = 0;
+
   if (error != null) throw error;
 }

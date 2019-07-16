@@ -83,6 +83,12 @@ class Worker {
 
   bool get isAborted => status == Status.aborted;
 
+  String speed = '';
+
+  void updateSpeed(speedValue) {
+    this.speed = '${prettySize(speedValue)}/s';
+  }
+
   /// get all local photos and videos
   Future<List<AssetEntity>> getAssetList() async {
     if (isAborted) return [];
@@ -364,7 +370,7 @@ class Worker {
     }
 
     await uploadViaIsolate(apis, targetDir, filePath, hash, mtime,
-        cancelIsolate: cancelUpload);
+        cancelIsolate: cancelUpload, updateSpeed: updateSpeed);
 
     // delete tmp file, only in iOS
     if (Platform.isIOS) {
@@ -593,6 +599,9 @@ class BackupWorker {
 
   bool get isDiffing => isRunning && worker?.ignored == worker?.finished;
 
-  String get progress =>
-      worker == null ? '' : '${worker.finished} / ${worker.total}';
+  String get progress => worker == null
+      ? ''
+      : isDiffing
+          ? '${(worker.finished / (worker.total + 1) * 100).floor()}%'
+          : '${worker.finished} / ${worker.total}   ${worker.speed ?? ''}';
 }
