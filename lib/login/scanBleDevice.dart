@@ -224,6 +224,7 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                                     BluetoothDevice device;
 
                                     final loadingInstance = showLoading(ctx);
+                                    print('before connectAsync');
                                     try {
                                       device = await connectAsync(scanResult);
                                     } catch (e) {
@@ -236,7 +237,7 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                                       );
                                       return;
                                     }
-
+                                    print('after connectAsync');
                                     try {
                                       await reqAuth(device);
                                     } catch (e) {

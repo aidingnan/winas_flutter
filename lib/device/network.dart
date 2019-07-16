@@ -1,9 +1,11 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Action;
 import 'package:flutter_redux/flutter_redux.dart';
 
 import './info.dart';
 import '../redux/redux.dart';
 import '../common/utils.dart';
+import '../login/ble.dart';
+import '../login/scanBleDevice.dart';
 
 class Network extends StatefulWidget {
   Network({Key key}) : super(key: key);
@@ -41,6 +43,18 @@ class _NetworkState extends State<Network> {
     }
   }
 
+  void startScanBLEDevice(AppState state, Action action) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (context) {
+          return ScanBleDevice(request: state.cloud, action: action);
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
@@ -54,6 +68,43 @@ class _NetworkState extends State<Network> {
               backgroundColor: Colors.white10,
               brightness: Brightness.light,
               iconTheme: IconThemeData(color: Colors.black38),
+              actions: <Widget>[
+                Builder(builder: (ctx) {
+                  return IconButton(
+                    icon: Icon(Icons.more_horiz),
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: ctx,
+                        builder: (BuildContext c) {
+                          return SafeArea(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Material(
+                                  child: InkWell(
+                                    onTap: () async {
+                                      Navigator.pop(c);
+                                      startScanBLEDevice(state, Action.wifi);
+                                    },
+                                    child: Container(
+                                      width: double.infinity,
+                                      padding: EdgeInsets.all(16),
+                                      child: Text(
+                                        i18n('Configuring Device WiFi'),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  );
+                })
+              ],
             ),
             body: loading
                 ? Container(
