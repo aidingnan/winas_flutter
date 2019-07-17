@@ -14,22 +14,20 @@ class PhotoItem extends StatefulWidget {
   final double cellSize;
   final Select select;
   @override
-  _PhotoItemState createState() => _PhotoItemState(item);
+  _PhotoItemState createState() => _PhotoItemState();
 }
 
 class _PhotoItemState extends State<PhotoItem> {
-  final Entry entry;
-  _PhotoItemState(this.entry);
   Uint8List thumbData;
   ThumbTask task;
 
   Future<void> _getThumb(AppState state) async {
     // check hash
-    if (entry.hash == null) return;
+    if (widget.item.hash == null) return;
 
     // try get cached file
     final cm = await CacheManager.getInstance();
-    final data = await cm.getCachedThumbData(entry);
+    final data = await cm.getCachedThumbData(widget.item);
     if (data != null && this.mounted) {
       setState(() {
         thumbData = data;
@@ -39,7 +37,7 @@ class _PhotoItemState extends State<PhotoItem> {
 
     // download thumb via queue
     final tm = TaskManager.getInstance();
-    TaskProps props = TaskProps(entry: entry, state: state);
+    TaskProps props = TaskProps(entry: widget.item, state: state);
     task = tm.createThumbTask(props, (error, value) {
       if (error == null && value is Uint8List && this.mounted) {
         setState(() {
@@ -52,9 +50,9 @@ class _PhotoItemState extends State<PhotoItem> {
   _onTap(BuildContext ctx) {
     print('onTap item: ${widget.item.name} ${widget.item.metadata}');
     if (widget.select.selectMode()) {
-      widget.select.toggleSelect(entry);
+      widget.select.toggleSelect(widget.item);
     } else {
-      widget.showPhoto(ctx, entry, thumbData);
+      widget.showPhoto(ctx, widget.item, thumbData);
     }
   }
 
