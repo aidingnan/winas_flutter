@@ -224,7 +224,9 @@ Future<void> uploadViaIsolate(
     uploadedList.insert(0, uploaded);
     timeList.insert(0, now);
     final deltaSize = uploadedList.first - uploadedList.last;
-    final deltaTime = timeList.first - timeList.last + 1;
+
+    // add 40 to avoid show a mistake large speed
+    final deltaTime = timeList.first - timeList.last + 40;
     final speed = deltaSize / deltaTime * 1000;
     updateSpeed(speed);
     if (deltaTime > 4 * 1000 || uploadedList.length > 256) {

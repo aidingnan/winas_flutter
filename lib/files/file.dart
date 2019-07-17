@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:pocket_drive/common/eventBus.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter/material.dart' hide Intent;
 import 'package:open_file/open_file.dart';
@@ -105,13 +107,14 @@ class _FilesState extends State<Files> {
   List<Entry> files = [];
   List<DirPath> paths = [];
   ScrollController myScrollController = ScrollController();
+  StreamSubscription<RefreshEvent> refreshListener;
 
   Function actions;
 
   Select select;
   EntrySort entrySort;
 
-  Future refresh(AppState state, {bool isRetry: false}) async {
+  Future<void> refresh(AppState state, {bool isRetry: false}) async {
     String driveUUID;
     String dirUUID;
     if (isRetry == true) {
@@ -213,12 +216,20 @@ class _FilesState extends State<Files> {
     return;
   }
 
-  Future firstRefresh(Store<AppState> store) async {
+  Future<void> firstRefresh(Store<AppState> store) async {
     try {
       if (widget?.justonce?.fired == false) {
         await widget.justonce.fire(store);
       }
       await refresh(store.state);
+
+      /// add Listener to refresh event
+      refreshListener = eventBus.on<RefreshEvent>().listen((event) {
+        print('RefreshEvent ${event.dirUUID} ${currentNode?.dirUUID}');
+        if (currentNode?.dirUUID == event.dirUUID && event.dirUUID != null) {
+          refresh(store.state).catchError(print);
+        }
+      });
     } catch (e) {
       print(e);
       loading = false;
@@ -491,7 +502,13 @@ class _FilesState extends State<Files> {
         ];
   }
 
-  openSearch(context, state) {
+  @override
+  void dispose() {
+    refreshListener?.cancel();
+    super.dispose();
+  }
+
+  void openSearch(context, state) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -507,7 +524,7 @@ class _FilesState extends State<Files> {
   }
 
   /// upload new file to current directroy
-  upload(String filePath, AppState state) {
+  void upload(String filePath, AppState state) {
     final cm = TransferManager.getInstance();
     Entry targetDir = Entry(
       uuid: currentNode.dirUUID,
@@ -566,7 +583,7 @@ class _FilesState extends State<Files> {
     );
   }
 
-  showNoPermissionDialog(BuildContext ctx) async {
+  Future<void> showNoPermissionDialog(BuildContext ctx) async {
     await showDialog(
       context: ctx,
       barrierDismissible: false,

@@ -26,3 +26,9 @@ class StationNotOnlineEvent {
 
   StationNotOnlineEvent(this.text);
 }
+
+/// Token Expired Event.
+class RefreshEvent {
+  String dirUUID;
+  RefreshEvent(this.dirUUID);
+}

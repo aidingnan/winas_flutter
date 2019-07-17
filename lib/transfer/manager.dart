@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:pocket_drive/common/eventBus.dart';
 import 'package:uuid/uuid.dart';
 import 'package:async/async.dart';
 import 'package:path_provider/path_provider.dart';
@@ -102,7 +103,10 @@ class TransferItem {
     this.deltaTimeList.insert(0, now);
 
     final deltaSize = this.deltaSizeList.first - this.deltaSizeList.last;
-    final deltaTime = this.deltaTimeList.first - this.deltaTimeList.last;
+
+    // add 40 to avoid show a mistake large speed
+    final deltaTime = this.deltaTimeList.first - this.deltaTimeList.last + 40;
+
     final speed = deltaSize / deltaTime * 1000;
     this.speed = '${prettySize(speed)}/s';
 
@@ -147,6 +151,11 @@ class TransferItem {
   void finish() {
     this.finishedTime = DateTime.now().millisecondsSinceEpoch;
     this.status = 'finished';
+
+    // send event to trigger refresh
+    if (this.transType != TransType.download) {
+      eventBus.fire(RefreshEvent(this.targetDir.uuid));
+    }
   }
 
   void fail(dynamic error) {
