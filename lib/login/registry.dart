@@ -293,8 +293,14 @@ class _RegistryState extends State<Registry> {
         store.dispatch(LoginAction(account));
 
         // device login
-        await deviceLogin(context, request, account, store);
-        _loadingOff();
+        try {
+          await deviceLogin(context, request, account, store);
+        } catch (e) {
+          print(e);
+          _loadingOff();
+          showSnackBar(context, i18n('Login Failed'));
+          return;
+        }
       } else {
         // request smsTicket via code
         _ticket = null;
