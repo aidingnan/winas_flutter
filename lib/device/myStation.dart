@@ -136,8 +136,8 @@ class _MyStationState extends State<MyStation> {
       });
       return null;
     }
-    var total = prettySize(space['total'] * 1024);
-    var used = prettySize((space['total'] - space['available']) * 1024);
+    var total = prettySize((space['available'] + space['used']) * 1024);
+    var used = prettySize(space['used'] * 1024);
 
     var usedPercent = space['used'] / (space['available'] + space['used']);
     int videoRaw = stats['video']['totalSize'];
