@@ -261,6 +261,7 @@ class _RegistryState extends State<Registry> {
 
       // _userExist == true, login via code, bind wechat, login station
       if (_userExist) {
+        _loading(context);
         // get token
         var res;
         try {
@@ -282,6 +283,7 @@ class _RegistryState extends State<Registry> {
           });
         } catch (err) {
           print(err);
+          _loadingOff();
           showSnackBar(context, i18n('Bind WeChat Failed'));
           return;
         }
@@ -292,6 +294,7 @@ class _RegistryState extends State<Registry> {
 
         // device login
         await deviceLogin(context, request, account, store);
+        _loadingOff();
       } else {
         // request smsTicket via code
         _ticket = null;
