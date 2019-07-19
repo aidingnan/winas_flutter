@@ -9,7 +9,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 
 import './delete.dart';
@@ -583,64 +582,8 @@ class _FilesState extends State<Files> {
     );
   }
 
-  Future<void> showNoPermissionDialog(BuildContext ctx) async {
-    await showDialog(
-      context: ctx,
-      barrierDismissible: false,
-      builder: (BuildContext context) => WillPopScope(
-        onWillPop: () => Future.value(false),
-        child: AlertDialog(
-          content: Text(i18n('No Storage Permission Warning')),
-          actions: <Widget>[
-            FlatButton(
-              textColor: Theme.of(context).primaryColor,
-              child: Text(i18n('Cancel')),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            StoreConnector<AppState, VoidCallback>(
-              converter: (store) => () => store.dispatch(
-                    UpdateConfigAction(
-                      Config.combine(
-                        store.state.config,
-                        Config(cellularTransfer: true),
-                      ),
-                    ),
-                  ),
-              builder: (context, callback) {
-                return FlatButton(
-                  textColor: Theme.of(context).primaryColor,
-                  child: Text(i18n('Goto Open Storage Permission')),
-                  onPressed: () async {
-                    await PermissionHandler().openAppSettings();
-                    Navigator.pop(context);
-                  },
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   /// select New Image/Video/File/Folder
   Future<void> showUploadSheet(context, state) async {
-    if (Platform.isAndroid) {
-      PermissionStatus permission = await PermissionHandler()
-          .checkPermissionStatus(PermissionGroup.storage);
-      if (permission.value != 2) {
-        Map<PermissionGroup, PermissionStatus> permissions =
-            await PermissionHandler()
-                .requestPermissions([PermissionGroup.storage]);
-        if (permissions[PermissionGroup.storage]?.value != 2) {
-          await showNoPermissionDialog(context);
-          return;
-        }
-      }
-    }
-
     showModalBottomSheet(
       context: this.context,
       builder: (BuildContext c) {
