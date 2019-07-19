@@ -96,7 +96,9 @@ class Worker {
     if (!result) return [];
     List<AssetPathEntity> pathList = await PhotoManager.getAssetPathList();
     List<AssetEntity> localAssetList = await pathList[0].assetList;
-    localAssetList.sort((a, b) => b.createTime - a.createTime);
+
+    /// older(small) first
+    localAssetList.sort((a, b) => a.createTime - b.createTime);
     return localAssetList;
   }
 
