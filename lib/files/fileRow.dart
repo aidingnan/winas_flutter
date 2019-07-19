@@ -450,7 +450,7 @@ class _FileRowState extends State<FileRow> {
         Expanded(
           flex: 1,
           child: Container(
-            decoration: isLast
+            decoration: isLast == true
                 ? null
                 : BoxDecoration(
                     border: Border(

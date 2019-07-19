@@ -205,7 +205,7 @@ class _SearchState extends State<Search> {
                     DeleteDialog(entries: [entry]),
               );
 
-              if (success) {
+              if (success == true) {
                 await _onSearch(state);
                 showSnackBar(ctx, i18n('Delete Success'));
               } else {
@@ -405,6 +405,7 @@ class _SearchState extends State<Search> {
                           onPress: () => download(ctx, entry, state),
                           isGrid: false,
                           select: select,
+                          isLast: index == _entries.length - 1,
                         );
                       },
                       childCount: _entries.length,
@@ -427,6 +428,7 @@ class _SearchState extends State<Search> {
                           onPress: () => download(ctx, entry, state),
                           isGrid: true,
                           select: select,
+                          isLast: index == _entries.length - 1,
                         );
                       },
                       childCount: _entries.length,
