@@ -215,7 +215,11 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                               final res = parseResult(scanResult);
                               final status = res['status'];
                               final enabled = res['enabled'];
-
+                              String localName =
+                                  scanResult.advertisementData.localName;
+                              if (localName == null || localName.length < 2) {
+                                localName = 'A1';
+                              }
                               return Material(
                                 child: InkWell(
                                   onTap: () async {
@@ -223,8 +227,9 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
 
                                     BluetoothDevice device;
 
-                                    final loadingInstance = showLoading(ctx);
-                                    print('before connectAsync');
+                                    final loadingInstance =
+                                        showLoading(ctx, fakeProgress: 5.0);
+
                                     try {
                                       device = await connectAsync(scanResult);
                                     } catch (e) {
@@ -237,7 +242,7 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                                       );
                                       return;
                                     }
-                                    print('after connectAsync');
+
                                     try {
                                       await reqAuth(device);
                                     } catch (e) {
@@ -283,12 +288,7 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                                                 Text(
                                                   i18n(
                                                     'Product Number in BLE',
-                                                    {
-                                                      'deviceNumber': scanResult
-                                                              .advertisementData
-                                                              .localName ??
-                                                          'A1'
-                                                    },
+                                                    {'deviceNumber': localName},
                                                   ),
                                                   style:
                                                       TextStyle(fontSize: 12),

@@ -152,6 +152,7 @@
   "100 Million Pixels": "{million} MP",
   "Connection Refused Error": "Connection refused.",
   "Connection Closed Error": "Connection closed.",
+  "Progressing": "Progressing",
 
   "==== nav/taskView.dart ====": "",
   "Xcopy Tasks": "Tasks",

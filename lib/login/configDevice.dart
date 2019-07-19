@@ -46,7 +46,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
   String ssid;
 
   /// password for Wi-Fi
-  String pwd = '';
+  String pwd = 'wisnuc123456';
 
   /// Error for set wifi Error;
   String errorText;
@@ -290,7 +290,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
       }
     } else if (status == Status.wifi) {
       if (pwd is String && pwd.length > 0) {
-        final loadingInstance = showLoading(ctx);
+        final loadingInstance = showLoading(ctx, fakeProgress: 10.0);
         try {
           print('pwd: $pwd');
           final ip = await setWifi(pwd);

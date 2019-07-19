@@ -20,6 +20,85 @@ void showSnackBar(BuildContext ctx, String message) {
   // Scaffold.of(ctx).showSnackBar(snackBar);
 }
 
+class FakeProgress extends StatefulWidget {
+  FakeProgress({Key key, this.targetTime}) : super(key: key);
+
+  /// target time that progress should finished (seconds)
+  final double targetTime;
+  @override
+  _FakeProgressState createState() => _FakeProgressState();
+}
+
+class _FakeProgressState extends State<FakeProgress> {
+  double progress = 0;
+  Timer timer;
+
+  void refreshProgress() {
+    setState(() {
+      progress += (1 - progress) / widget.targetTime / 10;
+    });
+  }
+
+  @override
+  void initState() {
+    // widget.targetTime
+    super.initState();
+
+    timer = Timer.periodic(Duration(milliseconds: 100), (Timer t) {
+      if (mounted) {
+        refreshProgress();
+      } else {
+        t.cancel();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
+  }
+
+  Widget build(BuildContext context) {
+    return Material(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      elevation: 4.0,
+      child: Container(
+        width: 240,
+        height: 120,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.all(16),
+              child: Text(i18n('Progressing'), style: TextStyle(fontSize: 18)),
+            ),
+            Container(
+              padding: EdgeInsets.all(16),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                      flex: 1,
+                      child: LinearProgressIndicator(
+                        value: progress,
+                        valueColor: AlwaysStoppedAnimation(Colors.teal),
+                        backgroundColor: Colors.grey[200],
+                      )),
+                  // Container(width: 16),
+                  // Text('${(progress * 100).toStringAsFixed(1)}%'),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class LoadingInstance {
   PageRoute route;
   BuildContext context;
@@ -36,16 +115,16 @@ class LoadingInstance {
 /// Show modal loading
 ///
 /// use `loadingInstance.close()` to finish loading
-LoadingInstance showLoading(
-  BuildContext context,
-) {
+LoadingInstance showLoading(BuildContext context, {double fakeProgress}) {
   final router = TransparentPageRoute(
     builder: (_) => WillPopScope(
       onWillPop: () => Future.value(false),
       child: Container(
         constraints: BoxConstraints.expand(),
         child: Center(
-          child: CircularProgressIndicator(),
+          child: fakeProgress != null
+              ? FakeProgress(targetTime: fakeProgress)
+              : CircularProgressIndicator(),
         ),
       ),
     ),
