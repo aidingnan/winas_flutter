@@ -45,3 +45,24 @@ class Info {
     this.certNotAfter = prettyDate(device['notAfter']);
   }
 }
+
+class UpgradeInfo {
+  String tag;
+  String hash;
+  String url;
+  String desc;
+  bool preRelease;
+  int gradient;
+  String createdAt;
+  String type;
+  UpgradeInfo.fromMap(Map m) {
+    this.tag = m['tag'];
+    this.hash = m['hash'];
+    this.url = m['url'];
+    this.desc = m['desc'];
+    this.preRelease = m['preRelease'] == 1;
+    this.gradient = m['gradient'];
+    this.createdAt = m['createdAt'];
+    this.type = m['type'];
+  }
+}

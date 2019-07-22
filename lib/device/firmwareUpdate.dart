@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 
 import './info.dart';
 import '../common/utils.dart';
+import '../redux/redux.dart';
 import '../icons/winas_icons.dart';
 import '../common/appBarSlivers.dart';
 
@@ -12,10 +15,11 @@ class Firmware extends StatefulWidget {
 }
 
 class _FirmwareState extends State<Firmware> {
-  Info info;
+  UpgradeInfo info;
   bool failed = false;
-  bool loading = false;
+  bool loading = true;
   bool lastest = true;
+  bool notLAN = false;
   ScrollController myScrollController = ScrollController();
 
   /// left padding of appbar
@@ -26,6 +30,30 @@ class _FirmwareState extends State<Firmware> {
     setState(() {
       paddingLeft = (myScrollController.offset * 1.25).clamp(16.0, 72.0);
     });
+  }
+
+  Future<void> getUpgradeInfo(AppState state) async {
+    final isLAN = await state.apis.testLAN();
+    if (isLAN) {
+      print('isLAN $isLAN');
+      try {
+        final res = await state.apis.upgradeInfo();
+        if (res?.data is List && res.data.length > 0) {
+          print(res.data);
+          info = UpgradeInfo.fromMap(res.data[0]);
+        } else {
+          lastest = true;
+        }
+      } catch (e) {
+        failed = true;
+      }
+    } else {
+      notLAN = true;
+    }
+    loading = false;
+    if (this.mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -57,11 +85,30 @@ class _FirmwareState extends State<Firmware> {
     List<Widget> slivers = appBarSlivers(paddingLeft, titleName);
     if (loading) {
       // loading
-      slivers.add(SliverToBoxAdapter(child: Container(height: 16)));
+      slivers.add(
+        SliverToBoxAdapter(
+          child: Container(
+            height: 160,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        ),
+      );
+      slivers.add(
+        SliverToBoxAdapter(
+          child: Container(
+            height: 120,
+            child: Center(
+              child: Text(i18n('Getting Firmware Info')),
+            ),
+          ),
+        ),
+      );
     } else if (!lastest) {
       // lastest
       slivers.add(renderText(i18n('Firmware Already Latest')));
-    } else if (info != null || failed) {
+    } else if (failed) {
       // failed
       slivers.add(renderText(i18n('Get Firmware Info Error')));
     } else {
@@ -86,13 +133,15 @@ class _FirmwareState extends State<Firmware> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      'Winas 1.1.0',
+                      'Winas ${info.tag}',
                       style: TextStyle(fontSize: 18),
                     ),
                     Container(height: 4),
                     Text('Aidingnan Inc.'),
                     Container(height: 4),
-                    Text('2019-06-18'),
+                    Text(info.tag.substring(0, 9)),
+                    Container(height: 4),
+                    Text(info.desc),
                   ],
                 )
               ],
@@ -127,8 +176,8 @@ class _FirmwareState extends State<Firmware> {
                     );
                     await Future.delayed(Duration(seconds: 3));
                     model.close = true;
-                    Navigator.pushNamedAndRemoveUntil(
-                        ctx, '/deviceList', (Route<dynamic> route) => false);
+                    // Navigator.pushNamedAndRemoveUntil(
+                    //     ctx, '/deviceList', (Route<dynamic> route) => false);
                   },
                   child: Text(
                     i18n('Update Firmware Now'),
@@ -146,11 +195,18 @@ class _FirmwareState extends State<Firmware> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: CustomScrollView(
-        controller: myScrollController,
-        slivers: getSlivers(),
-      ),
+    return StoreConnector<AppState, AppState>(
+      onInit: (store) => getUpgradeInfo(store.state),
+      onDispose: (store) => {},
+      converter: (store) => store.state,
+      builder: (context, state) {
+        return Scaffold(
+          body: CustomScrollView(
+            controller: myScrollController,
+            slivers: getSlivers(),
+          ),
+        );
+      },
     );
   }
 }

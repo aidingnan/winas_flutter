@@ -315,6 +315,7 @@
   "==== device/firmwareUpdate.dart ====": "",
   "Firmware Update": "Firmware update",
   "Firmware Already Latest": "Your firmware is up to date.",
+  "Getting Firmware Info": "Getting firmware info...",
   "Get Firmware Info Error": "Failed to get update info",
   "Updating Firmware": "Updating...",
   "Update Firmware Now": "Update Now",

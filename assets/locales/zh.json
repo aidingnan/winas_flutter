@@ -315,6 +315,7 @@
   "==== device/firmwareUpdate.dart ====": "",
   "Firmware Update": "系统更新",
   "Firmware Already Latest": "您的系统是最新版本。",
+  "Getting Firmware Info": "获取系统版本信息中...",
   "Get Firmware Info Error": "获取系统版本信息失败",
   "Updating Firmware": "正在安装更新",
   "Update Firmware Now": "立即安装更新",

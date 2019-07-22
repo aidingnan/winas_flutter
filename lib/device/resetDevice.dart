@@ -157,7 +157,7 @@ class _ResetDeviceState extends State<_ResetDevice> {
     return token;
   }
 
-  /// start to bind device
+  /// start to rest device
   Future<void> restDevice(
       BuildContext ctx, AppState state, String token) async {
     setState(() {
