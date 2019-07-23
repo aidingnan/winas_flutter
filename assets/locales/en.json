@@ -191,7 +191,8 @@
   "==== nav/xcopyTasks.dart ====": "",
   "Copying": "Copying",
   "Moving": "Moving",
-  "Finshed": "Finshed",
+  "Copy Finished": "Copied",
+  "Move Finished": "Moved",
 
   "==== files/file.dart ====": "",
   "Using Mobile Data Traffic Warning": "You are using cellular data. Click 'Continue' to start transfer which may casue charges.",
@@ -338,6 +339,7 @@
   "Music": "Music",
   "Document": "Doc",
   "Others": "Others",
+  "System": "System",
   "Storage Usage": "Usage: {usage}",
   "Device Title": "Device",
   "Connected Via Cloud":"Connected via cloud",

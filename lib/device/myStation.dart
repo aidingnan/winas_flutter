@@ -163,6 +163,10 @@ class _MyStationState extends State<MyStation> {
         othersRaw == 0 ? 0 : max(othersRaw / countTotal, 3.0).ceil();
     int restSize = max(
         100 - videoSize - imageSize - audioSize - documentSize - otherSize, 0);
+    int sysSize = max(
+        space['used'] * 1024 -
+            (videoRaw + imageRaw + audioRaw + documentRaw + othersRaw),
+        0);
 
     usageData = [
       {
@@ -204,6 +208,13 @@ class _MyStationState extends State<MyStation> {
         'size': prettySize(othersRaw),
         'icon': Icons.insert_drive_file,
         'count': stats['others']['count'],
+      },
+      {
+        'color': Color(0xFF000000),
+        'title': i18n('System'),
+        'size': prettySize(sysSize),
+        'icon': Icons.settings,
+        'count': '-',
       },
       {
         'color': Colors.grey[200],
@@ -354,6 +365,7 @@ class _MyStationState extends State<MyStation> {
                               height: 24,
                               child: Row(
                                 children: usageData
+                                    .where((d) => d['flex'] != null)
                                     .map((u) => Expanded(
                                           flex: u['flex'],
                                           child: Container(
@@ -376,7 +388,8 @@ class _MyStationState extends State<MyStation> {
                           padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
                           child: Row(
                               children: usageData
-                                  .where((d) => d['title'] != null)
+                                  .where((d) =>
+                                      d['title'] != null && d['flex'] != null)
                                   .map((u) => Row(
                                         children: <Widget>[
                                           Container(
@@ -439,7 +452,7 @@ class _MyStationState extends State<MyStation> {
                           Row(
                             children: <Widget>[
                               Text(
-                                state.apis.isCloud
+                                state.apis.isCloud == true
                                     ? i18n('Connected Via Cloud')
                                     : i18n('Connected Via LAN'),
                                 style: TextStyle(

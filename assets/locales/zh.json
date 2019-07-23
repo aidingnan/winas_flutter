@@ -191,7 +191,8 @@
   "==== nav/xcopyTasks.dart ====": "",
   "Copying": "复制中",
   "Moving": "移动中",
-  "Finshed": "完成",
+  "Copy Finished": "复制完成",
+  "Move Finished": "移动完成",
 
   "==== files/file.dart ====": "",
   "Using Mobile Data Traffic Warning": "当前正在使用移动数据流量，点击'继续'可传输，但可能产生流量资费。",
@@ -338,6 +339,7 @@
   "Music": "音乐",
   "Document": "文档",
   "Others": "其他",
+  "System": "系统",
   "Storage Usage": "已使用{usage}",
   "Device Title": "设备",
   "Connected Via Cloud":"外网连接中",
