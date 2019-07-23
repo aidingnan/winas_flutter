@@ -18,7 +18,7 @@ class _FirmwareState extends State<Firmware> {
   UpgradeInfo info;
   bool failed = false;
   bool loading = true;
-  bool lastest = true;
+  bool latest = false;
   bool notLAN = false;
   ScrollController myScrollController = ScrollController();
 
@@ -35,14 +35,12 @@ class _FirmwareState extends State<Firmware> {
   Future<void> getUpgradeInfo(AppState state) async {
     final isLAN = await state.apis.testLAN();
     if (isLAN) {
-      print('isLAN $isLAN');
       try {
         final res = await state.apis.upgradeInfo();
         if (res?.data is List && res.data.length > 0) {
-          print(res.data);
           info = UpgradeInfo.fromMap(res.data[0]);
         } else {
-          lastest = true;
+          latest = true;
         }
       } catch (e) {
         failed = true;
@@ -71,7 +69,7 @@ class _FirmwareState extends State<Firmware> {
   Widget renderText(String text) {
     return SliverToBoxAdapter(
       child: Container(
-        height: 256,
+        height: 64,
         child: Center(
           child: Text(text),
         ),
@@ -79,37 +77,86 @@ class _FirmwareState extends State<Firmware> {
     );
   }
 
-  List<Widget> getSlivers() {
+  List<Widget> actions(AppState state) {
+    return [
+      IconButton(
+        icon: Icon(Icons.refresh),
+        onPressed: () {
+          setState(() {
+            loading = true;
+          });
+          getUpgradeInfo(state);
+        },
+      )
+    ];
+  }
+
+  List<Widget> getSlivers(AppState state) {
     final String titleName = i18n('Firmware Update');
     // title
-    List<Widget> slivers = appBarSlivers(paddingLeft, titleName);
+    List<Widget> slivers =
+        appBarSlivers(paddingLeft, titleName, action: actions(state));
     if (loading) {
       // loading
       slivers.add(
         SliverToBoxAdapter(
           child: Container(
-            height: 160,
+            height: 144,
             child: Center(
               child: CircularProgressIndicator(),
             ),
           ),
         ),
       );
+      slivers.add(renderText(i18n('Getting Firmware Info')));
+    } else if (notLAN) {
       slivers.add(
         SliverToBoxAdapter(
           child: Container(
-            height: 120,
+            height: 144,
             child: Center(
-              child: Text(i18n('Getting Firmware Info')),
-            ),
+                child: Icon(
+              Icons.info,
+              color: Colors.redAccent,
+              size: 72,
+            )),
           ),
         ),
       );
-    } else if (!lastest) {
-      // lastest
+
+      slivers.add(renderText(i18n('Update Firmware Text')));
+    } else if (latest) {
+      // latest
+      slivers.add(
+        SliverToBoxAdapter(
+          child: Container(
+            height: 144,
+            child: Center(
+                child: Icon(
+              Icons.check,
+              color: Colors.green,
+              size: 72,
+            )),
+          ),
+        ),
+      );
       slivers.add(renderText(i18n('Firmware Already Latest')));
     } else if (failed) {
       // failed
+      slivers.add(
+        SliverToBoxAdapter(
+          child: Container(
+            height: 144,
+            child: Center(
+                child: Icon(
+              Icons.close,
+              color: Colors.redAccent,
+              size: 72,
+            )),
+          ),
+        ),
+      );
+
       slivers.add(renderText(i18n('Get Firmware Info Error')));
     } else {
       // actions
@@ -139,9 +186,7 @@ class _FirmwareState extends State<Firmware> {
                     Container(height: 4),
                     Text('Aidingnan Inc.'),
                     Container(height: 4),
-                    Text(info.tag.substring(0, 9)),
-                    Container(height: 4),
-                    Text(info.desc),
+                    Text(info.createdAt.substring(0, 10)),
                   ],
                 )
               ],
@@ -154,9 +199,7 @@ class _FirmwareState extends State<Firmware> {
               Container(
                 width: MediaQuery.of(context).size.width,
                 padding: EdgeInsets.all(16),
-                child: Text(
-                  'Winas 1.1.2: Bugs fixed.',
-                ),
+                child: Text(info.desc),
               )
             ],
           ),
@@ -176,6 +219,7 @@ class _FirmwareState extends State<Firmware> {
                     );
                     await Future.delayed(Duration(seconds: 3));
                     model.close = true;
+                    Navigator.pop(ctx);
                     // Navigator.pushNamedAndRemoveUntil(
                     //     ctx, '/deviceList', (Route<dynamic> route) => false);
                   },
@@ -203,7 +247,7 @@ class _FirmwareState extends State<Firmware> {
         return Scaffold(
           body: CustomScrollView(
             controller: myScrollController,
-            slivers: getSlivers(),
+            slivers: getSlivers(state),
           ),
         );
       },

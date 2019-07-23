@@ -161,6 +161,16 @@ class Request {
     return res.data;
   }
 
+  /// get winasd/time
+  Future<bool> timeDate(String ip) async {
+    final res = await dio.get(
+      'http://$ip:3001/winasd/timedate',
+      options: Options(connectTimeout: 10000),
+    );
+    print('timeDate res $res');
+    return res.data['System clock synchronized'] == 'yes';
+  }
+
   /// device Bind
   Future deviceBind(String ip, String encrypted) async {
     final res = await dio.post(

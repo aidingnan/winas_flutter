@@ -128,15 +128,17 @@ class _ConfigDeviceState extends State<ConfigDevice> {
           throw 'Timeout of 30 seconds for channel connected';
         await Future.delayed(Duration(seconds: 2));
         var res;
+        bool timeIsOK;
         try {
           res = await request.winasdInfo(ip);
+          timeIsOK = await request.timeDate(ip);
         } catch (e) {
           print(e);
           continue;
         }
 
         final channel = res['channel'];
-        if (channel != null && channel['state'] == 'Connected') {
+        if (channel != null && channel['state'] == 'Connected' && timeIsOK) {
           started = true;
           infoRes = res;
         }
