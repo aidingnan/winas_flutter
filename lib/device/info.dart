@@ -55,6 +55,7 @@ class UpgradeInfo {
   int gradient;
   String createdAt;
   String type;
+  bool downloaded;
   UpgradeInfo.fromMap(Map m) {
     this.tag = m['tag'];
     this.hash = m['hash'];
@@ -64,5 +65,6 @@ class UpgradeInfo {
     this.gradient = m['gradient'];
     this.createdAt = m['createdAt'];
     this.type = m['type'];
+    this.downloaded = m['downloaded'] == true;
   }
 }

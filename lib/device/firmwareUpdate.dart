@@ -39,6 +39,9 @@ class _FirmwareState extends State<Firmware> {
         final res = await state.apis.upgradeInfo();
         if (res?.data is List && res.data.length > 0) {
           info = UpgradeInfo.fromMap(res.data[0]);
+          if (info.downloaded != true) {
+            latest = true;
+          }
         } else {
           latest = true;
         }
