@@ -582,6 +582,17 @@ class _FilesState extends State<Files> {
     );
   }
 
+  String getTimeString(DateTime time) {
+    final y = time.year;
+    final m = time.month;
+    final d = time.day;
+    final h = time.hour;
+    final mi = time.minute;
+    final s = time.second;
+    final ms = time.millisecond;
+    return '$y$m${d}_$h$mi$s$ms';
+  }
+
   /// select New Image/Video/File/Folder
   Future<void> showUploadSheet(context, state) async {
     showModalBottomSheet(
@@ -603,6 +614,18 @@ class _FilesState extends State<Files> {
                       file = await ImagePicker.pickImage(
                         source: ImageSource.gallery,
                       );
+                      if (Platform.isIOS) {
+                        String dirPath = file.parent.path;
+                        String fileName = file.path.split('/').last;
+                        String extension = fileName.contains('.')
+                            ? fileName.split('.').last
+                            : '';
+                        DateTime time = (await file.stat()).modified;
+                        String newName = extension == ''
+                            ? 'IMG_${getTimeString(time)}'
+                            : 'IMG_${getTimeString(time)}.$extension';
+                        file = await file.rename('$dirPath' + '/' + newName);
+                      }
                     } catch (e) {
                       debug(e);
                       showSnackBar(
@@ -629,6 +652,18 @@ class _FilesState extends State<Files> {
                       file = await ImagePicker.pickVideo(
                         source: ImageSource.gallery,
                       );
+                      if (Platform.isIOS) {
+                        String dirPath = file.parent.path;
+                        String fileName = file.path.split('/').last;
+                        String extension = fileName.contains('.')
+                            ? fileName.split('.').last
+                            : '';
+                        DateTime time = (await file.stat()).modified;
+                        String newName = extension == ''
+                            ? 'VID_${getTimeString(time)}'
+                            : 'VID_${getTimeString(time)}.$extension';
+                        file = await file.rename('$dirPath' + '/' + newName);
+                      }
                     } catch (e) {
                       debug(e);
                       showSnackBar(

@@ -49,6 +49,11 @@ class _PhotosState extends State<Photos> {
       'order': 'newest',
       'count': 1,
     });
+    if (res.data is! List) {
+      debug('getCover not List error', res.data);
+      return;
+    }
+
     Entry entry = Entry.fromMap(res.data.first);
     final cm = await CacheManager.getInstance();
     final Uint8List thumbData = await cm.getThumbData(entry, state);
