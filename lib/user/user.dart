@@ -22,6 +22,8 @@ class AccountInfo extends StatefulWidget {
 class _AccountInfoState extends State<AccountInfo> {
   int cacheSize;
   String version = '';
+  bool showLogButton = false;
+
   Future getCacheSize() async {
     final cm = await CacheManager.getInstance();
     var size = await cm.getCacheSize();
@@ -208,27 +210,43 @@ class _AccountInfoState extends State<AccountInfo> {
                     ],
                   ),
                 ),
-                actionButton(
-                  'Log',
-                  () async {
-                    String logs = await getLogs();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) {
-                        return Scaffold(
-                          body: ListView(
-                            children: <Widget>[
-                              Container(
-                                padding: EdgeInsets.all(8),
-                                child: Text(logs),
-                              )
-                            ],
-                          ),
-                        );
-                      }),
-                    );
-                  },
-                  null,
+                // hidden logs
+                Material(
+                  color: Colors.transparent,
+                  child: GestureDetector(
+                    onDoubleTap: () {
+                      setState(() {
+                        showLogButton = true;
+                      });
+                    },
+                    onLongPress: () async {
+                      if (showLogButton != true) return;
+                      String logs = await getLogs();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) {
+                          return Scaffold(
+                            body: ListView(
+                              children: <Widget>[
+                                Container(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(logs),
+                                )
+                              ],
+                            ),
+                          );
+                        }),
+                      );
+                    },
+                    child: Container(
+                      child: Container(
+                        height: 64,
+                        width: double.infinity,
+                        color: Colors.white10,
+                        padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
