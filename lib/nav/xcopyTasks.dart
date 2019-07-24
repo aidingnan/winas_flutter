@@ -46,10 +46,26 @@ class Task {
       }
     }
 
+    if (this.name.length > 16) {
+      this.name = this.name.substring(0, 16) + '...';
+    }
+
     this.type = m['type'];
 
-    this.text = (this.type == 'copy' ? i18n('Copying') : i18n('Moving')) +
-        (this.isFinished ? i18n('Finished') : this.name);
+    this.text = this.name;
+    if (this.type == 'copy') {
+      if (this.isFinished == true) {
+        this.text += i18n('Copy Finished');
+      } else {
+        this.text += i18n('Copying');
+      }
+    } else {
+      if (this.isFinished == true) {
+        this.text += i18n('Move Finished');
+      } else {
+        this.text += i18n('Moving');
+      }
+    }
 
     this.icon = Icon(this.type == 'copy' ? Icons.content_copy : Icons.forward);
   }
