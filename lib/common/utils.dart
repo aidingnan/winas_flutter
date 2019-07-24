@@ -286,13 +286,13 @@ class DownloadingDialog {
 
   void cancel() {
     canceled = true;
+    cancelToken.cancel();
     close();
   }
 
   void close() {
     if (closed) return;
     closed = true;
-    cancelToken.cancel();
     model.close = true;
     ctrl.close();
     Navigator.pop(ctx);
