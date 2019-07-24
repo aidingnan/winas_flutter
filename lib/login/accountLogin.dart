@@ -109,7 +109,7 @@ class _LoginState extends State<Login> {
         final res = await request.req('checkUser', {'phone': _phoneNumber});
         userExist = res.data['userExist'];
       } catch (error) {
-        print(error);
+        debug(error);
 
         loadingInstance.close();
         showSnackBar(context, i18n('Check Phone Number Failed'));
@@ -126,7 +126,7 @@ class _LoginState extends State<Login> {
         });
         final future = Future.delayed(const Duration(milliseconds: 100),
             () => FocusScope.of(context).requestFocus(myFocusNode));
-        future.then((res) => print('100ms later'));
+        future.then((res) => debug('100ms later'));
       }
     } else {
       // login
@@ -152,7 +152,7 @@ class _LoginState extends State<Login> {
       try {
         res = await request.req('token', args);
       } catch (error) {
-        print(error?.response?.data);
+        debug(error?.response?.data);
         if (error is DioError && error.response.data['code'] == 60008) {
           loadingInstance.close();
           setState(() {

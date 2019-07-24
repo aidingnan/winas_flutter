@@ -55,7 +55,7 @@ class _DeviceInfoState extends State<DeviceInfo> {
         });
       }
     } catch (error) {
-      print(error);
+      debug(error);
       if (this.mounted) {
         setState(() {
           loading = false;

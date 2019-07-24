@@ -54,7 +54,7 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
       bool isOn = await flutterBlue.isOn;
       if (!isOn) throw 'bluetooth is not on';
     } catch (e) {
-      print(e);
+      debug(e);
       error = i18n('Bluetooth Not Available Error');
       if (mounted) {
         setState(() {});
@@ -69,16 +69,16 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
       int index = results.indexWhere((res) => res.device.id == id);
       if (index > -1) return;
       results.add(scanResult);
-      print('get device >>>>>>>>>>>');
-      print('AdvertisementData ${scanResult.advertisementData.localName}');
-      print(id);
-      print(scanResult.device.name);
+      debug('get device >>>>>>>>>>>');
+      debug('AdvertisementData ${scanResult.advertisementData.localName}');
+      debug(id);
+      debug(scanResult.device.name);
 
       if (mounted) {
         setState(() {});
       }
     }, onError: (e) {
-      print(e);
+      debug(e);
       if (e is PlatformException && e.code == 'no_permissions') {
         error = i18n('Bluetooth No Permission Error');
       } else {
@@ -95,7 +95,7 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
   Future reqAuth(BluetoothDevice device) async {
     final reqCommand = '{"action":"req","seq":1}';
     final res = await getLocalAuth(device, reqCommand);
-    print('reqAuth: $res');
+    debug('reqAuth: $res');
     final colors = res['data']['colors'];
     return colors;
   }
@@ -106,12 +106,12 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
     FlutterBlue flutterBlue = FlutterBlue.instance;
     // cancel previous BLE device connection
     deviceConnection?.cancel();
-    print('connecting ${scanResult.device.name} ...');
+    debug('connecting ${scanResult.device.name} ...');
     bool done = false;
     deviceConnection = flutterBlue
         .connect(device, timeout: Duration(seconds: 60), autoConnect: false)
         .listen((s) {
-      print(s);
+      debug(s);
       if (done) return;
       if (s == BluetoothDeviceState.connected) {
         done = true;
@@ -233,7 +233,7 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                                     try {
                                       device = await connectAsync(scanResult);
                                     } catch (e) {
-                                      print(e);
+                                      debug(e);
 
                                       loadingInstance.close();
                                       showSnackBar(
@@ -246,7 +246,7 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                                     try {
                                       await reqAuth(device);
                                     } catch (e) {
-                                      print(e);
+                                      debug(e);
 
                                       loadingInstance.close();
                                       showSnackBar(

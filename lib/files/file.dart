@@ -160,6 +160,7 @@ class _FilesState extends State<Files> {
     // test network
     if (state.apis.isCloud == null || isRetry) {
       await state.apis.testLAN();
+      debug('testLAN: ${state.apis.lanIp} isCloud: ${state.apis.isCloud}');
     }
 
     // request listNav
@@ -169,7 +170,7 @@ class _FilesState extends State<Files> {
           .req('listNavDir', {'driveUUID': driveUUID, 'dirUUID': dirUUID});
       _error = null;
     } catch (error) {
-      print(error);
+      debug(error);
       loading = false;
       _error = error;
       if (this.mounted) {
@@ -200,7 +201,7 @@ class _FilesState extends State<Files> {
     // node: Node(tag: 'home')
     if (widget.node.tag == 'home') {
       String filePath = await Intent.initIntent;
-      print('handle intent: $filePath');
+      // debug('handle intent: $filePath');
       if (filePath != null) {
         final cm = TransferManager.getInstance();
         cm.newUploadSharedFile(filePath, state);
@@ -224,13 +225,13 @@ class _FilesState extends State<Files> {
 
       /// add Listener to refresh event
       refreshListener = eventBus.on<RefreshEvent>().listen((event) {
-        print('RefreshEvent ${event.dirUUID} ${currentNode?.dirUUID}');
+        // debug('RefreshEvent ${event.dirUUID} ${currentNode?.dirUUID}');
         if (currentNode?.dirUUID == event.dirUUID && event.dirUUID != null) {
           refresh(store.state).catchError(print);
         }
       });
     } catch (e) {
-      print(e);
+      debug(e);
       loading = false;
       _error = e;
       if (this.mounted) {
@@ -251,7 +252,7 @@ class _FilesState extends State<Files> {
     List<Entry> newFiles = [];
 
     if (rawEntries.length == 0) {
-      // print('empty entries');
+      // debug('empty entries');
     } else if (rawEntries[0]?.type == 'directory') {
       int index = rawEntries.indexWhere((entry) => entry.type == 'file');
       if (index > -1) {
@@ -266,7 +267,7 @@ class _FilesState extends State<Files> {
       // filter entry.hash
       newFiles = List.from(rawEntries);
     } else {
-      print('other entries!!!!');
+      debug('other entries!!!!');
     }
     newEntries.addAll(newDirs);
     newEntries.addAll(newFiles);
@@ -362,7 +363,7 @@ class _FilesState extends State<Files> {
           await OpenFile.open(entryPath);
         }
       } catch (error) {
-        print(error);
+        debug(error);
         showSnackBar(ctx, i18n('No Available App to Open This File'));
       }
     }
@@ -371,7 +372,6 @@ class _FilesState extends State<Files> {
   @override
   void initState() {
     super.initState();
-
     select = Select(() => this.setState(() {}));
     entrySort = EntrySort(() {
       setState(() {
@@ -604,7 +604,7 @@ class _FilesState extends State<Files> {
                         source: ImageSource.gallery,
                       );
                     } catch (e) {
-                      print(e);
+                      debug(e);
                       showSnackBar(
                         this.context,
                         i18n('Pick Image Failed Text'),
@@ -630,7 +630,7 @@ class _FilesState extends State<Files> {
                         source: ImageSource.gallery,
                       );
                     } catch (e) {
-                      print(e);
+                      debug(e);
                       showSnackBar(
                         this.context,
                         i18n('Pick Video Failed Text'),
@@ -654,7 +654,7 @@ class _FilesState extends State<Files> {
                       filePath =
                           await FilePicker.getFilePath(type: FileType.ANY);
                     } catch (e) {
-                      print(e);
+                      debug(e);
                       showSnackBar(this.context, i18n('Pick File Failed Text'));
                     }
 

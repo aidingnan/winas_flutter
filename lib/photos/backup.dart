@@ -341,10 +341,10 @@ class Worker {
     String id = entity.id;
     int mtime = entity.createTime;
 
-    // print('before hash: $id, ${getNow() - time}');
+    // debug('before hash: $id, ${getNow() - time}');
     String hash = await getHash('$id+$mtime', entity);
 
-    // print('after hash, ${getNow() - time}');
+    // debug('after hash, ${getNow() - time}');
     final photoEntry = PhotoEntry(id, hash, mtime);
 
     final targetDir = await getTargetDir(remoteDirs, photoEntry, rootDir);
@@ -353,18 +353,18 @@ class Worker {
     if (targetDir == null) {
       finished += 1;
       ignored += 1;
-      // print('backup ignore: $id, ${getNow() - time}');
+      // debug('backup ignore: $id, ${getNow() - time}');
       return;
     }
 
-    // print('before upload: $id, ${getNow() - time}');
+    // debug('before upload: $id, ${getNow() - time}');
     // update cancelIsolate
     cancelUpload = CancelIsolate();
 
     // upload photo
     File file = await entity.originFile;
 
-    // print('file size ${file.statSync().size}');
+    // debug('file size ${file.statSync().size}');
     String filePath = file.path;
 
     if (isAborted) {
@@ -379,7 +379,7 @@ class Worker {
       await file.delete();
     }
 
-    // print('backup success: $id in ${DateTime.now().millisecondsSinceEpoch - time} ms');
+    // debug('backup success: $id in ${DateTime.now().millisecondsSinceEpoch - time} ms');
     finished += 1;
   }
 
@@ -442,13 +442,13 @@ class Worker {
         try {
           await uploadSingle(entity, remoteDirs, rootDir);
         } catch (e) {
-          print('backup failed: ${entity.id}');
-          print(e);
+          debug('backup failed: ${entity.id}');
+          debug(e);
           String id = entity.id;
           int mtime = entity.createTime;
 
           /// clean hash cache
-          cleanHash('$id+$mtime').catchError(print);
+          cleanHash('$id+$mtime').catchError(debug);
         }
       } else {
         return;
@@ -456,15 +456,15 @@ class Worker {
     }
 
     if (finished == total) {
-      print('upload all assetList');
+      debug('upload all assetList');
       await updateStatus(rootDir);
-      print('updateStatus finished');
+      debug('updateStatus finished');
       status = Status.finished;
       finished = 0;
       ignored = 0;
       total = 0;
     } else {
-      print('not all upload success');
+      debug('not all upload success');
       status = Status.failed;
       throw 'backup failed';
     }
@@ -475,7 +475,7 @@ class Worker {
       cancelUpload?.cancel();
       cancelHash?.cancel();
     } catch (e) {
-      print(e);
+      debug(e);
     }
 
     status = Status.aborted;
@@ -490,8 +490,8 @@ class Worker {
     ignored = 0;
     total = 0;
     this.startAsync().catchError((e) {
-      print('backup failed, retry ${retry * retry} minutes later');
-      print(e);
+      debug('backup failed, retry ${retry * retry} minutes later');
+      debug(e);
       retryLater();
     });
   }
@@ -521,7 +521,7 @@ class BackupWorker {
 
   monitorStart() {
     sub = Connectivity().onConnectivityChanged.listen((ConnectivityResult res) {
-      print('Network Changed to $res in backup');
+      debug('Network Changed to $res in backup');
       if (res == ConnectivityResult.wifi) {
         isMobile = false;
       } else if (res == ConnectivityResult.mobile) {
@@ -543,7 +543,7 @@ class BackupWorker {
     try {
       sub?.cancel();
     } catch (e) {
-      print(e);
+      debug(e);
     }
   }
 
@@ -557,7 +557,7 @@ class BackupWorker {
       monitorStart();
       worker = Worker(apis);
       worker.start();
-      print('backup started');
+      debug('backup started');
     }
   }
 
@@ -566,7 +566,7 @@ class BackupWorker {
     worker = null;
     monitorCancel();
     status = Status.aborted;
-    print('backup aborted');
+    debug('backup aborted');
   }
 
   /// pause backup

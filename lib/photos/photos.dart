@@ -159,7 +159,7 @@ class _PhotosState extends State<Photos> {
 
       // request album's cover
       for (var album in albumList) {
-        getCover(album, store.state).catchError(print);
+        getCover(album, store.state).catchError(debug);
       }
       // cache data
       userUUID = store.state.localUser.uuid;
@@ -169,7 +169,7 @@ class _PhotosState extends State<Photos> {
         setState(() {});
       }
     } catch (e) {
-      print(e);
+      debug(e);
       loading = false;
       error = true;
       if (this.mounted) {
@@ -193,7 +193,7 @@ class _PhotosState extends State<Photos> {
   @override
   void initState() {
     super.initState();
-    autoRefresh(isFirst: true).catchError(print);
+    autoRefresh(isFirst: true).catchError(debug);
   }
 
   Widget renderAlbum(Album album) {
@@ -398,7 +398,7 @@ class _PhotosState extends State<Photos> {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, Store<AppState>>(
-      onInit: (store) => refresh(store, false).catchError(print),
+      onInit: (store) => refresh(store, false).catchError(debug),
       onDispose: (store) => {},
       converter: (store) => store,
       builder: (context, store) {

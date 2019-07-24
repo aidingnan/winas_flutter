@@ -69,15 +69,15 @@ class _StationListState extends State<StationList> {
         shouldShowDialog: true,
       );
     } catch (error) {
-      print('login failed >>>>>');
+      debug('login failed >>>>>');
       if (error is DioError) {
-        print(error.message);
-        print(error.response.statusCode);
-        print(error.response.statusMessage);
+        debug(error.message);
+        debug(error.response.statusCode);
+        debug(error.response.statusMessage);
       } else {
-        print(error);
+        debug(error);
       }
-      print('<<<<<<<<<>>>>>>>>>');
+      debug('<<<<<<<<<>>>>>>>>>');
       loadingInstance.close();
       if (error is! String || !error.startsWith('EMBEDVOLUMEFAILED')) {
         showSnackBar(
@@ -99,7 +99,7 @@ class _StationListState extends State<StationList> {
       stationList = result['stationList'];
       setState(() {});
     } catch (error) {
-      print(error);
+      debug(error);
       if (error is DioError && error?.response?.statusCode == 401) {
         showDialog(
           context: context,

@@ -80,7 +80,7 @@ class ResetDevice extends StatelessWidget {
                             final colors = res.data['colors'];
                             if (colors is! List) throw 'get color code error';
                           } catch (e) {
-                            print(e);
+                            debug(e);
                             loadingInstance.close();
                             showSnackBar(ctx, i18n('Request Color Code Error'));
                             return;
@@ -169,12 +169,12 @@ class _ResetDeviceState extends State<_ResetDevice> {
       final encrypted = res.data['encrypted'] as String;
       final resetRes =
           await state.cloud.unbindDevice(state.apis.lanIp, encrypted, token);
-      print('resetRes: $resetRes');
+      debug('resetRes: $resetRes');
       setState(() {
         status = Status.success;
       });
     } catch (e) {
-      print('resetRes error $e');
+      debug('resetRes error $e');
       setState(() {
         status = Status.resetFailed;
       });
@@ -184,15 +184,15 @@ class _ResetDeviceState extends State<_ResetDevice> {
 
   void nextStep(BuildContext ctx, AppState state) async {
     if (status == Status.auth) {
-      print('code is $selected');
+      debug('code is $selected');
 
       final loadingInstance = showLoading(ctx);
       try {
         String token = await checkCode(state, selected);
         loadingInstance.close();
-        restDevice(ctx, state, token).catchError(print);
+        restDevice(ctx, state, token).catchError(debug);
       } catch (e) {
-        print(e);
+        debug(e);
         loadingInstance.close();
         setState(() {
           status = Status.authFailed;
@@ -218,7 +218,7 @@ class _ResetDeviceState extends State<_ResetDevice> {
         ),
       ),
     ];
-    print('selected: $selected');
+    debug('selected: $selected');
     List<Widget> options = List.from(
       colorCodes.map(
         (code) => Material(
@@ -230,7 +230,7 @@ class _ResetDeviceState extends State<_ResetDevice> {
                 activeColor: Colors.teal,
                 groupValue: selected,
                 onChanged: (value) {
-                  print('on tap $code');
+                  debug('on tap $code');
                   setState(() {
                     selected = value;
                   });

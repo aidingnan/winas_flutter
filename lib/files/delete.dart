@@ -68,7 +68,7 @@ class _DeleteDialogState extends State<DeleteDialog> {
         });
       }
     } catch (error) {
-      print(error);
+      debug(error);
       setState(() {
         loading = false;
       });

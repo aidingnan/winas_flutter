@@ -4,6 +4,7 @@ import './stationList.dart';
 import './loginDeviceFailed.dart';
 
 import '../redux/redux.dart';
+import '../common/utils.dart';
 import '../common/request.dart';
 import '../transfer/manager.dart';
 import '../common/stationApis.dart';
@@ -36,7 +37,7 @@ stationLogin(BuildContext context, Request request, Station currentDevice,
           boot.data['storage']['blocks'].map((b) => Block.fromMap(b)),
         );
       }
-      print('EMBEDVOLUMEFAILED $code $blks');
+      debug('EMBEDVOLUMEFAILED $code $blks');
       showDialog(
         context: context,
         builder: (BuildContext context) => LoginDeviceFailed(
@@ -161,7 +162,7 @@ deviceLogin(
     stationList = result['stationList'];
     lastDevice = result['lastDevice'];
   } catch (error) {
-    print(error);
+    debug(error);
     stationList = null;
     lastDevice = null;
   }
@@ -173,7 +174,7 @@ deviceLogin(
       await stationLogin(context, request, lastDevice, account, store);
       success = true;
     } catch (error) {
-      print(error);
+      debug(error);
       success = false;
     }
   }

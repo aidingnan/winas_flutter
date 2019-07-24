@@ -83,7 +83,7 @@ class _PageViewerState extends State<PageViewer> {
       try {
         ShareExtend.share(entryPath, "file");
       } catch (error) {
-        print(error);
+        debug(error);
         showSnackBar(ctx, i18n('No Available App to Open This File'));
       }
     }
@@ -165,7 +165,7 @@ class _PageViewerState extends State<PageViewer> {
                   },
                   itemCount: widget.list.length,
                   onPageChanged: (int index) {
-                    print('current index $index');
+                    debug('current index $index');
                     if (mounted) {
                       setState(() {
                         currentItem = widget.list[index];

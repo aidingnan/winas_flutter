@@ -72,7 +72,7 @@ class _DetailState extends State<Detail> {
   }
 
   Future getNamePath(AppState state) async {
-    print("entry $entry");
+    debug("entry $entry");
     try {
       // request entries/path
       final res = await state.apis
@@ -92,7 +92,7 @@ class _DetailState extends State<Detail> {
       paths.addAll(List.from(rest));
       rows.update(namepath: paths.join('/'));
     } catch (error) {
-      print('getNamePath error: $error');
+      debug('getNamePath error: $error');
     }
     setState(() {});
   }
@@ -109,7 +109,7 @@ class _DetailState extends State<Detail> {
             fileCount: stat.data['fileCount'].toString(),
             dirCount: stat.data['dirCount'].toString());
       } catch (error) {
-        print('getFolderSize error: $error');
+        debug('getFolderSize error: $error');
       }
       setState(() {});
     }

@@ -82,13 +82,13 @@ class _RegistryState extends State<Registry> {
 
     var future = Future.delayed(const Duration(milliseconds: 100),
         () => FocusScope.of(context).requestFocus(node));
-    future.then((res) => print('100ms later'));
+    future.then((res) => debug('100ms later'));
   }
 
   /// handle SmsError: close loading, setState
   _handleSmsError(BuildContext context, DioError error) {
     _loadingOff();
-    print(error.response.data);
+    debug(error.response.data);
     if ([60702, 60003].contains(error.response.data['code'])) {
       showSnackBar(context, i18n('Request Verification Code Too Frquent'));
     } else {
@@ -272,7 +272,7 @@ class _RegistryState extends State<Registry> {
             'clientId': clientId,
           });
         } catch (err) {
-          print(err);
+          debug(err);
           showSnackBar(context, i18n('Verification Code Error'));
           return;
         }
@@ -282,7 +282,7 @@ class _RegistryState extends State<Registry> {
             "wechatToken": widget.wechat,
           });
         } catch (err) {
-          print(err);
+          debug(err);
           _loadingOff();
           showSnackBar(context, i18n('Bind WeChat Failed'));
           return;
@@ -296,7 +296,7 @@ class _RegistryState extends State<Registry> {
         try {
           await deviceLogin(context, request, account, store);
         } catch (e) {
-          print(e);
+          debug(e);
           _loadingOff();
           showSnackBar(context, i18n('Login Failed'));
           return;
@@ -315,7 +315,7 @@ class _RegistryState extends State<Registry> {
           _ticket = res.data;
         } catch (error) {
           _loadingOff();
-          print(error);
+          debug(error);
           showSnackBar(context, i18n('Verification Code Error'));
           return;
         }
@@ -350,7 +350,7 @@ class _RegistryState extends State<Registry> {
         });
       } catch (error) {
         _loadingOff();
-        print(error);
+        debug(error);
         showSnackBar(context, i18n('Sign Up Failed'));
         return;
       }

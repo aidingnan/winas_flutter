@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter/rendering.dart';
 import 'package:video_player/video_player.dart';
 
-import 'package:flutter/rendering.dart';
+import '../common/utils.dart';
 
 class _ChewieProgressColors {
   _ChewieProgressColors({
@@ -77,7 +78,7 @@ class _VideoProgressBarState extends State<CupertinoVideoProgressBar> {
     }
 
     if (controller.value.hasError) {
-      print(controller.value.errorDescription);
+      debug(controller.value.errorDescription);
     }
 
     return GestureDetector(

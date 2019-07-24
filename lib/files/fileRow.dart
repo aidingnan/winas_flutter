@@ -49,7 +49,7 @@ class FileNavView {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _onTap(context),
-          onLongPress: () => print('long press: $_nav'),
+          onLongPress: () => debug('long press: $_nav'),
           child: Column(
             children: <Widget>[
               Container(

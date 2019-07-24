@@ -41,7 +41,7 @@ class _NewDeviceNameState extends State<NewDeviceName> {
         ),
       );
     } catch (error) {
-      print(error.response.data);
+      debug(error.response.data);
       setState(() {
         loading = false;
         _error = i18n('Rename Device Failed');

@@ -75,7 +75,7 @@ class _AboutState extends State<About> {
                 if (await canLaunch(url)) {
                   await launch(url);
                 } else {
-                  print('Could not launch $url');
+                  debug('Could not launch $url');
                 }
               },
               child: Container(

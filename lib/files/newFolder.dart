@@ -44,7 +44,7 @@ class _NewFolderState extends State<NewFolder> {
           _error = i18n('Invalid Name');
         }
       } else {
-        print(error);
+        debug(error);
       }
 
       setState(() {

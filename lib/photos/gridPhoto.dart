@@ -460,7 +460,7 @@ class _GridPhotoState extends State<GridPhoto>
     info = await _getImage(thumbData);
 
     if (this.mounted) {
-      print('thumbData updated');
+      // print('thumbData updated');
       setState(() {});
     } else {
       return;
@@ -477,7 +477,7 @@ class _GridPhotoState extends State<GridPhoto>
     info = await _getImage(imageData);
 
     if (imageData != null && this.mounted) {
-      print('imageData updated');
+      // print('imageData updated');
       setState(() {});
     }
   }

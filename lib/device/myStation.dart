@@ -292,7 +292,7 @@ class _MyStationState extends State<MyStation> {
 
       await refresh(state);
     } catch (error) {
-      print(error);
+      debug(error);
     }
   }
 
@@ -300,7 +300,7 @@ class _MyStationState extends State<MyStation> {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
       onInit: (store) =>
-          refresh(store.state).catchError((error) => print(error)),
+          refresh(store.state).catchError((error) => debug(error)),
       onDispose: (store) => {},
       converter: (store) => store.state,
       builder: (context, state) {

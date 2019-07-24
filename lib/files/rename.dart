@@ -44,7 +44,7 @@ class _RenameDialogState extends State<RenameDialog> {
           _error = i18n('Invalid Name');
         }
       } else {
-        print(error);
+        debug(error);
       }
 
       setState(() {

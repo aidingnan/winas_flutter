@@ -105,15 +105,15 @@ class _LoginPageState extends State<LoginPage> {
             tokenRes = res.data;
             callback(ctx);
           } else {
-            print(res);
+            debug(res);
             throw Error();
           }
         }).catchError((err) {
-          print(err);
+          debug(err);
           showSnackBar(ctx, i18n('WeChat Login Failed'));
         });
       } else {
-        print(data?.errCode);
+        debug(data?.errCode);
         showSnackBar(ctx, i18n('WeChat Login Failed'));
       }
     });

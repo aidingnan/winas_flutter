@@ -69,11 +69,11 @@ class _RemovableState extends State<Removable>
   double maxExtent() => status == Status.confirm ? -108 : -72;
 
   void _handleDragStart(DragStartDetails details) {
-    // print('_handleDragStart $details');
+    // debug('_handleDragStart $details');
   }
 
   void _handleDragUpdate(DragUpdateDetails details) {
-    // print('_handleDragUpdate $details');
+    // debug('_handleDragUpdate $details');
 
     // only right to left drag
     if (dragExtent >= 0 && details.delta.dx >= 0) return;
@@ -86,7 +86,7 @@ class _RemovableState extends State<Removable>
   }
 
   Future<void> _handleDragEnd(DragEndDetails details) async {
-    // print('_handleDragEnd $details');
+    // debug('_handleDragEnd $details');
     final double magnitude = details.velocity.pixelsPerSecond.distance;
 
     // Animation end positon

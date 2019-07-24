@@ -20,7 +20,7 @@ const CLOUD_SERVICE_WRITE = '80000003-0182-406c-9221-0a6680bd0943';
 /// bind: bind new device
 enum Action { wifi, bind }
 
-/// get photo's current wifi's ssid
+/// get phone's current wifi's ssid
 Future<String> getWifiSSID() async {
   String ssid = await Wifi.ssid;
   if (ssid == '<unknown ssid>') throw 'Get Wifi SSID Failed';

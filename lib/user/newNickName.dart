@@ -32,7 +32,7 @@ class _NewNickNameState extends State<NewNickName> {
       account.updateNickName(_newName);
       store.dispatch(LoginAction(account));
     } catch (error) {
-      print(error.response.data);
+      debug(error.response.data);
       setState(() {
         loading = false;
         _error = i18n('Change Nickname Failed');

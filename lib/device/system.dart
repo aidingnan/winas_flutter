@@ -53,7 +53,7 @@ class _SystemState extends State<System> {
         });
       }
     } catch (error) {
-      print(error);
+      debug(error);
       if (this.mounted) {
         setState(() {
           loading = false;

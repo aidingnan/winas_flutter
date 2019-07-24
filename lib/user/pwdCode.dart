@@ -72,13 +72,13 @@ class _SmsCodeState extends State<SmsCode> {
 
     var future = Future.delayed(Duration(milliseconds: 100),
         () => FocusScope.of(context).requestFocus(node));
-    future.then((res) => print('100ms later'));
+    future.then((res) => debug('100ms later'));
   }
 
   /// handle SmsError: close loading, setState
   _handleSmsError(BuildContext context, DioError error) {
     _loadingOff();
-    print(error.response.data);
+    debug(error.response.data);
     if ([60702, 60003].contains(error.response.data['code'])) {
       showSnackBar(context, i18n('Request Verification Code Too Frquent'));
     } else {

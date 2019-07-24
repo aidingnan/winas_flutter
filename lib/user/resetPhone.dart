@@ -27,7 +27,7 @@ class _ResetPhoneState extends State<ResetPhone> {
         'phone': phone,
       });
     } catch (error) {
-      print(error);
+      debug(error);
       if (this.mounted) {
         if ([60702, 60003].contains(error.response.data['code'])) {
           showSnackBar(ctx, i18n('Request Verification Code Too Frquent'));

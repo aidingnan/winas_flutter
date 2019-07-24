@@ -184,10 +184,8 @@ class Apis {
   Future<bool> isMobile() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.mobile) {
-      // print('current netwprk status: mobile');
       return true;
     } else if (connectivityResult == ConnectivityResult.wifi) {
-      // print('current netwprk status: wifi');
       return false;
     }
     return false;
@@ -222,11 +220,11 @@ class Apis {
       );
       isLAN = res.data['device']['sn'] == this.deviceSN;
     } catch (error) {
-      print(error);
+      // print('testLAN error: $error');
       isLAN = false;
     }
     this.isCloud = !isLAN;
-    print('this.lanIp: $lanIp, isCloud: $isCloud');
+    // print('this.lanIp: $lanIp, isCloud: $isCloud');
     return isLAN;
   }
 

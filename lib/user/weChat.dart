@@ -65,9 +65,9 @@ class _WeChatState extends State<WeChat> {
     );
 
     _wxlogin = fluwx.responseFromAuth.listen((data) {
-      print('responseFromAuth>>>>');
-      print(data);
-      print('<<<<<');
+      debug('responseFromAuth>>>>');
+      debug(data);
+      debug('<<<<<');
       code = data?.code;
       if (code != null) {
         final args = {
@@ -93,18 +93,18 @@ class _WeChatState extends State<WeChat> {
             // wechat has bind to other account
             showSnackBar(ctx, i18n('WeChat Bind to Another Account'));
           } else {
-            print(res);
+            debug(res);
             throw res;
           }
         }).catchError((err) {
-          print(err);
+          debug(err);
           if (err is DioError) {
-            print(err.response.statusMessage);
+            debug(err.response.statusMessage);
           }
           showSnackBar(ctx, i18n('Bind WeChat Failed'));
         });
       } else {
-        print(data);
+        debug(data);
         showSnackBar(ctx, i18n('Bind WeChat Failed'));
       }
     });
@@ -115,8 +115,8 @@ class _WeChatState extends State<WeChat> {
     _wxlogin?.cancel();
 
     final loadingInstance = showLoading(context);
-    print('wechatInfo $wechatInfo');
-    print('unionid ${wechatInfo[0]['unionid']}');
+    debug('wechatInfo $wechatInfo');
+    debug('unionid ${wechatInfo[0]['unionid']}');
     try {
       await state.cloud.req('unbindWechat', {
         'unionid': wechatInfo[0]['unionid'],
@@ -125,9 +125,9 @@ class _WeChatState extends State<WeChat> {
       loadingInstance.close();
       showSnackBar(ctx, i18n('Unbind WeChat Success'));
     } catch (error) {
-      print(error);
+      debug(error);
       if (error is DioError) {
-        print(error.response);
+        debug(error.response);
       }
       if (this.mounted) {
         setState(() {

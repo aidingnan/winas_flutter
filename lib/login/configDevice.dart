@@ -87,11 +87,11 @@ class _ConfigDeviceState extends State<ConfigDevice> {
   Future<String> checkCode(BluetoothDevice device, List<String> code) async {
     final authCommand =
         '{"action":"auth","seq":2,"body":{"color":["${code[2]}","${code[3]}"]}}';
-    print(authCommand);
+    debug(authCommand);
     final res = await getLocalAuth(device, authCommand);
-    print('checkCode res: $res');
+    debug('checkCode res: $res');
     String token = res['data']['token'];
-    print(token);
+    debug(token);
     return token;
   }
 
@@ -106,7 +106,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
     final wifiCommand =
         '{"action":"addAndActive", "seq": 123, "token": "$token", "body":{"ssid":"$ssid", "pwd":"$wifiPwd"}}';
     final wifiRes = await withTimeout(connectWifi(device, wifiCommand), 20);
-    print('wifiRes: $wifiRes');
+    debug('wifiRes: $wifiRes');
     final ip = wifiRes['data']['address'];
     currentIP = ip;
     return ip;
@@ -133,7 +133,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
           res = await request.winasdInfo(ip);
           timeIsOK = await request.timeDate(ip);
         } catch (e) {
-          print(e);
+          debug(e);
           continue;
         }
 
@@ -147,26 +147,26 @@ class _ConfigDeviceState extends State<ConfigDevice> {
       deviceSN = infoRes['device']['sn'] as String;
       if (deviceSN == null) throw 'Failed to get deviceSN from winasd';
     } catch (e) {
-      print(e);
+      debug(e);
       setState(() {
         status = Status.connectFailed;
       });
       return;
     }
 
-    print('connect');
-    print(widget.action);
+    debug('connect');
+    debug(widget.action);
     // switch by Action, bind device or login device directly
     if (widget.action == Action.bind) {
-      bindDevice(ip, token, store).catchError(print);
+      bindDevice(ip, token, store).catchError(debug);
     } else if (widget.action == Action.wifi) {
-      loginDevice(ip, token, store).catchError(print);
+      loginDevice(ip, token, store).catchError(debug);
     }
   }
 
   /// start to bind device
   Future<void> bindDevice(String ip, String token, store) async {
-    print('bindDevice start');
+    debug('bindDevice start');
     final request = widget.request;
 
     setState(() {
@@ -177,15 +177,15 @@ class _ConfigDeviceState extends State<ConfigDevice> {
       final res = await request.req('encrypted', null);
       final encrypted = res.data['encrypted'] as String;
       final bindRes = await request.deviceBind(ip, encrypted);
-      print('bindRes $bindRes');
+      debug('bindRes $bindRes');
     } catch (e) {
-      print('bind device error $e');
+      debug('bind device error $e');
       setState(() {
         status = Status.bindFailed;
       });
       return;
     }
-    loginDevice(ip, token, store).catchError(print);
+    loginDevice(ip, token, store).catchError(debug);
   }
 
   /// try login to device
@@ -244,8 +244,8 @@ class _ConfigDeviceState extends State<ConfigDevice> {
       final account = store.state.account as Account;
       await stationLogin(context, request, currentDevice, account, store);
     } catch (e) {
-      print('loginFailed');
-      print(e);
+      debug('loginFailed');
+      debug(e);
       setState(() {
         status = Status.loginFailed;
       });
@@ -259,7 +259,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
 
   void nextStep(BuildContext ctx, Store<AppState> store) async {
     if (status == Status.auth) {
-      print('code is $selected');
+      debug('code is $selected');
       // reset token
 
       final loadingInstance = showLoading(ctx);
@@ -274,7 +274,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
         try {
           ssid = await getWifiSSID();
         } catch (e) {
-          print(e);
+          debug(e);
           ssid = null;
         }
 
@@ -283,7 +283,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
           status = Status.wifi;
         });
       } catch (e) {
-        print(e);
+        debug(e);
 
         loadingInstance.close();
         setState(() {
@@ -294,7 +294,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
       if (pwd is String && pwd.length > 0) {
         final loadingInstance = showLoading(ctx, fakeProgress: 10.0);
         try {
-          print('pwd: $pwd');
+          debug('pwd: $pwd');
           final ip = await setWifi(pwd);
 
           // check ip
@@ -306,10 +306,10 @@ class _ConfigDeviceState extends State<ConfigDevice> {
           setState(() {
             status = Status.connecting;
           });
-          connectDevice(ip, token, store).catchError(print);
+          connectDevice(ip, token, store).catchError(debug);
           loadingInstance.close();
         } catch (e) {
-          print(e);
+          debug(e);
           loadingInstance.close();
           setState(() {
             errorText = i18n('Set WiFi Error');
@@ -342,7 +342,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
         ),
       ),
     ];
-    print('selected: $selected');
+    debug('selected: $selected');
     List<Widget> options = List.from(
       colorCodes.map(
         (code) => Material(
@@ -354,7 +354,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
                 activeColor: Colors.teal,
                 groupValue: selected,
                 onChanged: (value) {
-                  print('on tap $code');
+                  debug('on tap $code');
                   setState(() {
                     selected = value;
                   });
@@ -682,7 +682,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
                           ssid = await getWifiSSID();
                         } catch (e) {
                           ssid = null;
-                          print(e);
+                          debug(e);
                         } finally {
                           setState(() {});
                         }

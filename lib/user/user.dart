@@ -208,6 +208,28 @@ class _AccountInfoState extends State<AccountInfo> {
                     ],
                   ),
                 ),
+                actionButton(
+                  'Log',
+                  () async {
+                    String logs = await getLogs();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) {
+                        return Scaffold(
+                          body: ListView(
+                            children: <Widget>[
+                              Container(
+                                padding: EdgeInsets.all(8),
+                                child: Text(logs),
+                              )
+                            ],
+                          ),
+                        );
+                      }),
+                    );
+                  },
+                  null,
+                ),
               ],
             ),
           ),

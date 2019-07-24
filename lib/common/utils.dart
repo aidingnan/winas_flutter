@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:device_info/device_info.dart';
 import 'package:package_info/package_info.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
+import 'package:path_provider/path_provider.dart';
 
 import './iPhoneCodeMap.dart';
 
@@ -591,4 +592,26 @@ String i18nPlural(String key, int count) {
 
 Future<void> i18nRefresh(Locale languageCode) async {
   await FlutterI18n.refresh(cachedBuildContext, languageCode);
+}
+
+Future<void> writeLog(String log, String fileName) async {
+  Directory root = await getApplicationDocumentsDirectory();
+  await Directory(root.path + '/tmp/').create(recursive: true);
+  File logFile = File(root.path + '/tmp/' + fileName);
+  await logFile.writeAsString(log, mode: FileMode.append);
+}
+
+Future<String> getLogs() async {
+  Directory root = await getApplicationDocumentsDirectory();
+  File logFile = File(root.path + '/tmp/log.txt');
+  String logs = await logFile.readAsString();
+  return logs;
+}
+
+void debug(dynamic text, [dynamic t2, dynamic t3]) {
+  String log =
+      (text ?? '').toString() + (t2 ?? '').toString() + (t3 ?? '').toString();
+  DateTime time = DateTime.now();
+  print('$time: $log');
+  writeLog('$time: $log \n', 'log.txt').catchError(print);
 }

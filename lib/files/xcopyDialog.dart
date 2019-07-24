@@ -110,7 +110,7 @@ class _XCopyViewState extends State<_XCopyView> {
           loading = false;
           _error = error;
         });
-        print(error);
+        debug(error);
         return null;
       }
 
@@ -127,7 +127,7 @@ class _XCopyViewState extends State<_XCopyView> {
       List<Entry> newFiles = [];
 
       if (rawEntries.length == 0) {
-        print('empty entries or some error');
+        debug('empty entries or some error');
       } else if (rawEntries[0]?.type == 'directory') {
         int index = rawEntries.indexWhere((entry) => entry.type == 'file');
         if (index > -1) {
@@ -143,7 +143,7 @@ class _XCopyViewState extends State<_XCopyView> {
         // filter entry.hash
         newFiles = List.from(rawEntries.where((entry) => entry.hash != null));
       } else {
-        print('other entries!!!!');
+        debug('other entries!!!!');
       }
       newEntries.addAll(rawEntries);
 

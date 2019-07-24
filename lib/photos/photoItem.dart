@@ -4,6 +4,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 
 import '../redux/redux.dart';
 import '../common/cache.dart';
+import '../common/utils.dart';
 import '../common/taskManager.dart';
 
 class PhotoItem extends StatefulWidget {
@@ -48,7 +49,7 @@ class _PhotoItemState extends State<PhotoItem> {
   }
 
   _onTap(BuildContext ctx) {
-    print('onTap item: ${widget.item.name} ${widget.item.metadata}');
+    debug('onTap item: ${widget.item.name} ${widget.item.metadata}');
     if (widget.select.selectMode()) {
       widget.select.toggleSelect(widget.item);
     } else {

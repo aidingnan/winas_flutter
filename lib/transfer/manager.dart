@@ -223,7 +223,7 @@ class TransferManager {
       for (TransferItem item in transferList) {
         if (item.transType == TransType.download) {
           item.reload(
-              () => _instance._cleanDir(item.filePath).catchError(print));
+              () => _instance._cleanDir(item.filePath).catchError(debug));
         } else {
           // update to the correct filePath
           final pathList = item.filePath.split('/');
@@ -236,7 +236,7 @@ class TransferManager {
         }
       }
     } catch (error) {
-      print('load TransferItem error: $error');
+      debug('load TransferItem error: $error');
       transferList = [];
     }
     return;
@@ -292,7 +292,7 @@ class TransferManager {
     String transPath = _transDir() + Uuid().v4();
     item.setFilePath(entryPath);
     CancelToken cancelToken = CancelToken();
-    item.start(cancelToken, () => _cleanDir(entryDir).catchError(print));
+    item.start(cancelToken, () => _cleanDir(entryDir).catchError(debug));
 
     final ep = 'drives/${entry.pdrv}/dirs/${entry.pdir}/entries/${entry.uuid}';
     final qs = {'name': entry.name, 'hash': entry.hash};
@@ -310,7 +310,7 @@ class TransferManager {
       item.finish();
       await _save();
     } catch (error) {
-      print(error);
+      debug(error);
       // DioErrorType.CANCEL is not error
       if (error is DioError && (error?.type != DioErrorType.CANCEL)) {
         item.fail(error);
@@ -418,7 +418,7 @@ class TransferManager {
 
       await _save();
     } catch (error) {
-      print(error);
+      debug(error);
       // DioErrorType.CANCEL is not error
       if (error is! DioError || (error?.type != DioErrorType.CANCEL)) {
         item.fail(error);
@@ -431,7 +431,7 @@ class TransferManager {
     File(filePath)
       ..stat().then(
         (stat) {
-          print('newUploadSharedFile $stat');
+          debug('newUploadSharedFile $stat');
           if (stat.type != FileSystemEntityType.notFound) {
             String name = filePath.split('/').last;
             TransferItem item = TransferItem(
@@ -441,7 +441,7 @@ class TransferManager {
             );
             transferList.add(item);
             uploadSharedFile(item, state).catchError((error) {
-              print(error);
+              debug(error);
               // DioErrorType.CANCEL is not error
               if (error is! DioError || (error?.type != DioErrorType.CANCEL)) {
                 item.fail(error);
@@ -449,7 +449,7 @@ class TransferManager {
             });
           }
         },
-      ).catchError(print);
+      ).catchError(debug);
   }
 
   Future<void> uploadFile(TransferItem item, AppState state) async {
@@ -473,7 +473,7 @@ class TransferManager {
 
       await _save();
     } catch (error) {
-      print(error);
+      debug(error);
       // DioErrorType.CANCEL is not error
       if (error is! DioError || (error?.type != DioErrorType.CANCEL)) {
         item.fail(error);
@@ -486,7 +486,7 @@ class TransferManager {
     File(filePath)
       ..stat().then(
         (stat) {
-          print('new Upload File $stat');
+          debug('new Upload File $stat');
           if (stat.type != FileSystemEntityType.notFound) {
             String name = filePath.split('/').last;
             TransferItem item = TransferItem(
@@ -497,7 +497,7 @@ class TransferManager {
             );
             transferList.add(item);
             uploadFile(item, state).catchError((error) {
-              print(error);
+              debug(error);
               // DioErrorType.CANCEL is not error
               if (error is! DioError || (error?.type != DioErrorType.CANCEL)) {
                 item.fail(error);
@@ -505,6 +505,6 @@ class TransferManager {
             });
           }
         },
-      ).catchError(print);
+      ).catchError(debug);
   }
 }

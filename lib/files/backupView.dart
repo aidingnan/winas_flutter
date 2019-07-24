@@ -61,7 +61,7 @@ class _BackupViewState extends State<BackupView> {
         });
       }
     } catch (e) {
-      print(e);
+      debug(e);
       if (mounted) {
         setState(() {
           error = 'refresh failed';

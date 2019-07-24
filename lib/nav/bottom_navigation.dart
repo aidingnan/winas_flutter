@@ -127,6 +127,8 @@ class _BottomNavigationState extends State<BottomNavigation>
 
       // stations apis
       store.dispatch(UpdateApisAction(store.state.apis));
+
+      debug('refreshAndSaveToken success');
     }
   }
 
@@ -136,7 +138,7 @@ class _BottomNavigationState extends State<BottomNavigation>
       final data = await getMachineId();
       final deviceName = data['deviceName'];
       final machineId = data['machineId'];
-      print('deviceName $deviceName, machineId $machineId');
+      debug('deviceName $deviceName, machineId $machineId');
       final res = await store.state.apis.req('drives', null);
       // get current drives data
       List<Drive> drives = List.from(
@@ -218,7 +220,7 @@ class _BottomNavigationState extends State<BottomNavigation>
                           'props': props,
                         });
                       } catch (e) {
-                        print(e);
+                        debug(e);
                         Navigator.pop(context, false);
                         return;
                       }
@@ -235,7 +237,7 @@ class _BottomNavigationState extends State<BottomNavigation>
         }
       }
     } catch (e) {
-      print(e);
+      debug(e);
       loadingInstance.close();
       showSnackBar(context, i18n('Toggle Backup Failed'));
       return;
@@ -271,7 +273,7 @@ class _BottomNavigationState extends State<BottomNavigation>
     }
     // add listener of new intent
     intentListener = Intent.listenToOnNewIntent().listen((filePath) {
-      print('newIntent: $filePath');
+      debug('newIntent: $filePath');
       if (filePath != null) {
         final cm = TransferManager.getInstance();
         cm.newUploadSharedFile(filePath, state);
@@ -284,10 +286,10 @@ class _BottomNavigationState extends State<BottomNavigation>
       }
     });
 
-    // refresh token every 24 hour
+    // refresh token every 2 hour
     refreshTimer = Timer.periodic(Duration(hours: 2), (Timer timer) {
       if (this.mounted) {
-        refreshAndSaveToken(store).catchError(print);
+        refreshAndSaveToken(store).catchError(debug);
       } else {
         timer.cancel();
       }
@@ -305,7 +307,7 @@ class _BottomNavigationState extends State<BottomNavigation>
 
     // add tokenExpiredListener (asynchronous)
     tokenExpiredListener = eventBus.on<TokenExpiredEvent>().listen((event) {
-      print('TokenExpiredEvent ${event.text}');
+      debug('TokenExpiredEvent ${event.text}');
       showDialog(
         context: context,
         builder: (_) => TokenExpired(),
@@ -318,7 +320,7 @@ class _BottomNavigationState extends State<BottomNavigation>
     // add tokenExpiredListener (asynchronous)
     stationNotOnlineListener =
         eventBus.on<StationNotOnlineEvent>().listen((event) {
-      print('StationNotOnlineEvent ${event.text}');
+      debug('StationNotOnlineEvent ${event.text}');
       showDialog(
         context: context,
         builder: (_) => DeviceNotOnline(),

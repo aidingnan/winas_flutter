@@ -50,7 +50,7 @@ class _AvatarViewState extends State<AvatarView> {
       final res = await state.cloud.setAvatar(imageData);
       // update Account in store
       final String url = res.data;
-      print(url);
+      debug(url);
       if (url.startsWith('https')) {
         account.updateAvatar(url);
         store.dispatch(LoginAction(account));
@@ -60,7 +60,7 @@ class _AvatarViewState extends State<AvatarView> {
       loadingInstance.close();
       showSnackBar(ctx, i18n('Change Avatar Success'));
     } catch (error) {
-      print(error);
+      debug(error);
       loadingInstance.close();
       showSnackBar(ctx, i18n('Change Avatar Failed'));
     }
