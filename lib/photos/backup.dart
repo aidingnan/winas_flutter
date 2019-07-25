@@ -364,14 +364,27 @@ class Worker {
     // upload photo
     File file = await entity.originFile;
 
-    // debug('file size ${file.statSync().size}');
+    AssetType type = entity.type;
+
     String filePath = file.path;
+    String fileName = filePath.split('/').last;
+
+    if (Platform.isIOS) {
+      String extension = fileName.contains('.') ? fileName.split('.').last : '';
+      DateTime time = DateTime.fromMillisecondsSinceEpoch(mtime);
+      String prefix = type == AssetType.image
+          ? 'IMG'
+          : type == AssetType.video ? 'VID' : 'File';
+      fileName = extension == ''
+          ? '${prefix}_${getTimeString(time)}'
+          : '${prefix}_${getTimeString(time)}.$extension';
+    }
 
     if (isAborted) {
       return;
     }
 
-    await uploadViaIsolate(apis, targetDir, filePath, hash, mtime,
+    await uploadViaIsolate(apis, targetDir, filePath, hash, mtime, fileName,
         cancelIsolate: cancelUpload, updateSpeed: updateSpeed);
 
     // delete tmp file, only in iOS

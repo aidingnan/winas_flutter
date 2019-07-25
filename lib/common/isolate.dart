@@ -109,6 +109,7 @@ void isolateUpload(SendPort sendPort) {
     final isCloud = message[5] as bool;
     final answerSend = message[6] as SendPort;
     final progressSend = message[7] as SendPort;
+    final fileName = message[8] as String;
 
     final dir = Entry.fromMap(jsonDecode(entryJson));
 
@@ -117,9 +118,6 @@ void isolateUpload(SendPort sendPort) {
 
     // set network status
     apis.isCloud = isCloud;
-
-    // Entry dir, File photo
-    final fileName = file.path.split('/').last;
 
     final FileStat stat = file.statSync();
 
@@ -177,8 +175,8 @@ Future<String> hashViaIsolate(String filePath,
 }
 
 /// upload file in Isolate
-Future<void> uploadViaIsolate(
-    Apis apis, Entry targetDir, String filePath, String hash, int mtime,
+Future<void> uploadViaIsolate(Apis apis, Entry targetDir, String filePath,
+    String hash, int mtime, String fileName,
     {CancelIsolate cancelIsolate, Function updateSpeed}) async {
   final response = ReceivePort();
 
@@ -203,6 +201,7 @@ Future<void> uploadViaIsolate(
   // final isCloud = message[5] as bool;
   // final answerSend = message[6] as SendPort;
   // final progressSend = message[7] as SendPort;
+  // final fileName = message[8] as String;
 
   sendPort.send([
     targetDir.toString(),
@@ -213,6 +212,7 @@ Future<void> uploadViaIsolate(
     apis.isCloud,
     answer.sendPort,
     progressRes.sendPort,
+    fileName,
   ]);
   List<int> uploadedList = [];
   List<int> timeList = [];

@@ -615,3 +615,14 @@ void debug(dynamic text, [dynamic t2, dynamic t3]) {
   print('$time: $log');
   writeLog('$time: $log \n', 'log.txt').catchError(print);
 }
+
+String getTimeString(DateTime time) {
+  final y = time.year;
+  final m = time.month;
+  final d = time.day;
+  final h = time.hour;
+  final mi = time.minute;
+  final s = time.second;
+  final ms = time.millisecond;
+  return '$y$m${d}_$h$mi$s$ms';
+}
