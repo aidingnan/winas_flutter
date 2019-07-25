@@ -138,7 +138,14 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
 
   parseResult(ScanResult scanResult) {
     final manufacturerData = scanResult.advertisementData.manufacturerData;
-    final value = manufacturerData[65535][0];
+    int value = -1;
+    try {
+      value = manufacturerData[65535][0];
+    } catch (e) {
+      debug('parseResult $e');
+      value = -1;
+    }
+
     String status = '';
     switch (value) {
       case 1:
