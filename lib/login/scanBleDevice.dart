@@ -64,7 +64,7 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
 
     scanSubscription = flutterBlue.scan().listen((ScanResult scanResult) {
       // filter device
-      if (!scanResult.device.name.toLowerCase().startsWith('wi')) return;
+      if (!scanResult.device.name.toLowerCase().startsWith('pan')) return;
       final id = scanResult.device.id;
       int index = results.indexWhere((res) => res.device.id == id);
       if (index > -1) return;
@@ -215,11 +215,9 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                               final res = parseResult(scanResult);
                               final status = res['status'];
                               final enabled = res['enabled'];
-                              String localName =
-                                  scanResult.advertisementData.localName;
-                              if (localName == null || localName.length < 2) {
-                                localName = 'A1';
-                              }
+
+                              String localName = scanResult.device.name;
+
                               return Material(
                                 child: InkWell(
                                   onTap: () async {
