@@ -228,14 +228,6 @@ class Apis {
     return isLAN;
   }
 
-  Future upgradeInfo() async {
-    final res = await dio.get(
-      'http://${this.lanIp}:3001/winasd/upgrade',
-      options: Options(connectTimeout: 1000, receiveTimeout: 0),
-    );
-    return res;
-  }
-
   Future req(String name, Map<String, dynamic> args) {
     Future r;
     interceptDio();

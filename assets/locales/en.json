@@ -320,7 +320,6 @@
   "Get Firmware Info Error": "Failed to get update info， please check your network settings and try again.",
   "Updating Firmware": "Updating...",
   "Update Firmware Now": "Update Now",
-  "Update Firmware Text": "Firmware update requires PocketDrive and the mobile phone connected to the same Wi-Fi.",
 
   "==== device/network.dart ====": "",
   "Network Detail": "Network",

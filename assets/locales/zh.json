@@ -317,10 +317,9 @@
   "Firmware Update": "系统更新",
   "Firmware Already Latest": "您的系统是最新版本。",
   "Getting Firmware Info": "获取系统版本信息中...",
-  "Get Firmware Info Error": "获取系统版本信息失败，请确认手机与设备已连至同一Wi-Fi网络后重试",
+  "Get Firmware Info Error": "获取系统版本信息失败，请检查网络设置后尝试",
   "Updating Firmware": "正在安装更新",
   "Update Firmware Now": "立即安装更新",
-  "Update Firmware Text": "系统更新需要手机与设备连至同一Wi-Fi网络，请连接后重试",
 
   "==== device/network.dart ====": "",
   "Network Detail": "网络详情",

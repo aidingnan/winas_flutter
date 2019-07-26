@@ -302,7 +302,7 @@ class Request {
         break;
 
       case 'newNickName':
-        r = tpatch('/user/nickname', {
+        r = tpatch('user/nickname', {
           'nickName': args['nickName'],
         });
         break;
@@ -311,6 +311,43 @@ class Request {
         r = tget('station', null);
         break;
 
+      // upgrade
+      case 'upgradeInfo':
+        r = command(
+            args['deviceSN'], {'verb': 'GET', 'urlPath': '/winasd/upgrade'});
+        break;
+
+      case 'upgrade':
+        r = command(args['deviceSN'], {
+          'verb': 'POST',
+          'urlPath': '/winasd/upgrade',
+          'body': {
+            'version': args['version'],
+          },
+        });
+        break;
+
+      case 'info':
+        r = command(
+          args['deviceSN'],
+          {'verb': 'GET', 'urlPath': '/winasd/info'},
+        );
+        break;
+
+      case 'reboot':
+        r = command(
+          args['deviceSN'],
+          {
+            'verb': 'PATCH',
+            'urlPath': '/boot',
+            'body': {
+              'state': 'reboot',
+            },
+          },
+        );
+        break;
+
+      // login
       case 'localBoot':
         r = command(args['deviceSN'], {'verb': 'GET', 'urlPath': '/boot'});
         break;

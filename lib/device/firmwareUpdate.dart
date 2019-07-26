@@ -1,11 +1,13 @@
 import 'dart:async';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 import './info.dart';
-import '../common/utils.dart';
 import '../redux/redux.dart';
+import '../common/utils.dart';
 import '../icons/winas_icons.dart';
+import '../login/stationLogin.dart';
 import '../common/appBarSlivers.dart';
 
 class Firmware extends StatefulWidget {
@@ -19,7 +21,6 @@ class _FirmwareState extends State<Firmware> {
   bool failed = false;
   bool loading = true;
   bool latest = false;
-  bool notLAN = false;
   ScrollController myScrollController = ScrollController();
 
   /// left padding of appbar
@@ -33,28 +34,123 @@ class _FirmwareState extends State<Firmware> {
   }
 
   Future<void> getUpgradeInfo(AppState state) async {
-    final isLAN = await state.apis.testLAN();
-    if (isLAN) {
-      try {
-        final res = await state.apis.upgradeInfo();
-        if (res?.data is List && res.data.length > 0) {
-          info = UpgradeInfo.fromMap(res.data[0]);
-          if (info.downloaded != true) {
-            latest = true;
-          }
-        } else {
+    try {
+      final res = await state.cloud.req(
+        'upgradeInfo',
+        {'deviceSN': state.apis.deviceSN},
+      );
+      if (res?.data is List && res.data.length > 0) {
+        List<UpgradeInfo> list =
+            List.from(res.data.map((m) => UpgradeInfo.fromMap(m)));
+
+        info = list.firstWhere((l) => l.downloaded == true, orElse: () => null);
+        if (info?.downloaded != true) {
           latest = true;
         }
-      } catch (e) {
-        failed = true;
+      } else {
+        latest = true;
       }
-    } else {
-      notLAN = true;
+    } catch (e) {
+      debug(e);
+      failed = true;
     }
+
     loading = false;
     if (this.mounted) {
       setState(() {});
     }
+  }
+
+  Future<void> pollingInfo(AppState state, int timeout) async {}
+
+  Future<void> upgradeFire(BuildContext ctx, AppState state) async {
+    final model = Model();
+    final deviceSN = state.apis.deviceSN;
+
+    showNormalDialog(
+      context: context,
+      text: i18n('Updating Firmware'),
+      model: model,
+    );
+    try {
+      final result = await state.cloud.req('upgrade', {
+        'version': info.tag,
+        'deviceSN': deviceSN,
+      });
+      debug('result', result);
+      int now = DateTime.now().millisecondsSinceEpoch;
+      // wait upgrade state to 'Finished'
+      bool finished = false;
+      while (finished != true) {
+        final current = DateTime.now().millisecondsSinceEpoch;
+
+        if (current - now > 180000) {
+          throw 'Timeout of 180 seconds for upgrade to state Finished';
+        }
+
+        await Future.delayed(Duration(seconds: 2));
+
+        try {
+          final res = await state.cloud.req('info', {
+            'deviceSN': deviceSN,
+          });
+
+          debug(res.data['upgrade']['state']);
+          if (res.data['upgrade']['state'] == 'Finished') {
+            finished = true;
+          }
+        } catch (e) {
+          debug(e);
+          if (e is DioError) {
+            debug(e.response.data);
+          }
+        }
+      }
+
+      debug('rebooting');
+      // reboot
+      await state.cloud.req('reboot', {
+        'deviceSN': deviceSN,
+      });
+
+      // wait reboot
+      now = DateTime.now().millisecondsSinceEpoch;
+      bool isOnline = false;
+
+      while (isOnline != true) {
+        final current = DateTime.now().millisecondsSinceEpoch;
+
+        if (current - now > 180000) {
+          throw 'Timeout of 180 seconds for upgrade to state Finished';
+        }
+
+        await Future.delayed(Duration(seconds: 2));
+
+        try {
+          final res = await reqStationList(state.cloud);
+
+          List<Station> list = res['stationList'];
+          isOnline = list
+                  .firstWhere((s) => s.sn == deviceSN, orElse: () => null)
+                  ?.isOnline ==
+              true;
+          debug('isOnline', isOnline);
+        } catch (e) {
+          debug(e);
+        }
+
+        await Future.delayed(Duration(seconds: 2));
+
+        model.close = true;
+        Navigator.pushNamedAndRemoveUntil(
+            ctx, '/deviceList', (Route<dynamic> route) => false);
+      }
+    } catch (e) {
+      debug(e);
+    }
+
+    model.close = true;
+    Navigator.pop(ctx);
   }
 
   @override
@@ -112,22 +208,6 @@ class _FirmwareState extends State<Firmware> {
         ),
       );
       slivers.add(renderText(i18n('Getting Firmware Info')));
-    } else if (notLAN) {
-      slivers.add(
-        SliverToBoxAdapter(
-          child: Container(
-            height: 144,
-            child: Center(
-                child: Icon(
-              Icons.info,
-              color: Colors.redAccent,
-              size: 72,
-            )),
-          ),
-        ),
-      );
-
-      slivers.add(renderText(i18n('Update Firmware Text')));
     } else if (latest) {
       // latest
       slivers.add(
@@ -213,19 +293,7 @@ class _FirmwareState extends State<Firmware> {
               Builder(builder: (BuildContext ctx) {
                 // TODO: firmware update
                 return FlatButton(
-                  onPressed: () async {
-                    final model = Model();
-                    showNormalDialog(
-                      context: context,
-                      text: i18n('Updating Firmware'),
-                      model: model,
-                    );
-                    await Future.delayed(Duration(seconds: 3));
-                    model.close = true;
-                    Navigator.pop(ctx);
-                    // Navigator.pushNamedAndRemoveUntil(
-                    //     ctx, '/deviceList', (Route<dynamic> route) => false);
-                  },
+                  onPressed: () => upgradeFire(ctx, state),
                   child: Text(
                     i18n('Update Firmware Now'),
                     style: TextStyle(color: Colors.teal),

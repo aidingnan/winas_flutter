@@ -125,7 +125,7 @@ stationLogin(BuildContext context, Request request, Station currentDevice,
 }
 
 /// Request station list
-reqStationList(Request request) async {
+Future reqStationList(Request request) async {
   final stationsRes = await request.req('stations', null);
   final lastUseDeviceSn = stationsRes.data['lastUseDeviceSn'];
   List<Station> stationList = List.from(
