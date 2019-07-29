@@ -265,12 +265,10 @@ class _BottomNavigationState extends State<BottomNavigation>
   /// 3. refresh token
   void initWorks(Store<AppState> store) {
     final state = store.state;
+
+    // init backupWorker
     backupWorker = BackupWorker(state.apis, state.config.cellularBackup);
 
-    // start autoBackup
-    if (state.config.autoBackup == true) {
-      backupWorker.start();
-    }
     // add listener of new intent
     intentListener = Intent.listenToOnNewIntent().listen((filePath) {
       debug('newIntent: $filePath');
@@ -295,7 +293,15 @@ class _BottomNavigationState extends State<BottomNavigation>
       }
     });
 
-    justonce.callback = refreshAndSaveToken;
+    /// in firstRefresh, refreshAndSaveToken, start backup
+    justonce.callback = (Store<AppState> s) async {
+      await refreshAndSaveToken(s);
+
+      // start autoBackup
+      if (s.state.config.autoBackup == true) {
+        backupWorker.start();
+      }
+    };
   }
 
   @override
