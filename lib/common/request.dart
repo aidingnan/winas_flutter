@@ -157,7 +157,7 @@ class Request {
       'http://$ip:3001/winasd/info',
       options: Options(connectTimeout: 10000),
     );
-    print('winasdInfo res $res');
+    // print('winasdInfo res $res');
     return res.data;
   }
 
@@ -167,7 +167,7 @@ class Request {
       'http://$ip:3001/winasd/timedate',
       options: Options(connectTimeout: 10000),
     );
-    print('timeDate res $res');
+    // print('timeDate res $res');
     return res.data['System clock synchronized'] == 'yes';
   }
 

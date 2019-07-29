@@ -118,6 +118,8 @@
   "Logging Device": "Logging",
   "Device Login Failed": "Failed to login to PocketDrive",
   "Bind Device Title": "Authorization",
+  "Connect Device Success": "Connected",
+  "Bind Device Success": "Authorized",
 
   "==== login/LoginFailed.dart ====": "",
   "Login Failed Title": "Device is not working properly",

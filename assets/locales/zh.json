@@ -118,6 +118,8 @@
   "Logging Device": "登录设备中...",
   "Device Login Failed": "登录失败",
   "Bind Device Title": "绑定设备",
+  "Connect Device Success": "连接设备成功",
+  "Bind Device Success": "绑定设备成功",
 
   "==== login/LoginFailed.dart ====": "",
   "Login Failed Title": "设备状态异常",

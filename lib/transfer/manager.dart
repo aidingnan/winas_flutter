@@ -236,7 +236,7 @@ class TransferManager {
         }
       }
     } catch (error) {
-      debug('load TransferItem error: $error');
+      // debug('load TransferItem error: $error');
       transferList = [];
     }
     return;

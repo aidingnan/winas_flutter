@@ -422,7 +422,22 @@ class _StationListState extends State<StationList> {
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  // start all
+                                  // Bind NEW Device
+                                  Material(
+                                    child: InkWell(
+                                      onTap: () async {
+                                        Navigator.pop(c);
+                                        startScanBLEDevice(Action.bind);
+                                      },
+                                      child: Container(
+                                        width: double.infinity,
+                                        padding: EdgeInsets.all(16),
+                                        child: Text(i18n('Bind NEW Device')),
+                                      ),
+                                    ),
+                                  ),
+
+                                  // Configuring Device WiFi
                                   Material(
                                     child: InkWell(
                                       onTap: () async {
@@ -435,20 +450,6 @@ class _StationListState extends State<StationList> {
                                         child: Text(
                                           i18n('Configuring Device WiFi'),
                                         ),
-                                      ),
-                                    ),
-                                  ),
-                                  // start all
-                                  Material(
-                                    child: InkWell(
-                                      onTap: () async {
-                                        Navigator.pop(c);
-                                        startScanBLEDevice(Action.bind);
-                                      },
-                                      child: Container(
-                                        width: double.infinity,
-                                        padding: EdgeInsets.all(16),
-                                        child: Text(i18n('Bind NEW Device')),
                                       ),
                                     ),
                                   ),

@@ -540,99 +540,143 @@ class _ConfigDeviceState extends State<ConfigDevice> {
     );
   }
 
+  Widget successLine(String text) {
+    return Container(
+      padding: EdgeInsets.fromLTRB(0, 0, 0, 32),
+      child: Row(
+        children: <Widget>[
+          Expanded(flex: 2, child: Container()),
+          Expanded(
+            flex: 4,
+            child: Center(
+              child: Text(text, style: TextStyle(fontSize: 18)),
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Icon(Icons.check, color: Colors.teal),
+          ),
+          Expanded(flex: 1, child: Container()),
+        ],
+      ),
+    );
+  }
+
+  Widget iconLine(Widget icon) {
+    return Container(
+      height: 108,
+      child: Center(child: icon),
+    );
+  }
+
   Widget renderBind(BuildContext ctx) {
     String text = '';
     String buttonLabel;
     Widget icon = CircularProgressIndicator();
+    List<Widget> list = [
+      Container(
+        padding: EdgeInsets.all(16),
+        child: Text(
+          widget.action == Action.bind
+              ? i18n('Bind Device Title')
+              : i18n('Configuring Device WiFi'),
+          style: TextStyle(color: Colors.black87, fontSize: 28),
+        ),
+      ),
+    ];
+
     switch (status) {
       case Status.connecting:
+        list.add(iconLine(icon));
         text = i18n('Connecting to Device via Ip');
         break;
 
       case Status.connectFailed:
+        icon = Icon(Icons.error_outline, color: Colors.redAccent, size: 96);
+        list.add(iconLine(icon));
         text = i18n('Connect to Device via Ip Failed', {'ip': currentIP});
         buttonLabel = i18n('Back');
-        icon = Icon(Icons.error_outline, color: Colors.redAccent, size: 96);
         break;
 
       case Status.binding:
+        list.add(iconLine(icon));
+        list.add(successLine(i18n('Connect Device Success')));
         text = i18n('Binding Device');
         break;
 
       case Status.bindFailed:
+        icon = Icon(Icons.error_outline, color: Colors.redAccent, size: 96);
+        list.add(iconLine(icon));
         text = i18n('Bind Device Failed');
         buttonLabel = i18n('Back');
-        icon = Icon(Icons.error_outline, color: Colors.redAccent, size: 96);
         break;
 
       case Status.logging:
+        list.add(iconLine(icon));
+        list.add(successLine(i18n('Connect Device Success')));
+        if (widget.action == Action.bind) {
+          list.add(successLine(i18n('Bind Device Success')));
+        }
         text = i18n('Logging Device');
         break;
 
       case Status.loginFailed:
+        icon = Icon(Icons.error_outline, color: Colors.redAccent, size: 96);
+        list.add(iconLine(icon));
         text = i18n('Device Login Failed');
         buttonLabel = i18n('Back');
-        icon = Icon(Icons.error_outline, color: Colors.redAccent, size: 96);
+
         break;
 
       default:
         text = '';
         buttonLabel = null;
     }
+    // current running
+    list.add(Container(
+      padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+      child: Center(
+        child: Text(
+          text,
+          style: TextStyle(fontSize: 18),
+        ),
+      ),
+    ));
+    // button
+    list.add(
+      buttonLabel != null
+          ? Container(
+              height: 88,
+              padding: EdgeInsets.all(16),
+              width: double.infinity,
+              child: RaisedButton(
+                color: Colors.teal,
+                elevation: 1.0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(48),
+                ),
+                onPressed: () {
+                  // pop all page
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, '/deviceList', (Route<dynamic> route) => false);
+                },
+                child: Row(
+                  children: <Widget>[
+                    Expanded(child: Container()),
+                    Text(
+                      buttonLabel,
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                    Expanded(child: Container()),
+                  ],
+                ),
+              ),
+            )
+          : Container(),
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Container(
-          padding: EdgeInsets.all(16),
-          child: Text(
-            widget.action == Action.bind
-                ? i18n('Bind Device Title')
-                : i18n('Configuring Device WiFi'),
-            style: TextStyle(color: Colors.black87, fontSize: 28),
-          ),
-        ),
-        Container(
-          height: 108,
-          child: Center(child: icon),
-        ),
-        Container(
-          padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
-          child: Center(
-              child: Text(
-            text,
-            style: TextStyle(fontSize: 18),
-          )),
-        ),
-        buttonLabel != null
-            ? Container(
-                height: 88,
-                padding: EdgeInsets.all(16),
-                width: double.infinity,
-                child: RaisedButton(
-                  color: Colors.teal,
-                  elevation: 1.0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(48),
-                  ),
-                  onPressed: () {
-                    // pop all page
-                    Navigator.pushNamedAndRemoveUntil(context, '/deviceList',
-                        (Route<dynamic> route) => false);
-                  },
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(child: Container()),
-                      Text(
-                        buttonLabel,
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                      ),
-                      Expanded(child: Container()),
-                    ],
-                  ),
-                ),
-              )
-            : Container(),
-      ],
+      children: list,
     );
   }
 
