@@ -222,8 +222,8 @@ class CacheManager {
   /// download HEIC raw file, use AsyncMemoizer to memoizer result to fix bug of hero
   Future getHEICPhoto(Entry entry, AppState state) {
     int index = tasks.indexWhere((task) => task.name == entry.hash);
-    final height = entry.metadata.height ?? 200;
-    final width = entry.metadata.width ?? 200;
+    final height = entry?.metadata?.height ?? 200;
+    final width = entry?.metadata?.width ?? 200;
     if (index > -1) {
       return tasks[index].lock.runOnce(
             () => getThumbData(entry, state, height: height, width: width),

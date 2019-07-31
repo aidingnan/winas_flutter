@@ -45,8 +45,7 @@ List<_FileType> get fileTypes => List.from([
       [
         i18n('Photos'),
         iconFromName('a.bmp'),
-        'JPEG.PNG.JPG.GIF.BMP',
-        // 'JPEG.PNG.JPG.GIF.BMP.RAW.HEIC', TODO: HEIC in search
+        'JPEG.PNG.JPG.GIF.BMP.HEIC',
       ],
       [
         i18n('Videos'),

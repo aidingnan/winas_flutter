@@ -10,12 +10,8 @@ import '../common/cache.dart';
 import '../common/utils.dart';
 import '../icons/winas_icons.dart';
 
-// TODO: HEIC in mediaTypes
-// const mediaTypes =
-//   'HEIC.JPEG.PNG.JPG.GIF.BMP.RAW.RM.RMVB.WMV.AVI.MP4.3GP.MKV.MOV.FLV.MPEG';
-
 const mediaTypes =
-    'JPEG.PNG.JPG.GIF.BMP.RAW.RM.RMVB.WMV.AVI.MP4.3GP.MKV.MOV.FLV.MPEG';
+    'HEIC.JPEG.PNG.JPG.GIF.BMP.RAW.RM.RMVB.WMV.AVI.MP4.3GP.MKV.MOV.FLV.MPEG';
 const videoTypes = 'RM.RMVB.WMV.AVI.MP4.3GP.MKV.MOV.FLV.MPEG';
 const imageTypes = 'JPEG.PNG.JPG.GIF.BMP';
 

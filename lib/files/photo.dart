@@ -9,7 +9,7 @@ List<String> photoMagic = ['JPEG', 'GIF', 'PNG', 'BMP'];
 
 /// show thumbnails of videos and images
 List<String> thumbMagic = [
-  // 'HEIC', TODO: HEIC in thumbMagic
+  'HEIC',
   'JPEG',
   'JPG',
   'GIF',
