@@ -13,7 +13,7 @@ import '../icons/winas_icons.dart';
 const mediaTypes =
     'HEIC.JPEG.PNG.JPG.GIF.BMP.RAW.RM.RMVB.WMV.AVI.MP4.3GP.MKV.MOV.FLV.MPEG';
 const videoTypes = 'RM.RMVB.WMV.AVI.MP4.3GP.MKV.MOV.FLV.MPEG';
-const imageTypes = 'JPEG.PNG.JPG.GIF.BMP';
+const imageTypes = 'HEIC.JPEG.PNG.JPG.GIF.BMP';
 
 class Photos extends StatefulWidget {
   Photos({Key key, this.backupWorker, this.toggleBackup}) : super(key: key);

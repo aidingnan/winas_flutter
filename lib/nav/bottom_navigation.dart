@@ -268,7 +268,6 @@ class _BottomNavigationState extends State<BottomNavigation>
 
     // init backupWorker
     backupWorker = BackupWorker(state.apis, state.config.cellularBackup);
-
     // add listener of new intent
     intentListener = Intent.listenToOnNewIntent().listen((filePath) {
       debug('newIntent: $filePath');

@@ -137,8 +137,6 @@ void isolateUpload(SendPort sendPort) {
       'file': UploadFileInfo(file, jsonEncode(formDataOptions)),
     };
 
-    print('$fileName: ${stat.size}');
-
     apis.upload(
       args,
       (error, value) {
