@@ -42,8 +42,8 @@ dependencies:
   # photo_manager: 0.3.3
   photo_manager:
     git:
-      url: https://github.com/CaiJingLong/flutter_photo_manager
-      ref: 09c094e295b4495ffea81e2b4a725b4a98b45c23
+      url: https://github.com/juncaixinchi/flutter_photo_manager
+      ref: 1c86798dfa5778908c6fbfdb98fff965ea4f8f37
 
   # video
   chewie: 0.9.7
