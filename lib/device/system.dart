@@ -95,7 +95,12 @@ class _SystemState extends State<System> {
               }),
             );
           },
-          null,
+          Row(
+            children: <Widget>[
+              Text(i18n('Firmware Version', {'version': info.version})),
+              Icon(Icons.chevron_right),
+            ],
+          ),
         ),
         sliverActionButton(
           i18n('Reset Device'),

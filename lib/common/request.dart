@@ -312,6 +312,32 @@ class Request {
         break;
 
       // upgrade
+      case 'upgradeDownload':
+        print(args);
+        print('station/${args['deviceSN']}/publish');
+        r = tpost(
+          'station/${args['deviceSN']}/publish',
+          {
+            'message': 'download',
+            'content': {},
+            'tag': args['tag'],
+          },
+        );
+        break;
+
+      case 'upgradeCheckout':
+        r = tpost(
+          'station/${args['deviceSN']}/publish',
+          {
+            'message': 'checkout',
+            'content': {
+              'uuid': args['uuid'],
+            },
+            'tag': args['tag'],
+          },
+        );
+        break;
+
       case 'upgradeInfo':
         r = command(
             args['deviceSN'], {'verb': 'GET', 'urlPath': '/winasd/upgrade'});
@@ -397,5 +423,11 @@ class Request {
       ),
       cancelToken: cancelToken,
     );
+  }
+
+  Future upgradeList() async {
+    assert(token != null);
+    interceptDio();
+    return dio.get('https://test.aidingnan.com/s/v1/station/upgrade');
   }
 }

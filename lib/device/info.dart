@@ -9,6 +9,8 @@ class Info {
   String address;
   String macAddress;
 
+  String version;
+
   String fingerprint;
   String signer;
   String certNotBefore;
@@ -43,6 +45,8 @@ class Info {
     this.signer = device['signer'];
     this.certNotBefore = prettyDate(device['notBefore']);
     this.certNotAfter = prettyDate(device['notAfter']);
+
+    this.version = m['upgrade']['current'];
   }
 }
 
@@ -55,7 +59,7 @@ class UpgradeInfo {
   int gradient;
   String createdAt;
   String type;
-  bool downloaded;
+  String uuid;
   UpgradeInfo.fromMap(Map m) {
     this.tag = m['tag'];
     this.hash = m['hash'];
@@ -65,6 +69,9 @@ class UpgradeInfo {
     this.gradient = m['gradient'];
     this.createdAt = m['createdAt'];
     this.type = m['type'];
-    this.downloaded = m['downloaded'] == true;
+  }
+
+  addUUID(String id) {
+    this.uuid = id;
   }
 }

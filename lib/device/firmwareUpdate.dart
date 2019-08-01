@@ -1,14 +1,21 @@
 import 'dart:async';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 import './info.dart';
+import './upgradeDialog.dart';
+
 import '../redux/redux.dart';
 import '../common/utils.dart';
 import '../icons/winas_icons.dart';
-import '../login/stationLogin.dart';
 import '../common/appBarSlivers.dart';
+
+/// 1.2.3 > 1.0.4 => true
+bool versionCompare(String a, String b) {
+  List<int> listA = List.from(a.split('.').map((i) => int.parse(i)));
+  List<int> listB = List.from(b.split('.').map((i) => int.parse(i)));
+  return listA[0] > listB[0] || listA[1] > listB[1] || listA[2] > listB[2];
+}
 
 class Firmware extends StatefulWidget {
   Firmware({Key key}) : super(key: key);
@@ -35,16 +42,38 @@ class _FirmwareState extends State<Firmware> {
 
   Future<void> getUpgradeInfo(AppState state) async {
     try {
-      final res = await state.cloud.req(
+      final res = await state.cloud.upgradeList();
+      final local = await state.cloud.req(
         'upgradeInfo',
         {'deviceSN': state.apis.deviceSN},
       );
+
+      debug('local $local');
+
+      final currentVersion = local.data['current']['version'];
+
       if (res?.data is List && res.data.length > 0) {
         List<UpgradeInfo> list =
             List.from(res.data.map((m) => UpgradeInfo.fromMap(m)));
+        // find newer version
+        info = list.firstWhere(
+            (l) => versionCompare(l.tag, currentVersion) == true,
+            orElse: () => null);
 
-        info = list.firstWhere((l) => l.downloaded == true, orElse: () => null);
-        if (info?.downloaded != true) {
+        if (info != null) {
+          debug('find newer version, tag: ${info.tag}');
+          List roots = List.from(local.data['roots']);
+          final donwloadedVersion = roots
+              .firstWhere((r) => r['version'] == info.tag, orElse: () => null);
+          String uuid =
+              donwloadedVersion != null ? donwloadedVersion['uuid'] : null;
+          if (uuid != null) {
+            info.addUUID(uuid);
+          } else {
+            debug('new version not download');
+            latest = true;
+          }
+        } else {
           latest = true;
         }
       } else {
@@ -61,96 +90,19 @@ class _FirmwareState extends State<Firmware> {
     }
   }
 
-  Future<void> pollingInfo(AppState state, int timeout) async {}
-
-  Future<void> upgradeFire(BuildContext ctx, AppState state) async {
-    final model = Model();
-    final deviceSN = state.apis.deviceSN;
-
-    showNormalDialog(
-      context: context,
-      text: i18n('Updating Firmware'),
-      model: model,
-    );
+  Future<void> downloadUpgrade(BuildContext ctx, AppState state) async {
     try {
-      final result = await state.cloud.req('upgrade', {
-        'version': info.tag,
+      final deviceSN = state.apis.deviceSN;
+      final result = await state.cloud.req('upgradeDownload', {
+        'tag': info.tag,
         'deviceSN': deviceSN,
       });
+
       debug('result', result);
-      int now = DateTime.now().millisecondsSinceEpoch;
-      // wait upgrade state to 'Finished'
-      bool finished = false;
-      while (finished != true) {
-        final current = DateTime.now().millisecondsSinceEpoch;
-
-        if (current - now > 180000) {
-          throw 'Timeout of 180 seconds for upgrade to state Finished';
-        }
-
-        await Future.delayed(Duration(seconds: 2));
-
-        try {
-          final res = await state.cloud.req('info', {
-            'deviceSN': deviceSN,
-          });
-
-          debug(res.data['upgrade']['state']);
-          if (res.data['upgrade']['state'] == 'Finished') {
-            finished = true;
-          }
-        } catch (e) {
-          debug(e);
-          if (e is DioError) {
-            debug(e.response.data);
-          }
-        }
-      }
-
-      debug('rebooting');
-      // reboot
-      await state.cloud.req('reboot', {
-        'deviceSN': deviceSN,
-      });
-
-      // wait reboot
-      now = DateTime.now().millisecondsSinceEpoch;
-      bool isOnline = false;
-
-      while (isOnline != true) {
-        final current = DateTime.now().millisecondsSinceEpoch;
-
-        if (current - now > 180000) {
-          throw 'Timeout of 180 seconds for upgrade to state Finished';
-        }
-
-        await Future.delayed(Duration(seconds: 2));
-
-        try {
-          final res = await reqStationList(state.cloud);
-
-          List<Station> list = res['stationList'];
-          isOnline = list
-                  .firstWhere((s) => s.sn == deviceSN, orElse: () => null)
-                  ?.isOnline ==
-              true;
-          debug('isOnline', isOnline);
-        } catch (e) {
-          debug(e);
-        }
-
-        await Future.delayed(Duration(seconds: 2));
-
-        model.close = true;
-        Navigator.pushNamedAndRemoveUntil(
-            ctx, '/deviceList', (Route<dynamic> route) => false);
-      }
+      showSnackBar(ctx, 'Donwload ${info.tag} started');
     } catch (e) {
       debug(e);
     }
-
-    model.close = true;
-    Navigator.pop(ctx);
   }
 
   @override
@@ -291,9 +243,31 @@ class _FirmwareState extends State<Firmware> {
           child: Row(
             children: <Widget>[
               Builder(builder: (BuildContext ctx) {
-                // TODO: firmware update
                 return FlatButton(
-                  onPressed: () => upgradeFire(ctx, state),
+                  onPressed: () => downloadUpgrade(ctx, state),
+                  child: Text(
+                    'Download',
+                    style: TextStyle(color: Colors.teal),
+                  ),
+                );
+              }),
+            ],
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: Row(
+            children: <Widget>[
+              Builder(builder: (BuildContext ctx) {
+                return FlatButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) => WillPopScope(
+                        onWillPop: () => Future.value(false),
+                        child: UpgradeDialog(info: info),
+                      ),
+                    ).catchError(debug);
+                  },
                   child: Text(
                     i18n('Update Firmware Now'),
                     style: TextStyle(color: Colors.teal),

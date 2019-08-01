@@ -468,7 +468,6 @@ class _GridPhotoState extends State<GridPhoto>
 
     // download raw photo
     if (widget.photo?.metadata?.type == 'HEIC') {
-      // TODO: handle heic file
       imageData = await cm.getHEICPhoto(widget.photo, state);
     } else {
       imageData = await cm.getPhoto(widget.photo, state);
