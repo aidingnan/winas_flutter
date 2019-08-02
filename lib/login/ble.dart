@@ -91,6 +91,45 @@ Future connectWifi(BluetoothDevice device, String command) async {
   return json;
 }
 
+class BleRes {
+  Stream<List<int>> stream;
+  Function onData;
+  Function onError;
+  BleRes(this.onData, this.onError);
+  addStream(Stream<List<int>> s) {
+    this.stream = s;
+    this.stream.listen(onData);
+  }
+}
+
+Future<void> connectWifiAndBind(
+    BluetoothDevice device, String command, BleRes bleRes) async {
+  List<BluetoothService> services = await device.discoverServices();
+  final netService = services.firstWhere(
+    (s) => s.uuid.toString() == NET_SETTING_SERVICE,
+    orElse: () => null,
+  );
+
+  final netNotify = netService.characteristics.firstWhere(
+    (c) => c.uuid.toString() == NET_SETTING_SERVICE_INDICATE,
+    orElse: () => null,
+  );
+
+  final netWrite = netService.characteristics.firstWhere(
+    (c) => c.uuid.toString() == NET_SETTING_SERVICE_WRITE,
+    orElse: () => null,
+  );
+  await device.setNotifyValue(netNotify, true);
+
+  bleRes.addStream(device.onValueChanged(netNotify));
+
+  await device.writeCharacteristic(
+    netWrite,
+    command.codeUnits,
+    type: CharacteristicWriteType.withResponse,
+  );
+}
+
 /// write data to BLE Characteristic
 void writeData(
   String data,

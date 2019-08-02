@@ -361,6 +361,7 @@ class Request {
         r = command(
           args['deviceSN'],
           {'verb': 'GET', 'urlPath': '/winasd/info'},
+          options,
         );
         break;
 

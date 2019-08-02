@@ -120,6 +120,7 @@
   "Bind Device Title": "绑定设备",
   "Connect Device Success": "连接设备成功",
   "Bind Device Success": "绑定设备成功",
+  "BLE Error": "蓝牙连接错误，请重试",
 
   "==== login/LoginFailed.dart ====": "",
   "Login Failed Title": "设备状态异常",

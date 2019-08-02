@@ -108,8 +108,10 @@ class LoadingInstance {
   LoadingInstance(this.context, this.route);
 
   void close() {
-    Navigator.removeRoute(context, route);
-    isLoading = false;
+    if (isLoading == true) {
+      Navigator.removeRoute(context, route);
+      isLoading = false;
+    }
   }
 }
 

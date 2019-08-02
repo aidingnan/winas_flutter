@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter/material.dart' hide Action;
 import 'package:flutter_blue/flutter_blue.dart';
@@ -20,7 +22,8 @@ enum Status {
   binding,
   bindFailed,
   logging,
-  loginFailed
+  loginFailed,
+  bleFailed,
 }
 
 class ConfigDevice extends StatefulWidget {
@@ -50,6 +53,9 @@ class _ConfigDeviceState extends State<ConfigDevice> {
 
   /// Error for set wifi Error;
   String errorText;
+
+  /// loadingInstance for connect wifi
+  LoadingInstance loadingInstance;
 
   Status status = Status.auth;
   List<List<String>> colorCodes;
@@ -97,6 +103,191 @@ class _ConfigDeviceState extends State<ConfigDevice> {
 
   /// store current device's ip
   String currentIP;
+
+// I/flutter (25484): 2019-08-02 12:10:31.883932: setWifiAndBind fired
+// D/FlutterBluePlugin(25484): [onCharacteristicChanged] uuid: 70000002-0182-406c-9221-0a6680bd0943
+// I/flutter (25484): 2019-08-02 12:10:43.542846: onData res {seq: 123, success: WIFI, data: {address: 10.10.9.201, prefix: 24}}
+// D/FlutterBluePlugin(25484): [onCharacteristicChanged] uuid: 70000002-0182-406c-9221-0a6680bd0943
+// I/flutter (25484): 2019-08-02 12:10:44.134847: onData res {seq: 123, success: CHANNEL}
+// D/FlutterBluePlugin(25484): [onCharacteristicChanged] uuid: 70000002-0182-406c-9221-0a6680bd0943
+// I/flutter (25484): 2019-08-02 12:10:44.417648: onData res {seq: 123, success: NTP}
+// I/flutter (25484): 2019-08-02 12:10:45.912787: get device >>>>>>>>>>>
+// I/flutter (25484): 2019-08-02 12:10:45.913531: AdvertisementData pan-4549
+// I/flutter (25484): 2019-08-02 12:10:45.914147: CC:4B:73:3D:1C:5F
+// I/flutter (25484): 2019-08-02 12:10:45.914740: pan-4549
+// D/FlutterBluePlugin(25484): [onCharacteristicChanged] uuid: 70000002-0182-406c-9221-0a6680bd0943
+// I/flutter (25484): 2019-08-02 12:10:47.212765: onData res {seq: 123, success: BOUND, data: {sn: test_0123068cc0e5a15fee, addr: 10.10.9.201}}
+
+  void onData(value, Store<AppState> store) {
+    if (!this.mounted) return;
+    var res;
+    var error;
+    String success;
+    String code;
+    try {
+      res = jsonDecode(String.fromCharCodes(value));
+      debug('onData res $res');
+      success = res['success'];
+      error = res['error'];
+      if (error != null) {
+        code = error['code'];
+      }
+      if (code == null && success == null) {
+        throw 'Neither success or error with code';
+      }
+    } catch (e) {
+      this.loadingInstance.close();
+      setState(() {
+        status = Status.bleFailed;
+      });
+      return;
+    }
+    if (code != null) {
+      switch (code) {
+        case 'EWIFI':
+          this.loadingInstance.close();
+          setState(() {
+            errorText = i18n('Set WiFi Error');
+          });
+          break;
+        case 'ECHANNEL':
+          setState(() {
+            status = Status.connectFailed;
+          });
+          break;
+        case 'ENTP':
+          setState(() {
+            status = Status.connectFailed;
+          });
+          break;
+        case 'EBOUND':
+          setState(() {
+            status = Status.bindFailed;
+          });
+          break;
+        default:
+          // TODO: Other Error
+          this.loadingInstance.close();
+          setState(() {
+            errorText = i18n('Set WiFi Error');
+          });
+          break;
+      }
+    } else if (success != null) {
+      switch (success) {
+        case 'WIFI':
+          this.loadingInstance.close();
+          setState(() {
+            status = Status.connecting;
+          });
+          break;
+        case 'CHANNEL':
+          setState(() {
+            status = Status.connecting;
+          });
+          break;
+        case 'NTP':
+          setState(() {
+            status = Status.binding;
+          });
+          break;
+        case 'BOUND':
+          String sn = res['data']['sn'];
+          setState(() {
+            status = Status.logging;
+          });
+          loginViaCloud(store, sn).catchError(debug);
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+  void onError(error) {
+    this.loadingInstance.close();
+  }
+
+  Future loginViaCloud(Store<AppState> store, String sn) async {
+    try {
+      debug('loginViaCloud start');
+      final request = widget.request;
+
+      bool started = false;
+      final now = DateTime.now().millisecondsSinceEpoch;
+
+      while (started != true) {
+        final current = DateTime.now().millisecondsSinceEpoch;
+        if (current - now > 30000)
+          throw 'Timeout of 30 seconds for winas starting';
+        await Future.delayed(Duration(seconds: 2));
+
+        // request info via cloud
+        try {
+          final res = await request.req(
+            'info',
+            {'deviceSN': sn},
+            Options(connectTimeout: 5000),
+          );
+          debug('get info in loginViaCloud...');
+
+          final winas = res.data['winas'];
+          final channel = res.data['channel'];
+
+          if (winas != null && channel != null) {
+            if (winas['state'] == "Started" &&
+                channel['state'] == 'Connected' &&
+                winas['users'] is List) {
+              started = true;
+            } else if (winas['state'] == "Failed") {
+              throw 'Winas Failed';
+            }
+          }
+        } catch (e) {
+          debug(e);
+          continue;
+        }
+      }
+      debug('winas started');
+      final result = await reqStationList(request);
+      final stationList = result['stationList'] as List;
+      final currentDevice = stationList.firstWhere(
+          (s) => s.sn == sn && s.sn != null,
+          orElse: () => null) as Station;
+      final account = store.state.account;
+      debug('stationLogin ....');
+      await stationLogin(context, request, currentDevice, account, store);
+    } catch (e) {
+      debug(e);
+      setState(() {
+        status = Status.loginFailed;
+      });
+      return;
+    }
+
+    // pop all page and nav to station page
+    Navigator.pushNamedAndRemoveUntil(
+        context, '/station', (Route<dynamic> route) => false);
+  }
+
+  /// check color code
+  Future<void> setWifiAndBind(String wifiPwd, Store<AppState> store) async {
+    assert(token != null);
+    assert(ssid != null);
+    final res = await widget.request.req('encrypted', null);
+    final encrypted = res.data['encrypted'] as String;
+    final device = widget.device;
+    final wifiCommand =
+        '{"action":"addAndActiveAndBound", "seq":123, "token":"$token", "body":{"ssid":"$ssid", "pwd":"$wifiPwd", "encrypted":"$encrypted"}}';
+    BleRes bleRes = BleRes(
+      (data) {
+        this.onData(data, store);
+      },
+      this.onError,
+    );
+    await withTimeout(connectWifiAndBind(device, wifiCommand, bleRes), 20);
+    debug('setWifiAndBind fired');
+  }
 
   /// check color code
   Future<String> setWifi(String wifiPwd) async {
@@ -262,7 +453,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
       debug('code is $selected');
       // reset token
 
-      final loadingInstance = showLoading(ctx);
+      final loading = showLoading(ctx);
       // fired, not time out
       timeoutCheck = false;
       try {
@@ -278,21 +469,34 @@ class _ConfigDeviceState extends State<ConfigDevice> {
           ssid = null;
         }
 
-        loadingInstance.close();
+        loading.close();
         setState(() {
           status = Status.wifi;
         });
       } catch (e) {
         debug(e);
 
-        loadingInstance.close();
+        loading.close();
         setState(() {
           status = Status.authFailed;
         });
       }
     } else if (status == Status.wifi) {
-      if (pwd is String && pwd.length > 0) {
-        final loadingInstance = showLoading(ctx, fakeProgress: 10.0);
+      if (widget.action == Action.bind) {
+        // set Wi-Fi and bind Device in one step
+        this.loadingInstance = showLoading(ctx, fakeProgress: 10.0);
+        try {
+          await setWifiAndBind(pwd, store);
+        } catch (e) {
+          debug(e);
+          this.loadingInstance.close();
+          setState(() {
+            errorText = i18n('Set WiFi Error');
+          });
+        }
+      } else if (pwd is String && pwd.length > 0) {
+        // previous progress: set Wi-Fi and connectDevice and login device
+        final loading = showLoading(ctx, fakeProgress: 10.0);
         try {
           debug('pwd: $pwd');
           final ip = await setWifi(pwd);
@@ -307,10 +511,10 @@ class _ConfigDeviceState extends State<ConfigDevice> {
             status = Status.connecting;
           });
           connectDevice(ip, token, store).catchError(debug);
-          loadingInstance.close();
+          loading.close();
         } catch (e) {
           debug(e);
-          loadingInstance.close();
+          loading.close();
           setState(() {
             errorText = i18n('Set WiFi Error');
           });
@@ -540,6 +744,47 @@ class _ConfigDeviceState extends State<ConfigDevice> {
     );
   }
 
+  Widget renderBleError(BuildContext ctx) {
+    return Column(
+      children: <Widget>[
+        Container(height: 64),
+        Icon(Icons.error_outline, color: Colors.redAccent, size: 96),
+        Container(
+          padding: EdgeInsets.all(64),
+          child: Center(
+            child: Text(i18n('BLE Error')),
+          ),
+        ),
+        Container(
+          height: 88,
+          padding: EdgeInsets.all(16),
+          width: double.infinity,
+          child: RaisedButton(
+            color: Colors.teal,
+            elevation: 1.0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(48),
+            ),
+            onPressed: () {
+              // return to ble list
+              Navigator.pop(ctx);
+            },
+            child: Row(
+              children: <Widget>[
+                Expanded(child: Container()),
+                Text(
+                  'Back',
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+                Expanded(child: Container()),
+              ],
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
   Widget successLine(String text) {
     return Container(
       padding: EdgeInsets.fromLTRB(0, 0, 0, 32),
@@ -693,6 +938,9 @@ class _ConfigDeviceState extends State<ConfigDevice> {
 
       case Status.authTimeout:
         return renderTimeout(ctx);
+
+      case Status.bleFailed:
+        return renderBleError(ctx);
 
       default:
         return renderBind(ctx);

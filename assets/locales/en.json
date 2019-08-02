@@ -120,6 +120,7 @@
   "Bind Device Title": "Authorization",
   "Connect Device Success": "Connected",
   "Bind Device Success": "Authorized",
+  "BLE Error": "Bluetooth connection error, please try agian.",
 
   "==== login/LoginFailed.dart ====": "",
   "Login Failed Title": "Device is not working properly",
