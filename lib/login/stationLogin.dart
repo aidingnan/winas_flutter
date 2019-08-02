@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import './stationList.dart';
@@ -23,7 +24,12 @@ stationLogin(BuildContext context, Request request, Station currentDevice,
   final deviceSN = currentDevice.sn;
   final lanIp = currentDevice.lanIp;
   final deviceName = currentDevice.name;
-  final boot = await request.req('localBoot', {'deviceSN': deviceSN});
+  final boot = await request.req(
+    'localBoot',
+    {'deviceSN': deviceSN},
+    Options(connectTimeout: 10000),
+  );
+
   final state = boot.data['state'];
   if (state != 'STARTED' && shouldShowDialog) {
     // ProbeFailed, EMBEDVOLUMEFAILED

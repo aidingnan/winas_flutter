@@ -126,13 +126,17 @@ class Request {
   }
 
   /// command via pipe
-  command(deviceSN, data) {
+  command(deviceSN, data, [Options options]) {
     assert(token != null);
     assert(cookie != null);
     dio.options.headers['Authorization'] = token;
     dio.options.headers['Content-Type'] = 'application/json';
     dio.options.headers['cookie'] = cookie;
-    return dio.post('$cloudAddress/station/$deviceSN/json', data: data);
+    return dio.post(
+      '$cloudAddress/station/$deviceSN/json',
+      data: data,
+      options: options,
+    );
   }
 
   /// test lanIp
@@ -194,7 +198,7 @@ class Request {
     return res.data;
   }
 
-  Future req(String name, Map<String, dynamic> args) {
+  Future req(String name, Map<String, dynamic> args, [Options options]) {
     Future r;
     interceptDio();
     switch (name) {
@@ -375,7 +379,8 @@ class Request {
 
       // login
       case 'localBoot':
-        r = command(args['deviceSN'], {'verb': 'GET', 'urlPath': '/boot'});
+        r = command(
+            args['deviceSN'], {'verb': 'GET', 'urlPath': '/boot'}, options);
         break;
       case 'localDrives':
         r = command(args['deviceSN'], {'verb': 'GET', 'urlPath': '/drives'});
