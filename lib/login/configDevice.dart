@@ -758,7 +758,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
               children: <Widget>[
                 Expanded(child: Container()),
                 Text(
-                  'Back',
+                  i18n('Back'),
                   style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
                 Expanded(child: Container()),
@@ -799,7 +799,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
               children: <Widget>[
                 Expanded(child: Container()),
                 Text(
-                  'Back',
+                  i18n('Back'),
                   style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
                 Expanded(child: Container()),
