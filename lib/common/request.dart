@@ -390,7 +390,8 @@ class Request {
         r = command(args['deviceSN'], {'verb': 'GET', 'urlPath': '/token'});
         break;
       case 'localUsers':
-        r = command(args['deviceSN'], {'verb': 'GET', 'urlPath': '/users'});
+        r = command(
+            args['deviceSN'], {'verb': 'GET', 'urlPath': '/users'}, options);
         break;
       case 'renameStation':
         r = command(args['deviceSN'], {

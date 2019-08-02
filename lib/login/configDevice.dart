@@ -106,22 +106,20 @@ class _ConfigDeviceState extends State<ConfigDevice> {
 
   BleRes bleRes;
 
-// I/flutter (25484): 2019-08-02 12:10:31.883932: setWifiAndBind fired
-// D/FlutterBluePlugin(25484): [onCharacteristicChanged] uuid: 70000002-0182-406c-9221-0a6680bd0943
-// I/flutter (25484): 2019-08-02 12:10:43.542846: onData res {seq: 123, success: WIFI, data: {address: 10.10.9.201, prefix: 24}}
-// D/FlutterBluePlugin(25484): [onCharacteristicChanged] uuid: 70000002-0182-406c-9221-0a6680bd0943
-// I/flutter (25484): 2019-08-02 12:10:44.134847: onData res {seq: 123, success: CHANNEL}
-// D/FlutterBluePlugin(25484): [onCharacteristicChanged] uuid: 70000002-0182-406c-9221-0a6680bd0943
-// I/flutter (25484): 2019-08-02 12:10:44.417648: onData res {seq: 123, success: NTP}
-// I/flutter (25484): 2019-08-02 12:10:45.912787: get device >>>>>>>>>>>
-// I/flutter (25484): 2019-08-02 12:10:45.913531: AdvertisementData pan-4549
-// I/flutter (25484): 2019-08-02 12:10:45.914147: CC:4B:73:3D:1C:5F
-// I/flutter (25484): 2019-08-02 12:10:45.914740: pan-4549
-// D/FlutterBluePlugin(25484): [onCharacteristicChanged] uuid: 70000002-0182-406c-9221-0a6680bd0943
-// I/flutter (25484): 2019-08-02 12:10:47.212765: onData res {seq: 123, success: BOUND, data: {sn: test_0123068cc0e5a15fee, addr: 10.10.9.201}}
+  bool wifiError = false;
+  Timer wifiTimer;
 
+  /// onData res {seq: 123, success: WIFI, data: {address: 10.10.9.201, prefix: 24}}
+  ///
+  /// onData res {seq: 123, success: CHANNEL}
+  ///
+  /// onData res {seq: 123, success: NTP}
+  ///
+  /// onData res {seq: 123, success: BOUND, data: {sn: test_0123068cc0e5a15fee, addr: 10.10.9.201}}
   void onData(value, Store<AppState> store) {
-    if (!this.mounted) return;
+    if (!this.mounted || wifiError) return;
+    // clear timeout of connectWifi
+    wifiTimer?.cancel();
     var res;
     var error;
     String success;
@@ -169,12 +167,8 @@ class _ConfigDeviceState extends State<ConfigDevice> {
           });
           break;
         default:
-          // TODO: Other Error
-          this.loadingInstance.close();
-          bleRes?.cancel();
-          setState(() {
-            errorText = i18n('Set WiFi Error');
-          });
+          // Other Unknown Error
+          this.onError('Other Unknown Error Code in setting wifi');
           break;
       }
     } else if (success != null) {
@@ -184,16 +178,19 @@ class _ConfigDeviceState extends State<ConfigDevice> {
           setState(() {
             status = Status.connecting;
           });
+          setTimeout();
           break;
         case 'CHANNEL':
           setState(() {
             status = Status.connecting;
           });
+          setTimeout();
           break;
         case 'NTP':
           setState(() {
             status = Status.binding;
           });
+          setTimeout();
           break;
         case 'BOUND':
           String sn = res['data']['sn'];
@@ -209,10 +206,32 @@ class _ConfigDeviceState extends State<ConfigDevice> {
   }
 
   void onError(error) {
+    debug(error);
+    wifiError = true;
+    wifiTimer?.cancel();
     bleRes?.cancel();
     this.loadingInstance.close();
+    if (status == Status.wifi) {
+      setState(() {
+        errorText = i18n('Set WiFi Error');
+      });
+    } else {
+      setState(() {
+        status = Status.bleFailed;
+      });
+    }
   }
 
+  void setTimeout() {
+    wifiTimer = Timer(
+      Duration(seconds: 20),
+      () {
+        this.onError('Connect Wi-Fi Timeout');
+      },
+    );
+  }
+
+  /// login Via Cloud, without lcoal ip
   Future loginViaCloud(Store<AppState> store, String sn) async {
     try {
       debug('loginViaCloud start');
@@ -275,10 +294,11 @@ class _ConfigDeviceState extends State<ConfigDevice> {
         context, '/station', (Route<dynamic> route) => false);
   }
 
-  /// check color code
+  /// set Wifi And Bind
   Future<void> setWifiAndBind(String wifiPwd, Store<AppState> store) async {
     assert(token != null);
     assert(ssid != null);
+    wifiError = false;
     final res = await widget.request.req('encrypted', null);
     final encrypted = res.data['encrypted'] as String;
     final device = widget.device;
@@ -290,11 +310,12 @@ class _ConfigDeviceState extends State<ConfigDevice> {
       },
       this.onError,
     );
-    await withTimeout(connectWifiAndBind(device, wifiCommand, bleRes), 20);
+    setTimeout();
+    await withTimeout(connectWifiAndBind(device, wifiCommand, bleRes), 10);
     debug('setWifiAndBind fired');
   }
 
-  /// check color code
+  /// only set Wifi
   Future<String> setWifi(String wifiPwd) async {
     assert(token != null);
     assert(ssid != null);

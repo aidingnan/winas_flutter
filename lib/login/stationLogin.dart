@@ -58,7 +58,8 @@ stationLogin(BuildContext context, Request request, Station currentDevice,
   }
 
   List results = await Future.wait([
-    request.req('localUsers', {'deviceSN': deviceSN}),
+    request.req(
+        'localUsers', {'deviceSN': deviceSN}, Options(connectTimeout: 10000)),
     request.req('localToken', {'deviceSN': deviceSN}),
     request.req('localDrives', {'deviceSN': deviceSN}),
     request.testLAN(lanIp, deviceSN),
