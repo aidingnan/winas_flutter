@@ -95,10 +95,17 @@ class BleRes {
   Stream<List<int>> stream;
   Function onData;
   Function onError;
+  StreamSubscription sub;
+
   BleRes(this.onData, this.onError);
+
   addStream(Stream<List<int>> s) {
-    this.stream = s;
-    this.stream.listen(onData);
+    stream = s;
+    sub = stream.listen(onData, onError: onError);
+  }
+
+  cancel() {
+    sub?.cancel();
   }
 }
 

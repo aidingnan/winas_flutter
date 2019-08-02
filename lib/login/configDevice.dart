@@ -104,6 +104,8 @@ class _ConfigDeviceState extends State<ConfigDevice> {
   /// store current device's ip
   String currentIP;
 
+  BleRes bleRes;
+
 // I/flutter (25484): 2019-08-02 12:10:31.883932: setWifiAndBind fired
 // D/FlutterBluePlugin(25484): [onCharacteristicChanged] uuid: 70000002-0182-406c-9221-0a6680bd0943
 // I/flutter (25484): 2019-08-02 12:10:43.542846: onData res {seq: 123, success: WIFI, data: {address: 10.10.9.201, prefix: 24}}
@@ -143,6 +145,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
       return;
     }
     if (code != null) {
+      bleRes?.cancel();
       switch (code) {
         case 'EWIFI':
           this.loadingInstance.close();
@@ -168,6 +171,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
         default:
           // TODO: Other Error
           this.loadingInstance.close();
+          bleRes?.cancel();
           setState(() {
             errorText = i18n('Set WiFi Error');
           });
@@ -205,6 +209,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
   }
 
   void onError(error) {
+    bleRes?.cancel();
     this.loadingInstance.close();
   }
 
@@ -279,7 +284,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
     final device = widget.device;
     final wifiCommand =
         '{"action":"addAndActiveAndBound", "seq":123, "token":"$token", "body":{"ssid":"$ssid", "pwd":"$wifiPwd", "encrypted":"$encrypted"}}';
-    BleRes bleRes = BleRes(
+    bleRes = BleRes(
       (data) {
         this.onData(data, store);
       },
