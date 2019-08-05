@@ -60,6 +60,9 @@ class _FirmwareState extends State<Firmware> {
             (l) => versionCompare(l.tag, currentVersion) == true,
             orElse: () => null);
 
+        // TODO: Fake update
+        // info = list.last;
+
         if (info != null) {
           debug('find newer version, tag: ${info.tag}');
           List roots = List.from(local.data['roots']);

@@ -161,8 +161,8 @@ class _RootDialogState extends State<RootDialog> {
                       onPressed: () => onPressed(state),
                     )
                   ]
-                : status == Status.reboot
-                    ? null
+                : status == Status.reboot || status == Status.loading
+                    ? <Widget>[Container(height: 24)]
                     : <Widget>[
                         FlatButton(
                           textColor: Theme.of(context).primaryColor,

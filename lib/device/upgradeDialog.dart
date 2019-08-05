@@ -121,11 +121,12 @@ class _UpgradeDialogState extends State<UpgradeDialog> {
             borderRadius: BorderRadius.circular(16),
           ),
           children: <Widget>[
-            Container(height: 16),
-            Center(
-              child: icon,
+            Container(
+              height: 96,
+              child: Center(
+                child: icon,
+              ),
             ),
-            Container(height: 16),
             Center(
               child: Text(text),
             ),
