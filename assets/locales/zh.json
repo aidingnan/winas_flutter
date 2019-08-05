@@ -357,6 +357,13 @@
   "Device Serial Number": "序列号",
   "Bluetooth Address": "蓝牙地址",
 
+  "==== device/rootDialog.dart ====": "",
+  "Root Device Title": "Root口袋网盘",
+  "Root Device Text": "Root口袋网盘后，您可以获取设备的管理员权益，设备将开启SSH功能（用户名密码均为root）",
+  "Device Root Success": "Root口袋网盘成功",
+  "Device Root Failed": "Root口袋网盘失败",
+  "Rooting": "Root中",
+
   "==== photos/gridPhoto.dart====": "",
   "Detail": "详情",
   "Album Content Count": {

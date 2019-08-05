@@ -5,7 +5,9 @@ class Info {
   String eccName;
   String ssid;
   String sn;
+  String usn;
   String cert;
+  String model;
   String address;
   String macAddress;
 
@@ -28,7 +30,9 @@ class Info {
       bleAddr = unknown;
     }
     this.sn = device['sn'];
+    this.usn = device['usn'];
     this.cert = device['cert'];
+    this.model = device['model'];
     if (net != null && net['state'] == 70 && net['detail'] != null) {
       final interface = net['addresses'][0];
       this.address = interface['address'];

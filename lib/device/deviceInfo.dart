@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 import './info.dart';
+import './rootDialog.dart';
 import '../redux/redux.dart';
 import '../common/utils.dart';
 import '../common/appBarSlivers.dart';
@@ -24,6 +25,27 @@ class _DeviceInfoState extends State<DeviceInfo> {
 
   /// left padding of appbar
   double paddingLeft = 16;
+
+  /// cheats to open root dialog
+  int count = 0;
+
+  Future<void> onCheat(BuildContext ctx) async {
+    count += 1;
+    if (count > 7) {
+      debug('onCheat: click 7 times');
+      count = 0;
+      bool success = await showDialog(
+        context: context,
+        builder: (BuildContext context) => RootDialog(),
+      );
+      debug('root result $success');
+      if (success == true) {
+        showSnackBar(ctx, i18n('Device Root Success'));
+      } else if (success == false) {
+        showSnackBar(ctx, i18n('Device Root Failed'));
+      }
+    }
+  }
 
   /// scrollController's listener to get offset
   void listener() {
@@ -65,6 +87,43 @@ class _DeviceInfoState extends State<DeviceInfo> {
     }
   }
 
+  Widget renderModel() {
+    return SliverToBoxAdapter(
+      child: Builder(builder: (ctx) {
+        return Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => onCheat(ctx),
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(width: 1.0, color: Colors.grey[200]),
+                ),
+              ),
+              child: Container(
+                height: 64,
+                padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                child: Row(
+                  children: <Widget>[
+                    Text(
+                      i18n('Device Model'),
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Container(),
+                    ),
+                    _ellipsisText(info.model),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
   List<Widget> getSlivers() {
     final String titleName = i18n('Device Info');
     // title
@@ -87,15 +146,16 @@ class _DeviceInfoState extends State<DeviceInfo> {
     } else {
       // actions
       slivers.addAll([
-        sliverActionButton(
-          i18n('Device Model'),
-          () => {},
-          _ellipsisText('Bacchus'),
-        ),
+        renderModel(),
+        // sliverActionButton(
+        //   i18n('Device Model'),
+        //   () => {},
+        //   _ellipsisText(info.model),
+        // ),
         sliverActionButton(
           i18n('Device Serial Number'),
           () => {},
-          _ellipsisText(info.sn),
+          _ellipsisText(info.usn),
         ),
         sliverActionButton(
           i18n('Bluetooth Address'),
@@ -109,11 +169,11 @@ class _DeviceInfoState extends State<DeviceInfo> {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, Account>(
+    return StoreConnector<AppState, AppState>(
       onInit: (store) => refresh(store.state),
       onDispose: (store) => {},
-      converter: (store) => store.state.account,
-      builder: (context, account) {
+      converter: (store) => store.state,
+      builder: (context, state) {
         return Scaffold(
           body: CustomScrollView(
             controller: myScrollController,

@@ -357,6 +357,13 @@
   "Device Serial Number": "Serial Number",
   "Bluetooth Address": "Bluetooth Address",
 
+  "==== device/rootDialog.dart ====": "",
+  "Root Device Title": "Root PocketDrive",
+  "Root Device Text": "By rooting PocketDrive, you can get the administrator rights of the device, and the device will enable SSH (username and password are both root)",
+  "Device Root Success": "PocketDrive has been rooted.",
+  "Device Root Failed": "Failed to root PocketDrive.",
+  "Rooting": "Rooting",
+
   "==== photos/gridPhoto.dart====": "",
   "Detail": "Details",
   "Album Content Count": {

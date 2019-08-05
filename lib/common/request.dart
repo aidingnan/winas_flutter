@@ -370,9 +370,22 @@ class Request {
           args['deviceSN'],
           {
             'verb': 'PATCH',
-            'urlPath': '/boot',
+            'urlPath': '/winasd',
             'body': {
-              'state': 'reboot',
+              'op': 'reboot',
+            },
+          },
+        );
+        break;
+
+      case 'root':
+        r = command(
+          args['deviceSN'],
+          {
+            'verb': 'PATCH',
+            'urlPath': '/winasd',
+            'body': {
+              'op': 'root',
             },
           },
         );
