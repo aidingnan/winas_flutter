@@ -29,21 +29,17 @@ class _DeviceInfoState extends State<DeviceInfo> {
   /// cheats to open root dialog
   int count = 0;
 
-  Future<void> onCheat(BuildContext ctx) async {
+  void onCheat() {
     count += 1;
     if (count > 7) {
       debug('onCheat: click 7 times');
       count = 0;
-      bool success = await showDialog(
+      showDialog(
         context: context,
-        builder: (BuildContext context) => RootDialog(),
+        builder: (BuildContext context) => RootDialog(
+          rooted: info.rooted == true,
+        ),
       );
-      debug('root result $success');
-      if (success == true) {
-        showSnackBar(ctx, i18n('Device Root Success'));
-      } else if (success == false) {
-        showSnackBar(ctx, i18n('Device Root Failed'));
-      }
     }
   }
 
@@ -89,38 +85,36 @@ class _DeviceInfoState extends State<DeviceInfo> {
 
   Widget renderModel() {
     return SliverToBoxAdapter(
-      child: Builder(builder: (ctx) {
-        return Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: () => onCheat(ctx),
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(width: 1.0, color: Colors.grey[200]),
-                ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => onCheat(),
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(width: 1.0, color: Colors.grey[200]),
               ),
-              child: Container(
-                height: 64,
-                padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
-                child: Row(
-                  children: <Widget>[
-                    Text(
-                      i18n('Device Model'),
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: Container(),
-                    ),
-                    _ellipsisText(info.model),
-                  ],
-                ),
+            ),
+            child: Container(
+              height: 64,
+              padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+              child: Row(
+                children: <Widget>[
+                  Text(
+                    i18n('Device Model'),
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Container(),
+                  ),
+                  _ellipsisText(info.model),
+                ],
               ),
             ),
           ),
-        );
-      }),
+        ),
+      ),
     );
   }
 
@@ -147,11 +141,6 @@ class _DeviceInfoState extends State<DeviceInfo> {
       // actions
       slivers.addAll([
         renderModel(),
-        // sliverActionButton(
-        //   i18n('Device Model'),
-        //   () => {},
-        //   _ellipsisText(info.model),
-        // ),
         sliverActionButton(
           i18n('Device Serial Number'),
           () => {},
@@ -163,6 +152,15 @@ class _DeviceInfoState extends State<DeviceInfo> {
           _ellipsisText(info.bleAddr),
         ),
       ]);
+      if (info.rooted) {
+        slivers.add(
+          sliverActionButton(
+            i18n('Root Device Title'),
+            () => {},
+            _ellipsisText(i18n('Enabled')),
+          ),
+        );
+      }
     }
     return slivers;
   }

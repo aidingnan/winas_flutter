@@ -391,6 +391,19 @@ class Request {
         );
         break;
 
+      case 'unroot':
+        r = command(
+          args['deviceSN'],
+          {
+            'verb': 'PATCH',
+            'urlPath': '/winasd',
+            'body': {
+              'op': 'unroot',
+            },
+          },
+        );
+        break;
+
       // login
       case 'localBoot':
         r = command(

@@ -13,6 +13,8 @@ class Info {
 
   String version;
 
+  bool rooted;
+
   String fingerprint;
   String signer;
   String certNotBefore;
@@ -33,6 +35,8 @@ class Info {
     this.usn = device['usn'];
     this.cert = device['cert'];
     this.model = device['model'];
+    this.rooted = device['rooted'] == true;
+
     if (net != null && net['state'] == 70 && net['detail'] != null) {
       final interface = net['addresses'][0];
       this.address = interface['address'];

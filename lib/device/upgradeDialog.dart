@@ -108,6 +108,7 @@ class _UpgradeDialogState extends State<UpgradeDialog> {
         showButton = true;
         break;
       default:
+        break;
     }
     return StoreConnector<AppState, AppState>(
       onInit: (store) => upgradeFire(context, store.state).catchError(debug),

@@ -71,7 +71,8 @@ class _FirmwareState extends State<Firmware> {
             info.addUUID(uuid);
           } else {
             debug('new version not download');
-            latest = true;
+            // TODO: new version not download
+            // latest = true;
           }
         } else {
           latest = true;
