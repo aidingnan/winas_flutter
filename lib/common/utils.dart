@@ -607,3 +607,12 @@ String getTimeString(DateTime time) {
   final ms = time.millisecond;
   return '$y$m${d}_$h$mi$s$ms';
 }
+
+List<List<String>> getColorCodes() => [
+      [i18n('Red Light'), i18n('Always On'), '#ff0000', 'alwaysOn'],
+      [i18n('Red Light'), i18n('Breath'), '#ff0000', 'breath'],
+      [i18n('White Light'), i18n('Always On'), '#ffffff', 'alwaysOn'],
+      [i18n('White Light'), i18n('Breath'), '#ffffff', 'breath'],
+      [i18n('Green Light'), i18n('Breath'), '#00ff00', 'breath'],
+      [i18n('Blue Light'), i18n('Always On'), '#0000ff', 'alwaysOn'],
+    ];

@@ -71,16 +71,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
         });
       }
     });
-
-    /// color codes
-    colorCodes = [
-      [i18n('Red Light'), i18n('Always On'), '#ff0000', 'alwaysOn'],
-      [i18n('Red Light'), i18n('Breath'), '#ff0000', 'breath'],
-      [i18n('Green Light'), i18n('Always On'), '#00ff00', 'alwaysOn'],
-      [i18n('Green Light'), i18n('Breath'), '#00ff00', 'breath'],
-      [i18n('Blue Light'), i18n('Always On'), '#0000ff', 'alwaysOn'],
-      [i18n('Blue Light'), i18n('Breath'), '#0000ff', 'breath'],
-    ];
+    colorCodes = getColorCodes();
   }
 
   @override
