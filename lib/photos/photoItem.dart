@@ -49,7 +49,7 @@ class _PhotoItemState extends State<PhotoItem> {
   }
 
   _onTap(BuildContext ctx) {
-    debug('onTap item: ${widget.item.name} ${widget.item.metadata}');
+    debug('onTap item: ${widget.item.name}');
     if (widget.select.selectMode()) {
       widget.select.toggleSelect(widget.item);
     } else {

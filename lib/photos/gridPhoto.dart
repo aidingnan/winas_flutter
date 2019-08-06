@@ -449,23 +449,21 @@ class _GridPhotoState extends State<GridPhoto>
   Uint8List imageData;
   Uint8List thumbData;
 
-  _getPhoto(AppState state) async {
-    final cm = await CacheManager.getInstance();
-
+  Future<void> _getThumb(AppState state, CacheManager cm) async {
     // download thumb
     if (thumbData == null) {
       thumbData = await cm.getThumbData(widget.photo, state);
     }
-
-    info = await _getImage(thumbData);
-
-    if (this.mounted) {
-      // print('thumbData updated');
-      setState(() {});
-    } else {
-      return;
+    if (imageData == null || info == null) {
+      info = await _getImage(thumbData);
     }
+    debug('get Thumb: ${widget.photo.name}');
+    if (thumbData != null && this.mounted) {
+      setState(() {});
+    }
+  }
 
+  Future<void> _getRawImage(AppState state, CacheManager cm) async {
     // download raw photo
     if (widget.photo?.metadata?.type == 'HEIC') {
       imageData = await cm.getHEICPhoto(widget.photo, state);
@@ -474,11 +472,15 @@ class _GridPhotoState extends State<GridPhoto>
     }
 
     info = await _getImage(imageData);
-
+    debug('get RawImage: ${widget.photo.name}');
     if (imageData != null && this.mounted) {
-      // print('imageData updated');
       setState(() {});
     }
+  }
+
+  _getPhoto(AppState state) async {
+    final cm = await CacheManager.getInstance();
+    await Future.wait([_getRawImage(state, cm), _getThumb(state, cm)]);
   }
 
   Widget detailRow(Widget icon, String mainText, String subText) {

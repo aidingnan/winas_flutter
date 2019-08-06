@@ -254,7 +254,10 @@ class _GridVideoState extends State<GridVideo>
 
   _getPhoto(AppState state) async {
     final cm = await CacheManager.getInstance();
+    await Future.wait([_getThumb(state, cm), _getVideo(state, cm)]);
+  }
 
+  Future<void> _getThumb(AppState state, CacheManager cm) async {
     // download thumb
     if (thumbData == null) {
       thumbData = await cm.getThumbData(widget.video, state);
@@ -263,11 +266,11 @@ class _GridVideoState extends State<GridVideo>
     info = await _getImage(MemoryImage(thumbData));
 
     if (this.mounted) {
-      debug('thumbData updated');
       setState(() {});
-    } else {
-      return;
     }
+  }
+
+  Future<void> _getVideo(AppState state, CacheManager cm) async {
     // is video
     final ext = widget.video.metadata.type;
 
@@ -281,7 +284,7 @@ class _GridVideoState extends State<GridVideo>
     final String url =
         'http://${apis.lanIp}:3000/media/$key.${ext.toLowerCase()}';
 
-    debug('${widget.video.name}, url: $url, $mounted');
+    // debug('${widget.video.name}, url: $url, $mounted');
 
     // keep singleton
     if (vpc != null) return;
@@ -297,7 +300,7 @@ class _GridVideoState extends State<GridVideo>
       }
     }
 
-    debug('aspectRatio $aspectRatio, $meta');
+    // debug('aspectRatio $aspectRatio, $meta');
     chewieController = ChewieController(
       videoPlayerController: vpc,
       aspectRatio: aspectRatio,

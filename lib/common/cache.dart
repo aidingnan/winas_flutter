@@ -208,8 +208,8 @@ class CacheManager {
 
       // read data
       thumbData = await entryFile.readAsBytes();
-      print(
-          'download ${entry.name} success, cost ${DateTime.now().millisecondsSinceEpoch - now}ms');
+      // print(
+      //     'download ${entry.name} success, cost ${DateTime.now().millisecondsSinceEpoch - now}ms');
     } catch (error) {
       print('getThumbData of ${entry.name} failed ');
       return null;
