@@ -131,23 +131,22 @@ class _UpgradeDialogState extends State<UpgradeDialog> {
               child: Text(text),
             ),
             Container(height: 16),
-            showButton
-                ? Row(
-                    children: <Widget>[
-                      Expanded(child: Container(), flex: 1),
-                      Container(
-                        padding: EdgeInsets.only(right: 8),
-                        child: FlatButton(
-                          onPressed: () => backtoStationList(context),
-                          child: Text(
-                            i18n('OK'),
-                            style: TextStyle(color: Colors.teal),
-                          ),
-                        ),
+            if (showButton)
+              Row(
+                children: <Widget>[
+                  Expanded(child: Container(), flex: 1),
+                  Container(
+                    padding: EdgeInsets.only(right: 8),
+                    child: FlatButton(
+                      onPressed: () => backtoStationList(context),
+                      child: Text(
+                        i18n('OK'),
+                        style: TextStyle(color: Colors.teal),
                       ),
-                    ],
-                  )
-                : Container(),
+                    ),
+                  ),
+                ],
+              ),
           ],
         );
       },

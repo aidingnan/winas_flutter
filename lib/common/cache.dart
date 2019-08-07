@@ -196,7 +196,7 @@ class CacheManager {
     };
 
     try {
-      final now = DateTime.now().millisecondsSinceEpoch;
+      // final now = DateTime.now().millisecondsSinceEpoch;
       // print('download ${entry.name}');
       // download
       await state.apis.download(ep, qs, transPath, cancelToken: cancelToken);
