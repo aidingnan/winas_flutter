@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:pocket_drive/common/eventBus.dart';
 import 'package:uuid/uuid.dart';
 import 'package:async/async.dart';
 import 'package:path_provider/path_provider.dart';
@@ -11,6 +10,7 @@ import 'package:synchronized/synchronized.dart' as synchronized;
 import '../redux/redux.dart';
 import '../common/utils.dart';
 import '../common/isolate.dart';
+import '../common/eventBus.dart';
 
 enum TransType {
   shared,

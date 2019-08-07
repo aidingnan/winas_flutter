@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 import 'package:dio/dio.dart';
-import 'package:pocket_drive/common/eventBus.dart';
+
 import 'package:redux/redux.dart';
 import 'package:flutter/material.dart' hide Intent;
 import 'package:open_file/open_file.dart';
@@ -22,6 +22,7 @@ import '../redux/redux.dart';
 import '../common/cache.dart';
 import '../common/utils.dart';
 import '../common/intent.dart';
+import '../common/eventBus.dart';
 import '../transfer/manager.dart';
 import '../transfer/transfer.dart';
 import '../icons/winas_icons.dart';
