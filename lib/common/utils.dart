@@ -608,11 +608,18 @@ String getTimeString(DateTime time) {
   return '$y$m${d}_$h$mi$s$ms';
 }
 
+/// [Color Text,Status Text, True Color,True Status, Color for Text]
 List<List<String>> getColorCodes() => [
-      [i18n('Red Light'), i18n('Always On'), '#ff0000', 'alwaysOn'],
-      [i18n('Red Light'), i18n('Breath'), '#ff0000', 'breath'],
-      [i18n('White Light'), i18n('Always On'), '#ffffff', 'alwaysOn'],
-      [i18n('White Light'), i18n('Breath'), '#ffffff', 'breath'],
-      [i18n('Green Light'), i18n('Breath'), '#00ff00', 'breath'],
-      [i18n('Blue Light'), i18n('Always On'), '#0000ff', 'alwaysOn'],
+      [i18n('Red Light'), i18n('Always On'), '#ff0000', 'alwaysOn', '#ff0000'],
+      [i18n('Red Light'), i18n('Breath'), '#ff0000', 'breath', '#ff0000'],
+      [
+        i18n('White Light'),
+        i18n('Always On'),
+        '#ffffff',
+        'alwaysOn',
+        '#9e9e9e'
+      ],
+      [i18n('White Light'), i18n('Breath'), '#ffffff', 'breath', '#9e9e9e'],
+      [i18n('Green Light'), i18n('Breath'), '#00ff00', 'breath', '#00ff00'],
+      [i18n('Blue Light'), i18n('Always On'), '#0000ff', 'alwaysOn', '#0000ff'],
     ];

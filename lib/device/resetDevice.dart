@@ -234,7 +234,7 @@ class _ResetDeviceState extends State<_ResetDevice> {
                     children: [
                       TextSpan(
                         text: code[0],
-                        style: TextStyle(color: _getColor(code[2])),
+                        style: TextStyle(color: _getColor(code[4])),
                       ),
                       TextSpan(text: ' '),
                       TextSpan(text: code[1]),
