@@ -12,6 +12,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import './login/login.dart';
 import './redux/redux.dart';
 import './transfer/manager.dart';
+import './common/appConfig.dart';
 import './login/stationList.dart';
 import './nav/bottom_navigation.dart';
 
@@ -74,6 +75,13 @@ void main() async {
     await flutterI18nDelegate.load(null);
   } catch (e) {
     print('flutterI18nDelegate load failed $e');
+  }
+
+  // check if test or production mode
+  try {
+    await AppConfig.checkDev();
+  } catch (e) {
+    print('checkDev faile $e');
   }
 
   runApp(MyApp(initialState, store, flutterI18nDelegate));

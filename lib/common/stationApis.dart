@@ -5,11 +5,12 @@ import 'dart:io' show Platform;
 import 'package:connectivity/connectivity.dart';
 
 import './eventBus.dart';
+import '../common/appConfig.dart';
 
 class Apis {
   bool isIOS = !Platform.isAndroid;
   bool isCloud;
-  final cloudAddress = 'https://test.aidingnan.com/c/v1';
+  String get cloudAddress => AppConfig.cloudAddress;
   String token;
   String cookie;
   String lanToken;

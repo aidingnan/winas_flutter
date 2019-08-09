@@ -42,7 +42,8 @@ class _FirmwareState extends State<Firmware> {
 
   Future<void> getUpgradeInfo(AppState state) async {
     try {
-      final res = await state.cloud.upgradeList();
+      final res = await state.cloud.req('upgradeList', null);
+
       final local = await state.cloud.req(
         'upgradeInfo',
         {'deviceSN': state.apis.deviceSN},

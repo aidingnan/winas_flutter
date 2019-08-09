@@ -3,10 +3,13 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 
 import './eventBus.dart';
+import '../common/appConfig.dart';
 
 class Request {
   bool isIOS = !Platform.isAndroid;
-  final cloudAddress = 'https://test.aidingnan.com/c/v1';
+
+  String get cloudAddress => AppConfig.cloudAddress;
+
   String token;
   String refreshToken;
   String cookie;
@@ -316,6 +319,10 @@ class Request {
         break;
 
       // upgrade
+      case 'upgradeList':
+        r = aget('station/upgrade', null);
+        break;
+
       case 'upgradeDownload':
         print(args);
         print('station/${args['deviceSN']}/publish');
@@ -456,11 +463,5 @@ class Request {
       ),
       cancelToken: cancelToken,
     );
-  }
-
-  Future upgradeList() async {
-    assert(token != null);
-    interceptDio();
-    return dio.get('https://test.aidingnan.com/s/v1/station/upgrade');
   }
 }

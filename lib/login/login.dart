@@ -11,6 +11,7 @@ import './accountLogin.dart';
 import '../redux/redux.dart';
 import '../common/utils.dart';
 import '../common/request.dart';
+import '../common/appConfig.dart';
 import '../icons/winas_icons.dart';
 
 final pColor = Colors.teal;
@@ -25,6 +26,8 @@ class _LoginPageState extends State<LoginPage> {
   var request = Request();
   String code;
   var tokenRes;
+
+  bool toggleTest = false;
 
   @override
   void initState() {
@@ -132,6 +135,34 @@ class _LoginPageState extends State<LoginPage> {
       backgroundColor: Colors.teal,
       appBar: AppBar(
         elevation: 0.0, // no shadow
+        leading: GestureDetector(
+          onDoubleTap: () {
+            setState(() {
+              toggleTest = true;
+            });
+          },
+          onLongPress: () async {
+            if (toggleTest != true) return;
+            await AppConfig.toggleDev();
+            setState(() {
+              toggleTest = false;
+            });
+          },
+          child: Stack(
+            children: <Widget>[
+              Container(
+                width: 56,
+                height: 56,
+                color: Colors.teal,
+              ),
+              if (AppConfig.isDev)
+                Banner(
+                  location: BannerLocation.topStart,
+                  message: 'Test',
+                ),
+            ],
+          ),
+        ),
         actions: <Widget>[
           FlatButton(
             child: Text(i18n('Login')),
