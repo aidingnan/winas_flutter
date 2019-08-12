@@ -290,9 +290,9 @@ class Metadata {
       minutes = ((dur - hours * 3600) / 60).floor();
       seconds = ((dur - hours * 3600 - minutes * 60)).ceil();
 
-      String hoursString = hours > 10 ? hours.toString() : '0$hours';
-      String minutesString = minutes > 10 ? minutes.toString() : '0$minutes';
-      String secondsString = seconds > 10 ? seconds.toString() : '0$seconds';
+      String hoursString = hours >= 10 ? hours.toString() : '0$hours';
+      String minutesString = minutes >= 10 ? minutes.toString() : '0$minutes';
+      String secondsString = seconds >= 10 ? seconds.toString() : '0$seconds';
       this.duration = '$minutesString:$secondsString';
       if (hoursString != '00') {
         this.duration = '$hoursString:${this.duration}';
