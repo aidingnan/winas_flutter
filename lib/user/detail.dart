@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:fluwx/fluwx.dart' as fluwx;
+
 import './weChat.dart';
 import './avatarView.dart';
 import './newNickName.dart';
@@ -14,8 +16,24 @@ class Detail extends StatefulWidget {
 
 class _DetailState extends State<Detail> {
   @override
+  bool isWeChatInstalled = false;
+
   void initState() {
     super.initState();
+    _initFluwx().catchError(debug);
+  }
+
+  Future<void> _initFluwx() async {
+    await fluwx.register(
+      appId: "wx0aa672b8371cde8e",
+      doOnAndroid: true,
+      doOnIOS: true,
+      enableMTA: false,
+    );
+    isWeChatInstalled = await fluwx.isWeChatInstalled();
+    if (this.mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -122,27 +140,28 @@ class _DetailState extends State<Detail> {
                     style: TextStyle(color: Colors.black38),
                   ),
                 ),
-                actionButton(
-                  i18n('WeChat'),
-                  () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) {
-                        return WeChat();
-                      }),
-                    );
-                  },
-                  Row(
-                    children: <Widget>[
-                      Text(
-                        i18n('Detail'),
-                        style: TextStyle(color: Colors.black38),
-                      ),
-                      Container(width: 8),
-                      Icon(Icons.chevron_right, color: Colors.black38),
-                    ],
+                if (isWeChatInstalled == true)
+                  actionButton(
+                    i18n('WeChat'),
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) {
+                          return WeChat();
+                        }),
+                      );
+                    },
+                    Row(
+                      children: <Widget>[
+                        Text(
+                          i18n('Detail'),
+                          style: TextStyle(color: Colors.black38),
+                        ),
+                        Container(width: 8),
+                        Icon(Icons.chevron_right, color: Colors.black38),
+                      ],
+                    ),
                   ),
-                ),
               ],
             ),
           );

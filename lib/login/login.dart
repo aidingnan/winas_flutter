@@ -200,34 +200,36 @@ class _LoginPageState extends State<LoginPage> {
                   ),
 
                   // wechat login
-                  Container(
-                    height: 56,
-                    width: double.infinity,
-                    child: RaisedButton(
-                      color: Colors.white,
-                      elevation: 1.0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(48),
-                      ),
-                      onPressed: () => wechatAuth(ctx, callback),
-                      child: Row(
-                        children: <Widget>[
-                          Icon(Winas.wechat, color: pColor),
-                          Expanded(child: Container()),
-                          Text(
-                            i18n('Login via WeChat'),
-                            style: TextStyle(color: pColor, fontSize: 16),
-                          ),
-                          Expanded(child: Container()),
-                          Container(width: 24),
-                        ],
+                  if (isWeChatInstalled == true)
+                    Container(
+                      margin: EdgeInsets.only(bottom: 32),
+                      height: 56,
+                      width: double.infinity,
+                      child: RaisedButton(
+                        color: Colors.white,
+                        elevation: 1.0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(48),
+                        ),
+                        onPressed: () => wechatAuth(ctx, callback),
+                        child: Row(
+                          children: <Widget>[
+                            Icon(Winas.wechat, color: pColor),
+                            Expanded(child: Container()),
+                            Text(
+                              i18n('Login via WeChat'),
+                              style: TextStyle(color: pColor, fontSize: 16),
+                            ),
+                            Expanded(child: Container()),
+                            Container(width: 24),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
 
                   // create account
                   Container(
-                    margin: EdgeInsets.only(top: 32, bottom: 32),
+                    margin: EdgeInsets.only(bottom: 32),
                     height: 56,
                     padding: EdgeInsets.all(4),
                     decoration: BoxDecoration(

@@ -76,7 +76,7 @@ class _FirmwareState extends State<Firmware> {
           } else {
             debug('new version not download');
             // TODO: new version not download
-            // latest = true;
+            latest = true;
           }
         } else {
           latest = true;
