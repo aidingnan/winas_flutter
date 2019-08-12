@@ -6,6 +6,7 @@ import '../redux/redux.dart';
 import '../common/cache.dart';
 import '../common/utils.dart';
 import '../common/taskManager.dart';
+import '../common/placeHolderImage.dart';
 
 class PhotoItem extends StatefulWidget {
   PhotoItem({Key key, this.item, this.showPhoto, this.cellSize, this.select})
@@ -80,12 +81,10 @@ class _PhotoItemState extends State<PhotoItem> {
                 children: <Widget>[
                   // thumbnails
                   Positioned.fill(
-                    child: thumbData == null
-                        ? Container(color: Colors.grey[300])
-                        : Image.memory(
-                            thumbData,
-                            fit: BoxFit.cover,
-                          ),
+                    child: Image.memory(
+                      thumbData ?? placeHolderImage,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                   // video duration
                   Positioned(

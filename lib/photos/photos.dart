@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'package:redux/redux.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,9 @@ import './photoList.dart';
 import '../redux/redux.dart';
 import '../common/cache.dart';
 import '../common/utils.dart';
+import '../common/eventBus.dart';
 import '../icons/winas_icons.dart';
+import '../common/placeHolderImage.dart';
 
 const mediaTypes =
     'HEIC.JPEG.PNG.JPG.GIF.BMP.RAW.RM.RMVB.WMV.AVI.MP4.3GP.MKV.MOV.FLV.MPEG';
@@ -32,12 +35,27 @@ class _PhotosState extends State<Photos> {
   /// current users's userUUID
   static String userUUID;
 
+  /// cached album cover
+  static Map<String, Uint8List> cachedThumbs = {};
+
+  /// BackupEvent Listener
+  StreamSubscription<BackupEvent> backupEventListener;
+
+  int needRefresh = 0;
+
   /// req data error
   bool error = false;
 
   ScrollController myScrollController = ScrollController();
 
   Future getCover(Album album, AppState state) async {
+    // get from cached list
+    final preThumbData = cachedThumbs['${album.name + album.places}'];
+
+    if (preThumbData != null) {
+      album.setCover(preThumbData);
+    }
+
     // get first item
     final res = await state.apis.req('search', {
       'places': album.places,
@@ -53,6 +71,9 @@ class _PhotosState extends State<Photos> {
     Entry entry = Entry.fromMap(res.data.first);
     final cm = await CacheManager.getInstance();
     final Uint8List thumbData = await cm.getThumbData(entry, state);
+
+    // cache thumbData
+    cachedThumbs['${album.name + album.places}'] = thumbData;
 
     if (this.mounted && thumbData != null) {
       album.setCover(thumbData);
@@ -75,11 +96,9 @@ class _PhotosState extends State<Photos> {
     return allDrives;
   }
 
-  Future refresh(Store<AppState> store, bool isManual) async {
-    // use store.state to keep the state as latest
-    if (!isManual &&
-        store.state.localUser.uuid == userUUID &&
-        albumList.length > 0) {
+  Future<void> refresh(Store<AppState> store, bool isManual) async {
+    /// should mounted
+    if (this.mounted != true) {
       return;
     }
 
@@ -162,6 +181,7 @@ class _PhotosState extends State<Photos> {
       for (var album in albumList) {
         getCover(album, store.state).catchError(debug);
       }
+
       // cache data
       userUUID = store.state.localUser.uuid;
       loading = false;
@@ -180,21 +200,49 @@ class _PhotosState extends State<Photos> {
   }
 
   /// refresh per second to show backup progress
-  Future autoRefresh({bool isFirst = false}) async {
+  Future<void> autoRefresh(Store<AppState> store,
+      {bool isFirst = false}) async {
     await Future.delayed(
         isFirst ? Duration(milliseconds: 100) : Duration(seconds: 1));
+
+    if (needRefresh > 3 && !loading) {
+      needRefresh = 0;
+      await refresh(store, false);
+    }
     if (this.mounted) {
       if (!loading && !error) {
         setState(() {});
       }
-      autoRefresh();
+      autoRefresh(store);
     }
+  }
+
+  Future<void> initWorks(Store<AppState> store) async {
+    // add backupEventListener (asynchronous)
+    backupEventListener = eventBus.on<BackupEvent>().listen((event) {
+      if (this.mounted) {
+        setState(() {
+          needRefresh += 1;
+        });
+      }
+    });
+
+    // refresh photoList
+    refresh(store, false).catchError(debug);
+
+    // refresh UI to show bakcup progress
+    autoRefresh(store, isFirst: true).catchError(debug);
   }
 
   @override
   void initState() {
     super.initState();
-    autoRefresh(isFirst: true).catchError(debug);
+  }
+
+  @override
+  void dispose() {
+    backupEventListener?.cancel();
+    super.dispose();
   }
 
   Widget renderAlbum(Album album) {
@@ -215,17 +263,14 @@ class _PhotosState extends State<Photos> {
               children: [
                 Expanded(
                   flex: 1,
-                  child: album.cover != null
-                      ? Container(
-                          constraints: BoxConstraints.expand(),
-                          child: Image.memory(
-                            album.cover,
-                            fit: BoxFit.cover,
-                          ),
-                        )
-                      : Container(
-                          color: Colors.grey[300],
-                        ),
+                  child: Container(
+                    constraints: BoxConstraints.expand(),
+                    child: Image.memory(
+                      album.cover ?? placeHolderImage,
+                      fit: BoxFit.cover,
+                      gaplessPlayback: true,
+                    ),
+                  ),
                 ),
                 Container(
                   padding: EdgeInsets.fromLTRB(0, 4, 0, 4),
@@ -399,7 +444,7 @@ class _PhotosState extends State<Photos> {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, Store<AppState>>(
-      onInit: (store) => refresh(store, false).catchError(debug),
+      onInit: (store) => initWorks(store).catchError(debug),
       onDispose: (store) => {},
       converter: (store) => store,
       builder: (context, store) {

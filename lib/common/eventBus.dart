@@ -32,3 +32,8 @@ class RefreshEvent {
   String dirUUID;
   RefreshEvent(this.dirUUID);
 }
+
+class BackupEvent {
+  String driveUUID;
+  BackupEvent(this.driveUUID);
+}

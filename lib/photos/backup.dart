@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../redux/redux.dart';
 import '../common/utils.dart';
 import '../common/isolate.dart';
+import '../common/eventBus.dart';
 import '../common/stationApis.dart';
 
 /// `idle`: init state
@@ -391,6 +392,9 @@ class Worker {
     if (Platform.isIOS) {
       await file.delete();
     }
+
+    // send Backup Event
+    eventBus.fire(BackupEvent(rootDir.pdrv));
 
     // debug('backup success: $id in ${DateTime.now().millisecondsSinceEpoch - time} ms');
     finished += 1;
