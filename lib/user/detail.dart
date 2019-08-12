@@ -15,9 +15,9 @@ class Detail extends StatefulWidget {
 }
 
 class _DetailState extends State<Detail> {
-  @override
   bool isWeChatInstalled = false;
 
+  @override
   void initState() {
     super.initState();
     _initFluwx().catchError(debug);
