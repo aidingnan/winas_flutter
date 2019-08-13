@@ -70,9 +70,10 @@ class _SmsCodeState extends State<SmsCode> {
       _status = status;
     });
 
-    var future = Future.delayed(Duration(milliseconds: 100),
-        () => FocusScope.of(context).requestFocus(node));
-    future.then((res) => debug('100ms later'));
+    Future.delayed(
+      Duration(milliseconds: 100),
+      () => FocusScope.of(context).requestFocus(node),
+    ).catchError(debug);
   }
 
   /// handle SmsError: close loading, setState

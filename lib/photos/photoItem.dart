@@ -4,7 +4,6 @@ import 'package:flutter_redux/flutter_redux.dart';
 
 import '../redux/redux.dart';
 import '../common/cache.dart';
-import '../common/utils.dart';
 import '../common/taskManager.dart';
 import '../common/placeHolderImage.dart';
 
@@ -50,7 +49,6 @@ class _PhotoItemState extends State<PhotoItem> {
   }
 
   _onTap(BuildContext ctx) {
-    debug('onTap item: ${widget.item.name}');
     if (widget.select.selectMode()) {
       widget.select.toggleSelect(widget.item);
     } else {

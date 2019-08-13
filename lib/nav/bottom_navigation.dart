@@ -138,7 +138,7 @@ class _BottomNavigationState extends State<BottomNavigation>
       final data = await getMachineId();
       final deviceName = data['deviceName'];
       final machineId = data['machineId'];
-      debug('deviceName $deviceName, machineId $machineId');
+      // debug('deviceName $deviceName, machineId $machineId');
       final res = await store.state.apis.req('drives', null);
       // get current drives data
       List<Drive> drives = List.from(
