@@ -27,6 +27,8 @@ class _FirmwareState extends State<Firmware> {
   UpgradeInfo info;
   bool failed = false;
   bool loading = true;
+  bool donwloading = false;
+  bool donwloaded = false;
   bool latest = false;
   ScrollController myScrollController = ScrollController();
 
@@ -49,7 +51,7 @@ class _FirmwareState extends State<Firmware> {
         {'deviceSN': state.apis.deviceSN},
       );
 
-      debug('local $local');
+      // debug('local $local');
 
       final currentVersion = local.data['current']['version'];
 
@@ -73,10 +75,21 @@ class _FirmwareState extends State<Firmware> {
               donwloadedVersion != null ? donwloadedVersion['uuid'] : null;
           if (uuid != null) {
             info.addUUID(uuid);
+            donwloaded = true;
           } else {
-            debug('new version not download');
             // TODO: new version not download
-            latest = true;
+            donwloaded = false;
+            debug('new version not download');
+            try {
+              final winasdInfo = await state.cloud.req(
+                'info',
+                {'deviceSN': state.apis.deviceSN},
+              );
+              donwloading = winasdInfo.data['upgrade']['donwload'] != null;
+            } catch (e) {
+              debug(e);
+            }
+            // latest = true;
           }
         } else {
           latest = true;
@@ -104,7 +117,10 @@ class _FirmwareState extends State<Firmware> {
       });
 
       debug('result', result);
-      showSnackBar(ctx, 'Donwload ${info.tag} started');
+      showSnackBar(ctx, i18n('Donwload Started Text', {'tag': info.tag}));
+      setState(() {
+        donwloading = true;
+      });
     } catch (e) {
       debug(e);
     }
@@ -244,44 +260,55 @@ class _FirmwareState extends State<Firmware> {
             ],
           ),
         ),
-        SliverToBoxAdapter(
-          child: Row(
-            children: <Widget>[
-              Builder(builder: (BuildContext ctx) {
-                return FlatButton(
-                  onPressed: () => downloadUpgrade(ctx, state),
-                  child: Text(
-                    'Download',
-                    style: TextStyle(color: Colors.teal),
-                  ),
-                );
-              }),
-            ],
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: Row(
-            children: <Widget>[
-              Builder(builder: (BuildContext ctx) {
-                return FlatButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) => WillPopScope(
-                        onWillPop: () => Future.value(false),
-                        child: UpgradeDialog(info: info),
+        if (!donwloaded)
+          SliverToBoxAdapter(
+            child: Row(
+              children: <Widget>[
+                Builder(builder: (BuildContext ctx) {
+                  if (!donwloading) {
+                    return FlatButton(
+                      onPressed: () => downloadUpgrade(ctx, state),
+                      child: Text(
+                        i18n('Download'),
+                        style: TextStyle(color: Colors.teal),
                       ),
-                    ).catchError(debug);
-                  },
-                  child: Text(
-                    i18n('Update Firmware Now'),
-                    style: TextStyle(color: Colors.teal),
-                  ),
-                );
-              }),
-            ],
+                    );
+                  }
+                  return Container(
+                    margin: EdgeInsets.all(16),
+                    child: Text(
+                      i18n('Downloading'),
+                      style: TextStyle(color: Colors.black54),
+                    ),
+                  );
+                }),
+              ],
+            ),
+          )
+        else
+          SliverToBoxAdapter(
+            child: Row(
+              children: <Widget>[
+                Builder(builder: (BuildContext ctx) {
+                  return FlatButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) => WillPopScope(
+                          onWillPop: () => Future.value(false),
+                          child: UpgradeDialog(info: info),
+                        ),
+                      ).catchError(debug);
+                    },
+                    child: Text(
+                      i18n('Update Firmware Now'),
+                      style: TextStyle(color: Colors.teal),
+                    ),
+                  );
+                }),
+              ],
+            ),
           ),
-        ),
       ]);
     }
     return slivers;

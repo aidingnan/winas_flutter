@@ -328,6 +328,9 @@
   "Update Firmware Failed": "Failed to update your PocketDrive. Please reboot your PocketDrive and try again.",
   "Update Firmware Now": "Update Now",
   "Firmware Version": "Version: {version}",
+  "Download": "Download",
+  "Downloading": "Downloading...",
+  "Donwload Started Text": "Donwloading version: {tag}",
 
   "==== device/network.dart ====": "",
   "Network Detail": "Network",

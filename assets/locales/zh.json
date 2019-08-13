@@ -328,6 +328,9 @@
   "Update Firmware Failed": "升级失败，请重启口袋网盘后重试",
   "Update Firmware Now": "立即安装更新",
   "Firmware Version": "版本{version}",
+  "Download": "下载更新",
+  "Downloading": "下载中...",
+  "Donwload Started Text": "开始下载：{tag}",
 
   "==== device/network.dart ====": "",
   "Network Detail": "网络详情",
