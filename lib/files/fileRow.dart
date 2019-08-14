@@ -6,6 +6,7 @@ import './photo.dart';
 import './detail.dart';
 import '../redux/redux.dart';
 import '../common/utils.dart';
+import '../common/cache.dart';
 import '../common/renderIcon.dart';
 import '../common/taskManager.dart';
 
@@ -243,11 +244,21 @@ class _FileRowState extends State<FileRow> {
 
   Uint8List thumbData;
 
-  _getThumb(AppState state) {
+  Future<void> _getThumb(AppState state) async {
     // check hash and file type
     if (!isGrid ||
         entry.hash == null ||
         !thumbMagic.contains(entry?.metadata?.type)) {
+      return;
+    }
+
+    // try get cached file
+    final cm = await CacheManager.getInstance();
+    final data = await cm.getCachedThumbData(entry);
+    if (data != null && this.mounted) {
+      setState(() {
+        thumbData = data;
+      });
       return;
     }
 
@@ -512,7 +523,7 @@ class _FileRowState extends State<FileRow> {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
-      onInit: (store) => _getThumb(store.state),
+      onInit: (store) => _getThumb(store.state).catchError(debug),
       onDispose: (store) => {},
       converter: (store) => store.state,
       builder: (ctx, state) {
