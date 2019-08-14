@@ -36,7 +36,7 @@ class _PhotoListState extends State<PhotoList> {
   double cellSize;
 
   /// calc photoMapDates and mapHeight from given album
-  getList(Album album, BuildContext ctx, AppState state,
+  Future<void> getList(Album album, BuildContext ctx, AppState state,
       {bool isManual = false}) async {
     List<Entry> items;
     if (album.items == null || isManual) {
@@ -47,7 +47,6 @@ class _PhotoListState extends State<PhotoList> {
         'order': 'newest',
       });
       items = List.from(res.data.map((m) => Entry.fromSearch(m, album.drives)));
-
       // sort allMedia
       items.sort((a, b) {
         int order = b.hdate.compareTo(a.hdate);
@@ -82,7 +81,6 @@ class _PhotoListState extends State<PhotoList> {
       items[0].hdate,
       [items[0]],
     ];
-
     items.forEach((entry) {
       final last = photoMapDates.last;
       if (last[0].hdate == entry.hdate) {
@@ -112,6 +110,7 @@ class _PhotoListState extends State<PhotoList> {
     });
 
     loading = false;
+
     // delay to next render circle
     await Future.delayed(Duration.zero);
     if (this.mounted) {
@@ -197,7 +196,8 @@ class _PhotoListState extends State<PhotoList> {
                       showSnackBar(ctx, i18n('Delete Failed'));
                     }
                     select.clearSelect();
-                    getList(widget.album, context, state);
+
+                    await getList(widget.album, context, state);
                   },
           );
         }),
@@ -276,7 +276,8 @@ class _PhotoListState extends State<PhotoList> {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
-      onInit: (store) => getList(widget.album, context, store.state),
+      onInit: (store) =>
+          getList(widget.album, context, store.state).catchError(debug),
       onDispose: (store) => {},
       converter: (store) => store.state,
       builder: (ctx, state) {
@@ -286,9 +287,10 @@ class _PhotoListState extends State<PhotoList> {
           body: Container(
             color: Colors.grey[100],
             child: RefreshIndicator(
-              onRefresh: loading || select.selectMode()
-                  ? () async {}
-                  : () => getList(widget.album, ctx, state, isManual: true),
+              onRefresh: () async {
+                if (loading || select.selectMode()) return;
+                await getList(widget.album, ctx, state, isManual: true);
+              },
               child: loading == true
                   ? Center(child: CircularProgressIndicator())
                   : widget.album.count == 0
@@ -353,8 +355,8 @@ class _PhotoListState extends State<PhotoList> {
                                     delegate: SliverChildBuilderDelegate(
                                       (BuildContext context, int index) {
                                         return PhotoItem(
-                                          // key: Key(line[index].uuid +
-                                          //     line[index].selected.toString()),
+                                          key: Key(line[index].uuid +
+                                              line[index].selected.toString()),
                                           item: line[index],
                                           showPhoto: showPhoto,
                                           cellSize: cellSize,
