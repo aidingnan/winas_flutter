@@ -30,32 +30,32 @@ List<_FileType> get fileTypes => List.from([
       [
         'Word',
         iconFromName('a.docx'),
-        'DOCX.DOC',
+        'DOCX.DOC.PAGES',
       ],
       [
         'Excel',
         iconFromName('a.xlsx'),
-        'XLSX.XLS',
+        'XLSX.XLS.NUMBERS',
       ],
       [
         'PPT',
         iconFromName('a.ppt'),
-        'PPTX.PPT',
+        'PPTX.PPT.KEY',
       ],
       [
         i18n('Photos'),
         iconFromName('a.bmp'),
-        'JPEG.PNG.JPG.GIF.BMP.HEIC',
+        'JPEG.PNG.GIF.BMP.TIFF.HEIC',
       ],
       [
         i18n('Videos'),
         iconFromName('a.mkv'),
-        'RM.RMVB.WMV.AVI.MP4.3GP.MKV.MOV.FLV.MPEG',
+        'RM.RMVB.WMV.AVI.MPEG.MP4.3GP.MOV.FLV.MKV',
       ],
       [
         i18n('Audios'),
         iconFromName('a.mp3'),
-        'WAV.MP3.APE.WMA.FLAC',
+        'RA.WMA.MP3.OGG.MKA.WAV.APE.FLAC',
       ],
     ].map((x) => _FileType(x[0], x[1], x[2])));
 

@@ -12,8 +12,6 @@ import '../common/utils.dart';
 import '../common/cache.dart';
 import './cupertino_progress_bar.dart';
 
-const videoTypes = 'RM.RMVB.WMV.AVI.MP4.3GP.MKV.MOV.FLV.MPEG';
-
 class GridVideo extends StatefulWidget {
   const GridVideo({
     Key key,
