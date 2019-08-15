@@ -256,7 +256,7 @@ class Metadata {
 
   Metadata.fromMap(Map m) {
     this.type = m['type'];
-    this.datetime = m['datec'] ?? m['date'];
+    this.datetime = m['dateo'] ?? m['datec'] ?? m['date'];
     this.height = m['h'];
     this.width = m['w'];
     this.rot = m['rot'];
