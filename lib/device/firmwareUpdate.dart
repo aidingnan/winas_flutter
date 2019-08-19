@@ -42,8 +42,8 @@ class _FirmwareState extends State<Firmware> {
   UpgradeInfo info;
   bool failed = false;
   bool loading = true;
-  bool donwloading = false;
-  bool donwloaded = false;
+  bool downloading = false;
+  bool downloaded = false;
   bool latest = false;
   ScrollController myScrollController = ScrollController();
 
@@ -84,23 +84,23 @@ class _FirmwareState extends State<Firmware> {
         if (info != null) {
           debug('find newer version, tag: ${info.tag}');
           List roots = List.from(local.data['roots']);
-          final donwloadedVersion = roots
+          final downloadedVersion = roots
               .firstWhere((r) => r['version'] == info.tag, orElse: () => null);
           String uuid =
-              donwloadedVersion != null ? donwloadedVersion['uuid'] : null;
+              downloadedVersion != null ? downloadedVersion['uuid'] : null;
           if (uuid != null) {
             info.addUUID(uuid);
-            donwloaded = true;
+            downloaded = true;
           } else {
             // TODO: new version not download
-            donwloaded = false;
+            downloaded = false;
             debug('new version not download');
             try {
               final winasdInfo = await state.cloud.req(
                 'info',
                 {'deviceSN': state.apis.deviceSN},
               );
-              donwloading = winasdInfo.data['upgrade']['donwload'] != null;
+              downloading = winasdInfo.data['upgrade']['download'] != null;
             } catch (e) {
               debug(e);
             }
@@ -132,9 +132,9 @@ class _FirmwareState extends State<Firmware> {
       });
 
       debug('result', result);
-      showSnackBar(ctx, i18n('Donwload Started Text', {'tag': info.tag}));
+      showSnackBar(ctx, i18n('Download Started Text', {'tag': info.tag}));
       setState(() {
-        donwloading = true;
+        downloading = true;
       });
     } catch (e) {
       debug(e);
@@ -275,12 +275,12 @@ class _FirmwareState extends State<Firmware> {
             ],
           ),
         ),
-        if (!donwloaded)
+        if (!downloaded)
           SliverToBoxAdapter(
             child: Row(
               children: <Widget>[
                 Builder(builder: (BuildContext ctx) {
-                  if (!donwloading) {
+                  if (!downloading) {
                     return FlatButton(
                       onPressed: () => downloadUpgrade(ctx, state),
                       child: Text(

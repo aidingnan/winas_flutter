@@ -331,7 +331,7 @@
   "Firmware Version": "版本{version}",
   "Download": "下载更新",
   "Downloading": "下载中...",
-  "Donwload Started Text": "开始下载：{tag}",
+  "Download Started Text": "开始下载：{tag}",
 
   "==== device/network.dart ====": "",
   "Network Detail": "网络详情",
