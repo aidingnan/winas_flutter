@@ -14,7 +14,22 @@ import '../common/appBarSlivers.dart';
 bool versionCompare(String a, String b) {
   List<int> listA = List.from(a.split('.').map((i) => int.parse(i)));
   List<int> listB = List.from(b.split('.').map((i) => int.parse(i)));
-  return listA[0] > listB[0] || listA[1] > listB[1] || listA[2] > listB[2];
+  if (listA[0] > listB[0]) {
+    return true;
+  } else if (listA[0] < listB[0]) {
+    return false;
+  }
+
+  if (listA[1] > listB[1]) {
+    return true;
+  } else if (listA[1] < listB[1]) {
+    return false;
+  }
+
+  if (listA[2] > listB[2]) {
+    return true;
+  }
+  return false;
 }
 
 class Firmware extends StatefulWidget {
@@ -54,7 +69,7 @@ class _FirmwareState extends State<Firmware> {
       // debug('local $local');
 
       final currentVersion = local.data['current']['version'];
-
+      // debug('currentVersion $currentVersion');
       if (res?.data is List && res.data.length > 0) {
         List<UpgradeInfo> list =
             List.from(res.data.map((m) => UpgradeInfo.fromMap(m)));
