@@ -24,6 +24,7 @@ enum Status {
   logging,
   loginFailed,
   bleFailed,
+  bindTimeout,
 }
 
 class ConfigDevice extends StatefulWidget {
@@ -206,6 +207,10 @@ class _ConfigDeviceState extends State<ConfigDevice> {
       setState(() {
         errorText = i18n('Set WiFi Error');
       });
+    } else if (error == 'Connect Timeout') {
+      setState(() {
+        status = Status.bindTimeout;
+      });
     } else {
       setState(() {
         status = Status.bleFailed;
@@ -215,9 +220,9 @@ class _ConfigDeviceState extends State<ConfigDevice> {
 
   void setTimeout() {
     wifiTimer = Timer(
-      Duration(seconds: 20),
+      Duration(seconds: 60),
       () {
-        this.onError('Connect Wi-Fi Timeout');
+        this.onError('Connect Timeout');
       },
     );
   }
@@ -802,6 +807,47 @@ class _ConfigDeviceState extends State<ConfigDevice> {
     );
   }
 
+  Widget renderBindTimeoutError(BuildContext ctx) {
+    return Column(
+      children: <Widget>[
+        Container(height: 64),
+        Icon(Icons.error_outline, color: Colors.redAccent, size: 96),
+        Container(
+          padding: EdgeInsets.all(64),
+          child: Center(
+            child: Text(i18n('Bind Timeout Error')),
+          ),
+        ),
+        Container(
+          height: 88,
+          padding: EdgeInsets.all(16),
+          width: double.infinity,
+          child: RaisedButton(
+            color: Colors.teal,
+            elevation: 1.0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(48),
+            ),
+            onPressed: () {
+              // return to ble list
+              Navigator.pop(ctx);
+            },
+            child: Row(
+              children: <Widget>[
+                Expanded(child: Container()),
+                Text(
+                  i18n('Back'),
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+                Expanded(child: Container()),
+              ],
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
   Widget successLine(String text) {
     return Container(
       padding: EdgeInsets.fromLTRB(0, 0, 0, 32),
@@ -958,6 +1004,9 @@ class _ConfigDeviceState extends State<ConfigDevice> {
 
       case Status.bleFailed:
         return renderBleError(ctx);
+
+      case Status.bindTimeout:
+        return renderBindTimeoutError(ctx);
 
       default:
         return renderBind(ctx);

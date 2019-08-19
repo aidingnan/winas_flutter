@@ -122,6 +122,7 @@
   "Connect Device Success": "Connected",
   "Bind Device Success": "Authorized",
   "BLE Error": "Bluetooth connection error, please try agian.",
+  "Bind Timeout Error": "Connection Timeout, please reboot the device and then try agian.",
 
   "==== login/LoginFailed.dart ====": "",
   "Login Failed Title": "Device is not working properly",

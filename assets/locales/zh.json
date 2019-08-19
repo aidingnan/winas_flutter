@@ -109,7 +109,7 @@
   "Phone Not Connect to WiFi Text 2": "请连接后刷新重试",
   "WiFi Password Input Text Part 1": "设备将连接至 ",
   "WiFi Password Input Text Part 2": " , 请输入该Wi-Fi的密码: ",
-  "Color Code Auth Failed": "验证失败。断开电源连接重新启动后重试。",
+  "Color Code Auth Failed": "验证失败，请重启设备后重试",
   "Back": "返回",
   "Color Code Auth Timeout": "验证超时，请返回上一步然后重试",
   "Connecting to Device via Ip": "连接中...",
@@ -122,6 +122,7 @@
   "Connect Device Success": "连接设备成功",
   "Bind Device Success": "绑定设备成功",
   "BLE Error": "蓝牙连接错误，请重试",
+  "Bind Timeout Error": "连接超时，请重启设备后重试",
 
   "==== login/LoginFailed.dart ====": "",
   "Login Failed Title": "设备状态异常",
