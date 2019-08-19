@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import '../common/utils.dart';
 
 class Info {
@@ -82,4 +84,12 @@ class UpgradeInfo {
   addUUID(String id) {
     this.uuid = id;
   }
+
+  @override
+  String toString() {
+    Map<String, dynamic> m = {'tag': tag};
+    return jsonEncode(m);
+  }
+
+  String toJson() => toString();
 }

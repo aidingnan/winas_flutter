@@ -73,6 +73,15 @@ class _FirmwareState extends State<Firmware> {
       if (res?.data is List && res.data.length > 0) {
         List<UpgradeInfo> list =
             List.from(res.data.map((m) => UpgradeInfo.fromMap(m)));
+
+        // sort by version
+        list.sort((UpgradeInfo a, UpgradeInfo b) {
+          if (versionCompare(b.tag, a.tag) == true) {
+            return 1;
+          }
+          return -1;
+        });
+
         // find newer version
         info = list.firstWhere(
             (l) => versionCompare(l.tag, currentVersion) == true,
