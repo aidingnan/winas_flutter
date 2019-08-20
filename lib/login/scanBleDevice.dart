@@ -13,9 +13,13 @@ import '../login/bleHelp.dart';
 import '../common/request.dart';
 
 class ScanBleDevice extends StatefulWidget {
-  ScanBleDevice({Key key, this.request, this.action}) : super(key: key);
+  ScanBleDevice({Key key, this.request, this.action, this.target})
+      : super(key: key);
   final Request request;
   final Action action;
+
+  ///  target ble device's advertising name
+  final String target;
   @override
   _ScanBleDeviceState createState() => _ScanBleDeviceState();
 }
@@ -64,16 +68,23 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
     }
 
     scanSubscription = flutterBlue.scan().listen((ScanResult scanResult) {
+      final deviceName = scanResult.device.name;
       // filter device
-      if (!scanResult.device.name.toLowerCase().startsWith('pan')) return;
+      if (!deviceName.toLowerCase().startsWith('pan')) return;
+
+      // only show target if specified
+      if (widget.target != null && deviceName != widget.target) return;
       final id = scanResult.device.id;
       int index = results.indexWhere((res) => res.device.id == id);
+
+      // only add once
       if (index > -1) return;
       results.add(scanResult);
-      debug('get device >>>>>>>>>>>');
-      debug('AdvertisementData ${scanResult.advertisementData.localName}');
-      debug(id);
-      debug(scanResult.device.name);
+
+      // debug('get device >>>>>>>>>>>');
+      // debug('AdvertisementData ${scanResult.advertisementData.localName}');
+      // debug(id);
+      // debug(scanResult.device.name);
 
       if (mounted) {
         setState(() {});

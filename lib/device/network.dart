@@ -49,7 +49,13 @@ class _NetworkState extends State<Network> {
       MaterialPageRoute(
         fullscreenDialog: true,
         builder: (context) {
-          return ScanBleDevice(request: state.cloud, action: action);
+          return ScanBleDevice(
+            request: state.cloud,
+            action: action,
+
+            /// ble advertising name
+            target: 'pan-${info?.usn?.substring(0, 4)}',
+          );
         },
       ),
     );
