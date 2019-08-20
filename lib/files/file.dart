@@ -601,6 +601,7 @@ class _FilesState extends State<Files> {
                     File file;
                     try {
                       file = await FilePicker.getFile(type: FileType.IMAGE);
+                      if (file == null) return;
                       if (Platform.isIOS) {
                         String dirPath = file.parent.path;
                         String fileName = file.path.split('/').last;
@@ -637,6 +638,7 @@ class _FilesState extends State<Files> {
                     File file;
                     try {
                       file = await FilePicker.getFile(type: FileType.VIDEO);
+                      if (file == null) return;
                       if (Platform.isIOS) {
                         String dirPath = file.parent.path;
                         String fileName = file.path.split('/').last;
@@ -655,11 +657,10 @@ class _FilesState extends State<Files> {
                         this.context,
                         i18n('Pick Video Failed Text'),
                       );
+                      return;
                     }
 
-                    if (file != null) {
-                      upload(file.path, state);
-                    }
+                    upload(file.path, state);
                   },
                   Icon(Icons.videocam, color: Colors.white),
                   Colors.green,
@@ -673,14 +674,13 @@ class _FilesState extends State<Files> {
                     try {
                       filePath =
                           await FilePicker.getFilePath(type: FileType.ANY);
+                      if (filePath == null) return;
                     } catch (e) {
                       debug(e);
                       showSnackBar(this.context, i18n('Pick File Failed Text'));
+                      return;
                     }
-
-                    if (filePath != null) {
-                      upload(filePath, state);
-                    }
+                    upload(filePath, state);
                   },
                   Icon(Icons.insert_drive_file, color: Colors.white),
                   Colors.lightBlue,

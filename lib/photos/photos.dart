@@ -56,6 +56,9 @@ class _PhotosState extends State<Photos> {
       album.setCover(preThumbData);
     }
 
+    // fix bug of call this after logout
+    if (state?.apis?.req == null) return;
+
     // get first item
     final res = await state.apis.req('search', {
       'places': album.places,
