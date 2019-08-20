@@ -6,7 +6,6 @@ import 'package:redux/redux.dart';
 import 'package:flutter/material.dart' hide Intent;
 import 'package:open_file/open_file.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
@@ -601,9 +600,7 @@ class _FilesState extends State<Files> {
 
                     File file;
                     try {
-                      file = await ImagePicker.pickImage(
-                        source: ImageSource.gallery,
-                      );
+                      file = await FilePicker.getFile(type: FileType.IMAGE);
                       if (Platform.isIOS) {
                         String dirPath = file.parent.path;
                         String fileName = file.path.split('/').last;
@@ -639,9 +636,7 @@ class _FilesState extends State<Files> {
 
                     File file;
                     try {
-                      file = await ImagePicker.pickVideo(
-                        source: ImageSource.gallery,
-                      );
+                      file = await FilePicker.getFile(type: FileType.VIDEO);
                       if (Platform.isIOS) {
                         String dirPath = file.parent.path;
                         String fileName = file.path.split('/').last;

@@ -81,10 +81,10 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
       if (index > -1) return;
       results.add(scanResult);
 
-      // debug('get device >>>>>>>>>>>');
-      // debug('AdvertisementData ${scanResult.advertisementData.localName}');
-      // debug(id);
-      // debug(scanResult.device.name);
+      debug('get device >>>>>>>>>>>');
+      debug(id);
+      debug(scanResult.device.name);
+      debug(scanResult.advertisementData.manufacturerData);
 
       if (mounted) {
         setState(() {});
