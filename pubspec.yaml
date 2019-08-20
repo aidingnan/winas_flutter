@@ -72,6 +72,9 @@ dependencies:
   # event bus
   event_bus: 1.1.0
 
+  # keep screen on
+  wakelock: 0.1.2+8
+
   # i18n
   # flutter_i18n: 0.6.3
 

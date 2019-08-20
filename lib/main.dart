@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'package:redux/redux.dart';
 import 'package:flutter/material.dart';
+import 'package:wakelock/wakelock.dart';
 import 'package:intl/intl_standalone.dart';
 import 'package:redux_persist/redux_persist.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:path_provider/path_provider.dart';
-
 import 'package:flutter_i18n/flutter_i18n_delegate.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -81,8 +81,11 @@ void main() async {
   try {
     await AppConfig.checkDev();
   } catch (e) {
-    print('checkDev faile $e');
+    print('checkDev failed $e');
   }
+
+  // keep screen on
+  Wakelock.enable().catchError(print);
 
   runApp(MyApp(initialState, store, flutterI18nDelegate));
 }
