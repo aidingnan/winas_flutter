@@ -1,5 +1,6 @@
-import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 
 import './about.dart';
 import './detail.dart';
@@ -23,6 +24,7 @@ class _AccountInfoState extends State<AccountInfo> {
   int cacheSize;
   String version = '';
   bool showLogButton = false;
+  ScrollController myScrollController = ScrollController();
 
   Future getCacheSize() async {
     final cm = await CacheManager.getInstance();
@@ -226,13 +228,17 @@ class _AccountInfoState extends State<AccountInfo> {
                         context,
                         MaterialPageRoute(builder: (context) {
                           return Scaffold(
-                            body: ListView(
-                              children: <Widget>[
-                                Container(
-                                  padding: EdgeInsets.all(8),
-                                  child: Text(logs),
-                                )
-                              ],
+                            body: DraggableScrollbar.semicircle(
+                              controller: myScrollController,
+                              child: ListView(
+                                controller: myScrollController,
+                                children: <Widget>[
+                                  Container(
+                                    padding: EdgeInsets.all(8),
+                                    child: Text(logs),
+                                  )
+                                ],
+                              ),
                             ),
                           );
                         }),
