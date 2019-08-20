@@ -113,7 +113,8 @@ class _FilesState extends State<Files> {
   Select select;
   EntrySort entrySort;
 
-  Future<void> refresh(AppState state, {bool isRetry: false}) async {
+  Future<void> refresh(AppState state,
+      {bool isRetry: false, bool needTestLAN: false}) async {
     String driveUUID;
     String dirUUID;
     if (isRetry == true) {
@@ -158,7 +159,7 @@ class _FilesState extends State<Files> {
     }
 
     // test network
-    if (state.apis.isCloud == null || isRetry) {
+    if (state.apis.isCloud == null || isRetry || needTestLAN) {
       await state.apis.testLAN();
       debug('testLAN: ${state.apis.lanIp} isCloud: ${state.apis.isCloud}');
     }
@@ -1190,7 +1191,7 @@ class _FilesState extends State<Files> {
                   child: RefreshIndicator(
                     onRefresh: loading || select.selectMode()
                         ? () async {}
-                        : () => refresh(state),
+                        : () => refresh(state, needTestLAN: true),
                     child: _error != null
                         ? Center(
                             child: Column(
