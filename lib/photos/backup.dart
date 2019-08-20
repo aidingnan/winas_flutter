@@ -372,7 +372,11 @@ class Worker {
 
     if (Platform.isIOS) {
       String extension = fileName.contains('.') ? fileName.split('.').last : '';
-      DateTime time = DateTime.fromMillisecondsSinceEpoch(mtime);
+
+      // tofix mtime == 0 or null bug
+      DateTime time = (mtime == 0 || mtime == null)
+          ? DateTime.now()
+          : DateTime.fromMillisecondsSinceEpoch(mtime);
       String prefix = type == AssetType.image
           ? 'IMG'
           : type == AssetType.video ? 'VID' : 'File';
