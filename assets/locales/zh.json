@@ -360,6 +360,7 @@
   "Device Info": "设备信息",
   "Device Model": "型号",
   "Device Serial Number": "序列号",
+  "Bluetooth Name": "蓝牙名称",
   "Bluetooth Address": "蓝牙地址",
 
   "==== device/rootDialog.dart ====": "",

@@ -8,6 +8,7 @@ class Info {
   String ssid;
   String sn;
   String usn;
+  String bleName;
   String cert;
   String model;
   String address;
@@ -35,6 +36,7 @@ class Info {
     }
     this.sn = device['sn'];
     this.usn = device['usn'];
+    this.bleName = 'pan-${this.usn?.substring(0, 4) ?? 'XXXX'}';
     this.cert = device['cert'];
     this.model = device['model'];
     this.rooted = device['rooted'] == true;

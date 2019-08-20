@@ -360,6 +360,7 @@
   "Device Info": "Device Info",
   "Device Model": "Device Model",
   "Device Serial Number": "Serial Number",
+  "Bluetooth Name": "Bluetooth Name",
   "Bluetooth Address": "Bluetooth Address",
 
   "==== device/rootDialog.dart ====": "",

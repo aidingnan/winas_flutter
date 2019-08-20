@@ -147,6 +147,11 @@ class _DeviceInfoState extends State<DeviceInfo> {
           _ellipsisText(info.usn),
         ),
         sliverActionButton(
+          i18n('Bluetooth Name'),
+          () => {},
+          _ellipsisText(info.bleName),
+        ),
+        sliverActionButton(
           i18n('Bluetooth Address'),
           () => {},
           _ellipsisText(info.bleAddr),

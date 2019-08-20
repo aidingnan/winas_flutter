@@ -54,7 +54,7 @@ class _NetworkState extends State<Network> {
             action: action,
 
             /// ble advertising name
-            target: 'pan-${info?.usn?.substring(0, 4)}',
+            target: info.bleName,
           );
         },
       ),
