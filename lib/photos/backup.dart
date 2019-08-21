@@ -84,10 +84,27 @@ class Worker {
 
   bool get isAborted => status == Status.aborted;
 
+  int uploadedSum = 0;
+  void updateSpeed(int newUploaded) {
+    uploadedSum += newUploaded;
+  }
+
   String speed = '';
 
-  void updateSpeed(speedValue) {
-    this.speed = '${prettySize(speedValue)}/s';
+  Timer timer;
+  List<int> uploadedList = [0];
+
+  void calcSpeed() {
+    uploadedList.insert(0, uploadedSum);
+
+    final double averageSpeed =
+        (uploadedList.first - uploadedList.last) / (uploadedList.length - 1);
+
+    if (uploadedList.length > 10) {
+      uploadedList.removeLast();
+    }
+
+    this.speed = '${prettySize(averageSpeed)}/s';
   }
 
   /// get all local photos and videos
@@ -458,6 +475,8 @@ class Worker {
     List<AssetEntity> assetList = await getAssetList();
     total = assetList.length;
 
+    timer = Timer.periodic(Duration(seconds: 1), (_) => calcSpeed());
+
     for (AssetEntity entity in assetList) {
       if (status == Status.running) {
         try {
@@ -484,9 +503,11 @@ class Worker {
       finished = 0;
       ignored = 0;
       total = 0;
+      timer?.cancel();
     } else {
       debug('not all upload success');
       status = Status.failed;
+      timer?.cancel();
       throw 'backup failed';
     }
   }
@@ -495,6 +516,7 @@ class Worker {
     try {
       cancelUpload?.cancel();
       cancelHash?.cancel();
+      timer?.cancel();
     } catch (e) {
       debug(e);
     }
@@ -510,9 +532,11 @@ class Worker {
     finished = 0;
     ignored = 0;
     total = 0;
+    timer?.cancel();
     this.startAsync().catchError((e) {
       debug('backup failed, retry ${retry * retry} minutes later');
       debug(e);
+      timer?.cancel();
       retryLater();
     });
   }
