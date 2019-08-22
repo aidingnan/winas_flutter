@@ -214,15 +214,25 @@ Future<void> uploadViaIsolate(Apis apis, Entry targetDir, String filePath,
     progressRes.sendPort,
     fileName,
   ]);
-  int preUploaded = 0;
   List<int> uploadedList = [];
   List<int> timeList = [];
 
   progressRes.listen((res) {
-    final int uploaded = res[0];
-    final int deltaSize = uploaded - preUploaded;
-    preUploaded = uploaded;
-    updateSpeed(deltaSize);
+    // print('progressRes.listen res ${res[0]}, ${res[1]}');
+    int uploaded = res[0];
+    int now = DateTime.now().millisecondsSinceEpoch;
+    uploadedList.insert(0, uploaded);
+    timeList.insert(0, now);
+    final deltaSize = uploadedList.first - uploadedList.last;
+
+    // add 40 to avoid show a mistake large speed
+    final deltaTime = timeList.first - timeList.last + 40;
+    final speed = deltaSize / deltaTime * 1000;
+    updateSpeed(speed);
+    if (deltaTime > 4 * 1000 || uploadedList.length > 256) {
+      uploadedList.removeLast();
+      timeList.removeLast();
+    }
   });
 
   final error = await answer.first;
