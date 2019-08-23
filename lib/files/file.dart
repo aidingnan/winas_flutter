@@ -187,8 +187,9 @@ class _FilesState extends State<Files> {
     List<DirPath> rawPath =
         List.from(listNav.data['path'].map((path) => DirPath.fromMap(path)));
 
-    // remove deleted file/dir in backup drive
-    rawEntries = List.from(rawEntries.where((entry) => entry.deleted != true));
+    // remove deleted file/dir, or part-file in backup drive
+    rawEntries = List.from(rawEntries
+        .where((entry) => entry.deleted != true && entry.fingerprint == null));
 
     // hidden archived entries
     if (state.config.showArchive != true) {

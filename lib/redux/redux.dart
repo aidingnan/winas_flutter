@@ -338,6 +338,8 @@ class Entry {
   String location;
   bool archived = false;
   bool deleted = false;
+  // large file's part in backup
+  String fingerprint;
 
   /// photo token date
   String hdate;
@@ -368,6 +370,7 @@ class Entry {
     this.pdrv = m['pdrv'];
     this.archived = m['archived'] ?? false;
     this.deleted = m['deleted'] ?? false;
+    this.fingerprint = m['fingerprint'];
     this.metadata = (m['metadata'] == 'null' || m['metadata'] == null)
         ? null
         : Metadata.fromMap(m['metadata'] is String
@@ -393,6 +396,7 @@ class Entry {
       'metadata': metadata,
       'archived': archived,
       'deleted': deleted,
+      'fingerprint': fingerprint,
     };
     return jsonEncode(m);
   }
@@ -419,6 +423,7 @@ class Entry {
     this.location = drive.tag ?? drive.type;
     this.archived = m['archived'] ?? false;
     this.deleted = m['deleted'] ?? false;
+    this.fingerprint = m['fingerprint'];
     this.hdate = this.metadata?.hdate ??
         prettyDate(this.bctime ?? this.mtime, showDay: true);
   }
@@ -435,6 +440,7 @@ class Entry {
     this.hmtime = prettyDate(this.mtime);
     this.archived = m['archived'] ?? false;
     this.deleted = m['deleted'] ?? false;
+    this.fingerprint = m['fingerprint'];
     this.metadata =
         m['metadata'] == null ? null : Metadata.fromMap(m['metadata']);
     this.pdir = n.dirUUID;
