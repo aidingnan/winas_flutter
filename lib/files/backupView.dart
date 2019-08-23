@@ -21,6 +21,12 @@ class _BackupViewState extends State<BackupView> {
   bool loading = true;
 
   String error;
+  @override
+  void dispose() {
+    myScrollController?.dispose();
+    drives = [];
+    super.dispose();
+  }
 
   Future updateDirSize(AppState state, Drive drive) async {
     var res = await state.apis

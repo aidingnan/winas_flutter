@@ -34,6 +34,8 @@ class _PhotoItemState extends State<PhotoItem> {
         thumbData = data;
       });
       return;
+    } else {
+      thumbData = null;
     }
 
     // download thumb via queue
@@ -44,7 +46,10 @@ class _PhotoItemState extends State<PhotoItem> {
         setState(() {
           thumbData = value;
         });
+      } else {
+        thumbData = null;
       }
+      task = null;
     });
   }
 
@@ -59,6 +64,8 @@ class _PhotoItemState extends State<PhotoItem> {
   @override
   void dispose() {
     task?.abort();
+    task = null;
+    thumbData = null;
     super.dispose();
   }
 

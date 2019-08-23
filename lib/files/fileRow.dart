@@ -240,9 +240,9 @@ class _FileRowState extends State<FileRow> {
   final bool isLast;
   final Select select;
 
-  ThumbTask task;
+  ThumbTask _task;
 
-  Uint8List thumbData;
+  Uint8List _thumbData;
 
   Future<void> _getThumb(AppState state) async {
     // check hash and file type
@@ -255,25 +255,31 @@ class _FileRowState extends State<FileRow> {
     // try get cached file
     final cm = await CacheManager.getInstance();
     final data = await cm.getCachedThumbData(entry);
+    _thumbData = data;
     if (data != null && this.mounted) {
-      setState(() {
-        thumbData = data;
-      });
+      setState(() {});
       return;
+    } else {
+      // prevent memory leak
+      _thumbData = null;
     }
 
     final tm = TaskManager.getInstance();
     TaskProps props = TaskProps(entry: entry, state: state);
-    task = tm.createThumbTask(props, (error, value) {
+    _task = tm.createThumbTask(props, (error, value) {
       if (error == null && value is Uint8List && this.mounted) {
         setState(() {
-          thumbData = value;
+          _thumbData = value;
         });
+      } else {
+        // prevent memory leak
+        _thumbData = null;
       }
+      _task = null;
     });
   }
 
-  _onPressMore(BuildContext ctx) {
+  void _onPressMore(BuildContext ctx) {
     if (!select.selectMode()) {
       showModalBottomSheet(
         context: ctx,
@@ -342,11 +348,11 @@ class _FileRowState extends State<FileRow> {
     }
   }
 
-  _onTap(BuildContext ctx) {
+  void _onTap(BuildContext ctx) {
     if (select.selectMode()) {
       select.toggleSelect(entry);
     } else if (photoMagic.indexOf(entry?.metadata?.type) > -1) {
-      showPhoto(ctx, entry, thumbData);
+      showPhoto(ctx, entry, _thumbData);
     } else {
       onPress();
     }
@@ -413,19 +419,19 @@ class _FileRowState extends State<FileRow> {
     );
   }
 
-  Widget renderGrid(BuildContext ctx, Uint8List thumbData) {
+  Widget renderGrid(BuildContext ctx, Uint8List _thumbData) {
     return type == 'file'
         ? Column(
             children: [
               Expanded(
                 flex: 1,
-                child: thumbData == null
+                child: _thumbData == null
                     ? renderIcon(entry.name, entry.metadata, size: 72.0)
                     // show thumb
                     : Hero(
                         tag: entry.uuid,
                         child: Image.memory(
-                          thumbData,
+                          _thumbData,
                           fit: BoxFit.contain,
                         ),
                       ),
@@ -516,7 +522,9 @@ class _FileRowState extends State<FileRow> {
 
   @override
   void dispose() {
-    task?.abort();
+    _task?.abort();
+    _task = null;
+    _thumbData = null;
     super.dispose();
   }
 
@@ -540,7 +548,7 @@ class _FileRowState extends State<FileRow> {
                   ? Stack(
                       children: <Widget>[
                         Positioned.fill(
-                          child: renderGrid(context, thumbData),
+                          child: renderGrid(context, _thumbData),
                         ),
                         Positioned.fill(
                           child: (select.selectMode() && entry.type == 'file')

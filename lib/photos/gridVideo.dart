@@ -57,6 +57,8 @@ class _GridVideoState extends State<GridVideo>
   Widget playerWidget;
   bool showDetails = false;
   double detailTop = double.negativeInfinity;
+  Uint8List imageData;
+  Uint8List thumbData;
   @override
   void initState() {
     super.initState();
@@ -72,6 +74,12 @@ class _GridVideoState extends State<GridVideo>
     vpc?.dispose();
     chewieController?.pause();
     chewieController?.dispose();
+    playerWidget = null;
+    // prevent memory leak
+    info = null;
+    playerWidget = null;
+    imageData = null;
+    thumbData = null;
     super.dispose();
   }
 
@@ -246,9 +254,6 @@ class _GridVideoState extends State<GridVideo>
       _latestValue = vpc.value;
     });
   }
-
-  Uint8List imageData;
-  Uint8List thumbData;
 
   _getPhoto(AppState state) async {
     final cm = await CacheManager.getInstance();

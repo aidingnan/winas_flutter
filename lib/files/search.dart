@@ -215,6 +215,14 @@ class _SearchState extends State<Search> {
         ];
   }
 
+  @override
+  void dispose() {
+    _entries = null;
+    select = null;
+    myScrollController?.dispose();
+    super.dispose();
+  }
+
   /// Normal AppBar
   AppBar searchAppBar(AppState state) {
     return AppBar(

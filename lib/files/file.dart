@@ -27,63 +27,6 @@ import '../transfer/transfer.dart';
 import '../icons/winas_icons.dart';
 import '../nav/taskFab.dart';
 
-Widget _buildItem(
-  BuildContext context,
-  List<Entry> entries,
-  int index,
-  List actions,
-  Function download,
-  Select select,
-  bool isGrid,
-  bool isLast,
-) {
-  final entry = entries[index];
-  switch (entry.type) {
-    case 'dirTitle':
-      return TitleRow(isFirst: true, type: 'directory');
-    case 'fileTitle':
-      return TitleRow(isFirst: index == 0, type: 'file');
-    case 'file':
-      return FileRow(
-        key: Key(entry.name + entry.uuid + entry.selected.toString()),
-        type: 'file',
-        onPress: () => download(entry),
-        entry: entry,
-        actions: actions,
-        isGrid: isGrid,
-        select: select,
-        isLast: isLast,
-      );
-    case 'directory':
-      return FileRow(
-        key: Key(entry.name + entry.uuid + entry.selected.toString()),
-        type: 'directory',
-        onPress: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return Files(
-                node: Node(
-                  name: entry.name,
-                  driveUUID: entry.pdrv,
-                  dirUUID: entry.uuid,
-                  location: entry.location,
-                  tag: 'dir',
-                ),
-              );
-            },
-          ),
-        ),
-        entry: entry,
-        actions: actions,
-        isGrid: isGrid,
-        select: select,
-        isLast: isLast,
-      );
-  }
-  return null;
-}
-
 class Files extends StatefulWidget {
   Files({Key key, this.node, this.fileNavViews, this.justonce})
       : super(key: key);
@@ -107,11 +50,158 @@ class _FilesState extends State<Files> {
   List<DirPath> paths = [];
   ScrollController myScrollController = ScrollController();
   StreamSubscription<RefreshEvent> refreshListener;
-
   Function actions;
-
   Select select;
   EntrySort entrySort;
+
+  @override
+  void initState() {
+    super.initState();
+    select = Select(() => this.setState(() {}));
+    entrySort = EntrySort(() {
+      setState(() {
+        loading = true;
+      });
+      parseEntries(entries, paths);
+    });
+
+    actions = (AppState state) => [
+          {
+            'icon': Icons.edit,
+            'title': i18n('Rename'),
+            'types': node.location == 'backup' ? [] : ['file', 'directory'],
+            'action': (BuildContext ctx, Entry entry) {
+              Navigator.pop(ctx);
+              showDialog(
+                context: ctx,
+                builder: (BuildContext context) => RenameDialog(
+                  entry: entry,
+                ),
+              ).then((success) => refresh(state));
+            },
+          },
+          {
+            'icon': Icons.content_copy,
+            'title': i18n('Copy to'),
+            'types': node.location == 'backup' ? [] : ['file', 'directory'],
+            'action': (BuildContext ctx, Entry entry) async {
+              Navigator.pop(ctx);
+              newXCopyView(
+                  this.context, ctx, [entry], 'copy', () => refresh(state));
+            }
+          },
+          {
+            'icon': Icons.forward,
+            'title': i18n('Move to'),
+            'types': node.location == 'backup' ? [] : ['file', 'directory'],
+            'action': (BuildContext ctx, Entry entry) async {
+              Navigator.pop(ctx);
+              newXCopyView(
+                  this.context, ctx, [entry], 'move', () => refresh(state));
+            }
+          },
+          {
+            'icon': Icons.file_download,
+            'title': i18n('Download to Local'),
+            'types': ['file'],
+            'action': (BuildContext ctx, Entry entry) async {
+              Navigator.pop(ctx);
+
+              bool shouldContinue = await checkMobile(ctx, state);
+              if (shouldContinue != true) return;
+
+              final cm = TransferManager.getInstance();
+              cm.newDownload(entry, state);
+              showSnackBar(ctx, i18n('File Add to Transfer List'));
+            },
+          },
+          {
+            'icon': Icons.share,
+            'title': i18n('Share to Public Drive'),
+            'types': node.location == 'home' ? ['file', 'directory'] : [],
+            'action': (BuildContext ctx, Entry entry) async {
+              Navigator.pop(ctx);
+
+              final loadingInstance = showLoading(this.context);
+
+              // get built-in public drive
+              Drive publicDrive = state.drives.firstWhere(
+                  (drive) => drive.tag == 'built-in',
+                  orElse: () => null);
+
+              String driveUUID = publicDrive?.uuid;
+
+              var args = {
+                'type': 'copy',
+                'entries': [entry.name],
+                'policies': {
+                  'dir': ['rename', 'rename'],
+                  'file': ['rename', 'rename']
+                },
+                'dst': {'drive': driveUUID, 'dir': driveUUID},
+                'src': {
+                  'drive': currentNode.driveUUID,
+                  'dir': currentNode.dirUUID
+                },
+              };
+              try {
+                await state.apis.req('xcopy', args);
+                loadingInstance.close();
+                showSnackBar(ctx, i18n('Share to Public Drive Success'));
+              } catch (error) {
+                loadingInstance.close();
+                showSnackBar(ctx, i18n('Share to Public Drive Failed'));
+              }
+            },
+          },
+          {
+            'icon': Icons.open_in_new,
+            'title': i18n('Share to Other App'),
+            'types': ['file'],
+            'action': (BuildContext ctx, Entry entry) {
+              Navigator.pop(ctx);
+              _download(ctx, entry, state, share: true);
+            },
+          },
+          {
+            'icon': Icons.delete,
+            'title': i18n('Delete'),
+            'types': ['file', 'directory'],
+            'action': (BuildContext ctx, Entry entry) async {
+              Navigator.pop(ctx);
+              bool success = await showDialog(
+                context: this.context,
+                builder: (BuildContext context) =>
+                    DeleteDialog(entries: [entry]),
+              );
+
+              if (success == true) {
+                await refresh(state);
+                showSnackBar(ctx, i18n('Delete Success'));
+              } else if (success == false) {
+                showSnackBar(ctx, i18n('Delete Failed'));
+              }
+            },
+          },
+        ];
+  }
+
+  @override
+  void dispose() {
+    refreshListener?.cancel();
+    myScrollController?.dispose();
+    refreshListener = null;
+    myScrollController = null;
+    currentNode = null;
+    entries = [];
+    dirs = [];
+    files = [];
+    paths = [];
+    actions = null;
+    select = null;
+    entrySort = null;
+    super.dispose();
+  }
 
   Future<void> refresh(AppState state,
       {bool isRetry: false, bool needTestLAN: false}) async {
@@ -371,144 +461,6 @@ class _FilesState extends State<Files> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    select = Select(() => this.setState(() {}));
-    entrySort = EntrySort(() {
-      setState(() {
-        loading = true;
-      });
-      parseEntries(entries, paths);
-    });
-
-    actions = (AppState state) => [
-          {
-            'icon': Icons.edit,
-            'title': i18n('Rename'),
-            'types': node.location == 'backup' ? [] : ['file', 'directory'],
-            'action': (BuildContext ctx, Entry entry) {
-              Navigator.pop(ctx);
-              showDialog(
-                context: ctx,
-                builder: (BuildContext context) => RenameDialog(
-                  entry: entry,
-                ),
-              ).then((success) => refresh(state));
-            },
-          },
-          {
-            'icon': Icons.content_copy,
-            'title': i18n('Copy to'),
-            'types': node.location == 'backup' ? [] : ['file', 'directory'],
-            'action': (BuildContext ctx, Entry entry) async {
-              Navigator.pop(ctx);
-              newXCopyView(
-                  this.context, ctx, [entry], 'copy', () => refresh(state));
-            }
-          },
-          {
-            'icon': Icons.forward,
-            'title': i18n('Move to'),
-            'types': node.location == 'backup' ? [] : ['file', 'directory'],
-            'action': (BuildContext ctx, Entry entry) async {
-              Navigator.pop(ctx);
-              newXCopyView(
-                  this.context, ctx, [entry], 'move', () => refresh(state));
-            }
-          },
-          {
-            'icon': Icons.file_download,
-            'title': i18n('Download to Local'),
-            'types': ['file'],
-            'action': (BuildContext ctx, Entry entry) async {
-              Navigator.pop(ctx);
-
-              bool shouldContinue = await checkMobile(ctx, state);
-              if (shouldContinue != true) return;
-
-              final cm = TransferManager.getInstance();
-              cm.newDownload(entry, state);
-              showSnackBar(ctx, i18n('File Add to Transfer List'));
-            },
-          },
-          {
-            'icon': Icons.share,
-            'title': i18n('Share to Public Drive'),
-            'types': node.location == 'home' ? ['file', 'directory'] : [],
-            'action': (BuildContext ctx, Entry entry) async {
-              Navigator.pop(ctx);
-
-              final loadingInstance = showLoading(this.context);
-
-              // get built-in public drive
-              Drive publicDrive = state.drives.firstWhere(
-                  (drive) => drive.tag == 'built-in',
-                  orElse: () => null);
-
-              String driveUUID = publicDrive?.uuid;
-
-              var args = {
-                'type': 'copy',
-                'entries': [entry.name],
-                'policies': {
-                  'dir': ['rename', 'rename'],
-                  'file': ['rename', 'rename']
-                },
-                'dst': {'drive': driveUUID, 'dir': driveUUID},
-                'src': {
-                  'drive': currentNode.driveUUID,
-                  'dir': currentNode.dirUUID
-                },
-              };
-              try {
-                await state.apis.req('xcopy', args);
-                loadingInstance.close();
-                showSnackBar(ctx, i18n('Share to Public Drive Success'));
-              } catch (error) {
-                loadingInstance.close();
-                showSnackBar(ctx, i18n('Share to Public Drive Failed'));
-              }
-            },
-          },
-          {
-            'icon': Icons.open_in_new,
-            'title': i18n('Share to Other App'),
-            'types': ['file'],
-            'action': (BuildContext ctx, Entry entry) {
-              Navigator.pop(ctx);
-              _download(ctx, entry, state, share: true);
-            },
-          },
-          {
-            'icon': Icons.delete,
-            'title': i18n('Delete'),
-            'types': ['file', 'directory'],
-            'action': (BuildContext ctx, Entry entry) async {
-              Navigator.pop(ctx);
-              bool success = await showDialog(
-                context: this.context,
-                builder: (BuildContext context) =>
-                    DeleteDialog(entries: [entry]),
-              );
-
-              if (success == true) {
-                await refresh(state);
-                showSnackBar(ctx, i18n('Delete Success'));
-              } else if (success == false) {
-                showSnackBar(ctx, i18n('Delete Failed'));
-              }
-            },
-          },
-        ];
-  }
-
-  @override
-  void dispose() {
-    refreshListener?.cancel();
-    super.dispose();
-  }
-
   void openSearch(context, state) {
     Navigator.push(
       context,
@@ -538,48 +490,6 @@ class _FilesState extends State<Files> {
       context,
       MaterialPageRoute(
         builder: (context) => Transfer(),
-      ),
-    );
-  }
-
-  Widget navButton(Function onTap, Widget icon, Color color, String title) {
-    return Expanded(
-      flex: 1,
-      child: Container(
-        width: double.infinity,
-        height: 80,
-        margin: EdgeInsets.all(8),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onTap,
-            child: Column(
-              children: <Widget>[
-                Container(height: 8),
-                Container(
-                  height: 48,
-                  width: 48,
-                  child: icon,
-                  decoration: BoxDecoration(
-                    color: color,
-                    borderRadius: BorderRadius.all(
-                      const Radius.circular(24),
-                    ),
-                  ),
-                ),
-                Container(
-                  height: 32,
-                  child: Center(
-                    child: Text(
-                      title,
-                      style: TextStyle(fontSize: 12),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -818,6 +728,105 @@ class _FilesState extends State<Files> {
         },
       ),
     ];
+  }
+
+  Widget _buildItem(
+    BuildContext context,
+    List<Entry> entries,
+    int index,
+    List actions,
+    Function download,
+    Select select,
+    bool isGrid,
+    bool isLast,
+  ) {
+    final entry = entries[index];
+    switch (entry.type) {
+      case 'dirTitle':
+        return TitleRow(isFirst: true, type: 'directory');
+      case 'fileTitle':
+        return TitleRow(isFirst: index == 0, type: 'file');
+      case 'file':
+        return FileRow(
+          key: Key(entry.name + entry.uuid + entry.selected.toString()),
+          type: 'file',
+          onPress: () => download(entry),
+          entry: entry,
+          actions: actions,
+          isGrid: isGrid,
+          select: select,
+          isLast: isLast,
+        );
+      case 'directory':
+        return FileRow(
+          key: Key(entry.name + entry.uuid + entry.selected.toString()),
+          type: 'directory',
+          onPress: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return Files(
+                  node: Node(
+                    name: entry.name,
+                    driveUUID: entry.pdrv,
+                    dirUUID: entry.uuid,
+                    location: entry.location,
+                    tag: 'dir',
+                  ),
+                );
+              },
+            ),
+          ),
+          entry: entry,
+          actions: actions,
+          isGrid: isGrid,
+          select: select,
+          isLast: isLast,
+        );
+    }
+    return null;
+  }
+
+  Widget navButton(Function onTap, Widget icon, Color color, String title) {
+    return Expanded(
+      flex: 1,
+      child: Container(
+        width: double.infinity,
+        height: 80,
+        margin: EdgeInsets.all(8),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            child: Column(
+              children: <Widget>[
+                Container(height: 8),
+                Container(
+                  height: 48,
+                  width: 48,
+                  child: icon,
+                  decoration: BoxDecoration(
+                    color: color,
+                    borderRadius: BorderRadius.all(
+                      const Radius.circular(24),
+                    ),
+                  ),
+                ),
+                Container(
+                  height: 32,
+                  child: Center(
+                    child: Text(
+                      title,
+                      style: TextStyle(fontSize: 12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   AppBar directoryViewAppBar(AppState state) {

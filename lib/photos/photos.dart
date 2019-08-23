@@ -245,6 +245,7 @@ class _PhotosState extends State<Photos> {
   @override
   void dispose() {
     backupEventListener?.cancel();
+    myScrollController?.dispose();
     super.dispose();
   }
 

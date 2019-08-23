@@ -342,6 +342,7 @@ class _BottomNavigationState extends State<BottomNavigation>
   void dispose() {
     super.dispose();
     backupWorker?.abort();
+    backupWorker = null;
     refreshTimer?.cancel();
     intentListener?.cancel();
     tokenExpiredListener?.cancel();

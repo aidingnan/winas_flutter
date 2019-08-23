@@ -41,6 +41,8 @@ class _GridPhotoState extends State<GridPhoto>
   Widget playerWidget;
   bool showDetails = false;
   double detailTop = double.negativeInfinity;
+  Uint8List imageData;
+  Uint8List thumbData;
   @override
   void initState() {
     super.initState();
@@ -52,6 +54,11 @@ class _GridPhotoState extends State<GridPhoto>
   @override
   void dispose() {
     _controller?.dispose();
+    // prevent memory leak
+    info = null;
+    playerWidget = null;
+    imageData = null;
+    thumbData = null;
     super.dispose();
   }
 
@@ -445,9 +452,6 @@ class _GridPhotoState extends State<GridPhoto>
     });
     return completer.future;
   }
-
-  Uint8List imageData;
-  Uint8List thumbData;
 
   Future<void> _getThumb(AppState state, CacheManager cm) async {
     // download thumb

@@ -41,6 +41,14 @@ class _PageViewerState extends State<PageViewer> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    currentItem = null;
+    myScrollController?.dispose();
+    pageController?.dispose();
+    super.dispose();
+  }
+
   double opacity = 1.0;
   updateOpacity(double value) {
     setState(() {

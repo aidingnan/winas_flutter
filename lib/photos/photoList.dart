@@ -274,6 +274,14 @@ class _PhotoListState extends State<PhotoList> {
   }
 
   @override
+  void dispose() {
+    photoMapDates = null;
+    mapHeight = null;
+    myScrollController?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
       onInit: (store) =>
