@@ -303,6 +303,7 @@ String twoDigits(int n) {
 /// date == true: 2019-03-06
 String prettyDate(int time, {bool showDay: false, bool showMonth: false}) {
   if (time == null) return '';
+  if (time == 0) return i18n('Unknown Date');
   var t = DateTime.fromMillisecondsSinceEpoch(time);
   var year = t.year;
   var month = twoDigits(t.month);

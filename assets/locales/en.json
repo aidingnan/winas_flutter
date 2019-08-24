@@ -158,6 +158,7 @@
   "Connection Refused Error": "Connection refused.",
   "Connection Closed Error": "Connection closed.",
   "Progressing": "Progressing",
+  "Unknown Date": "Unknown Date",
 
   "==== nav/taskView.dart ====": "",
   "Xcopy Tasks": "Tasks",
