@@ -469,11 +469,13 @@ class _GridPhotoState extends State<GridPhoto>
 
   Future<void> _getRawImage(AppState state, CacheManager cm) async {
     // download raw photo
-    if (widget.photo?.metadata?.type == 'HEIC') {
-      imageData = await cm.getHEICPhoto(widget.photo, state);
-    } else {
-      imageData = await cm.getPhoto(widget.photo, state);
-    }
+    // if (widget.photo?.metadata?.type == 'HEIC') {
+    // imageData = await cm.getHEICPhoto(widget.photo, state);
+    // } else {
+    //   imageData = await cm.getPhoto(widget.photo, state);
+    // }
+
+    imageData = await cm.getLargePhoto(widget.photo, state);
 
     info = await _getImage(imageData);
     // debug('get RawImage: ${widget.photo.name}');

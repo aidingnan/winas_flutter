@@ -385,6 +385,10 @@ class Worker {
           : '${prefix}_${getTimeString(time)}.$extension';
     }
 
+    if (mtime == 0 || mtime == null) {
+      debug('createTime is 0, $id, $fileName');
+    }
+
     if (isAborted) {
       return;
     }

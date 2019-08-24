@@ -237,6 +237,24 @@ class CacheManager {
     }
   }
 
+  /// download Large file, use AsyncMemoizer to memoizer result to fix bug of hero
+  Future getLargePhoto(Entry entry, AppState state) {
+    int index = tasks.indexWhere((task) => task.name == entry.hash);
+    final height = 1080;
+    final width = 1080;
+    if (index > -1) {
+      return tasks[index].lock.runOnce(
+            () => getThumbData(entry, state, height: height, width: width),
+          );
+    } else {
+      Task task = Task(entry.hash);
+      tasks.add(task);
+      return task.lock.runOnce(
+        () => getThumbData(entry, state, height: height, width: width),
+      );
+    }
+  }
+
   /// download raw photo, use AsyncMemoizer to memoizer result to fix bug of hero
   Future getPhoto(Entry entry, AppState state) {
     int index = tasks.indexWhere((task) => task.name == entry.hash);
