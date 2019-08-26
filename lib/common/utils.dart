@@ -284,9 +284,9 @@ class DownloadingDialog {
 /// Provide pretty printed file sizes
 String prettySize(num size) {
   if (size == null || size < 0 || size == double.infinity) return '';
-  if (size < 1024) return '${size.toInt()} B';
-  if (size < 1024 * 1024) return '${(size / 1024).toStringAsFixed(2)} KB';
-  if (size < 1024 * 1024 * 1024)
+  if (size < 800) return '${size.toInt()} B';
+  if (size < 1024 * 800) return '${(size / 1024).toStringAsFixed(2)} KB';
+  if (size < 1024 * 1024 * 800)
     return '${(size / 1024 / 1024).toStringAsFixed(2)} MB';
   return '${(size / 1024 / 1024 / 1024).toStringAsFixed(2)} GB';
 }
