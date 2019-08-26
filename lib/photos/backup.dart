@@ -318,7 +318,7 @@ class Worker {
     String hash = prefs.getString(id);
     if (hash == null) {
       cancelHash = CancelIsolate();
-      File file = await entity.originFile;
+      File file = await entity.originFile.timeout(Duration(seconds: 60));
       String filePath = file.path;
       hash = await hashViaIsolate(filePath, cancelIsolate: cancelHash);
       if (hash == null) throw 'hash error';
@@ -363,7 +363,7 @@ class Worker {
     cancelUpload = CancelIsolate();
 
     // upload photo
-    File file = await entity.originFile;
+    File file = await entity.originFile.timeout(Duration(seconds: 60));
 
     AssetType type = entity.type;
 
