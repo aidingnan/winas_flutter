@@ -320,7 +320,8 @@ class Worker {
       cancelHash = CancelIsolate();
       File file = await entity.originFile.timeout(Duration(seconds: 60));
       String filePath = file.path;
-      hash = await hashViaIsolate(filePath, cancelIsolate: cancelHash);
+      hash = await hashViaIsolate(filePath, cancelIsolate: cancelHash)
+          .timeout(Duration(minutes: 60));
       if (hash == null) throw 'hash error';
       await prefs.setString(id, hash);
     }

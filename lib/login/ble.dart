@@ -196,9 +196,3 @@ Future writeDataAsync(
   });
   return c.future;
 }
-
-/// add a simple timeout
-Future withTimeout(Future future, int seconds) async {
-  final timeout = Future.delayed(Duration(seconds: seconds));
-  return await Future.any([timeout, future]);
-}

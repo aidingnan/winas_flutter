@@ -655,15 +655,21 @@ class EntrySort {
 }
 
 class Config {
+  /// app
+  /// `auto` `en` `zh`
+  String language = 'auto';
+
+  /// user
   bool gridView = false;
   bool showArchive = false;
+
+  /// station
   bool autoBackup = false;
-  bool showTaskFab = false;
   bool cellularBackup = false;
   bool cellularTransfer = true;
 
-  /// `auto` `en` `zh`
-  String language = 'auto';
+  /// runtime
+  bool showTaskFab = false;
 
   Config({
     this.gridView,

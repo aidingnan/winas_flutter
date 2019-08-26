@@ -307,7 +307,8 @@ class _ConfigDeviceState extends State<ConfigDevice> {
       this.onError,
     );
     setTimeout();
-    await withTimeout(connectWifiAndBind(device, wifiCommand, bleRes), 10);
+    await connectWifiAndBind(device, wifiCommand, bleRes)
+        .timeout(Duration(seconds: 10));
     debug('setWifiAndBind fired');
   }
 
@@ -318,7 +319,8 @@ class _ConfigDeviceState extends State<ConfigDevice> {
     final device = widget.device;
     final wifiCommand =
         '{"action":"addAndActive", "seq": 123, "token": "$token", "body":{"ssid":"$ssid", "pwd":"$wifiPwd"}}';
-    final wifiRes = await withTimeout(connectWifi(device, wifiCommand), 20);
+    final wifiRes =
+        await connectWifi(device, wifiCommand).timeout(Duration(seconds: 10));
     debug('wifiRes: $wifiRes');
     final ip = wifiRes['data']['address'];
     currentIP = ip;
