@@ -624,3 +624,20 @@ List<List<String>> getColorCodes() => [
       [i18n('Green Light'), i18n('Breath'), '#00ff00', 'breath', '#00ff00'],
       [i18n('Blue Light'), i18n('Always On'), '#0000ff', 'alwaysOn', '#0000ff'],
     ];
+
+String getUsnName(String sn) {
+  try {
+    int number = int.parse(
+      int.parse(sn.substring(4, 16), radix: 16)
+          .toRadixString(2)
+          .substring(0, 13),
+      radix: 2,
+    );
+    int h1 = (number ~/ 96) + 10;
+    int h2 = number % 96 + 3;
+    return 'pan-$h1$h2';
+  } catch (e) {
+    debug('getUsnName error: $sn');
+    return 'pan-xxxx';
+  }
+}

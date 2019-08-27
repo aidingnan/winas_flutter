@@ -19,7 +19,7 @@ class ScanBleDevice extends StatefulWidget {
   final Action action;
 
   ///  target ble device's advertising name
-  final String target;
+  final List<String> target;
   @override
   _ScanBleDeviceState createState() => _ScanBleDeviceState();
 }
@@ -73,7 +73,7 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
       if (!deviceName.toLowerCase().startsWith('pan')) return;
 
       // only show target if specified
-      if (widget.target != null && deviceName != widget.target) return;
+      if (widget.target != null && !widget.target.contains(deviceName)) return;
       final id = scanResult.device.id;
       int index = results.indexWhere((res) => res.device.id == id);
 

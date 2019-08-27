@@ -48,13 +48,16 @@ class _StationListState extends State<StationList> {
   bool loading = false;
 
   String stationStatus(Station s) {
-    if (s.sn != null && widget.currentDevSN == s.sn)
-      return i18n('Current Device');
+    // offline
     if (!s.isOnline) {
       return i18n('Device Offline');
-    } else {
-      return i18n('Device Online');
     }
+    // Current logged device
+    if (s.sn != null && widget.currentDevSN == s.sn) {
+      return i18n('Current Device');
+    }
+    // online
+    return i18n('Device Online');
   }
 
   Future<void> login(BuildContext ctx, Station station, store) async {
@@ -142,13 +145,17 @@ class _StationListState extends State<StationList> {
     );
   }
 
-  void startScanBLEDevice(Action action) {
+  void startScanBLEDevice(Action action, {List<String> target}) {
     Navigator.push(
       context,
       MaterialPageRoute(
         fullscreenDialog: true,
         builder: (context) {
-          return ScanBleDevice(request: widget.request, action: action);
+          return ScanBleDevice(
+            request: widget.request,
+            action: action,
+            target: target,
+          );
         },
       ),
     );
@@ -406,64 +413,68 @@ class _StationListState extends State<StationList> {
                     ),
                   ),
             centerTitle: false,
-            actions: widget.currentDevSN == null &&
-                    stationList != null &&
-                    stationList.length > 0
-                ? <Widget>[
-                    refreshButton(),
-                    IconButton(
-                      icon: Icon(Icons.more_horiz),
-                      onPressed: () {
-                        showModalBottomSheet(
-                          context: ctx,
-                          builder: (BuildContext c) {
-                            return SafeArea(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  // Bind NEW Device
-                                  Material(
-                                    child: InkWell(
-                                      onTap: () async {
-                                        Navigator.pop(c);
-                                        startScanBLEDevice(Action.bind);
-                                      },
-                                      child: Container(
-                                        width: double.infinity,
-                                        padding: EdgeInsets.all(16),
-                                        child: Text(i18n('Bind NEW Device')),
-                                      ),
+            actions: <Widget>[
+              refreshButton(),
+              if (stationList != null && stationList.length > 0)
+                IconButton(
+                  icon: Icon(Icons.more_horiz),
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: ctx,
+                      builder: (BuildContext c) {
+                        return SafeArea(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              // Bind NEW Device
+
+                              if (widget.currentDevSN == null)
+                                Material(
+                                  child: InkWell(
+                                    onTap: () async {
+                                      Navigator.pop(c);
+                                      startScanBLEDevice(Action.bind);
+                                    },
+                                    child: Container(
+                                      width: double.infinity,
+                                      padding: EdgeInsets.all(16),
+                                      child: Text(i18n('Bind NEW Device')),
                                     ),
                                   ),
+                                ),
 
-                                  // Configuring Device WiFi
-                                  Material(
-                                    child: InkWell(
-                                      onTap: () async {
-                                        Navigator.pop(c);
-                                        startScanBLEDevice(Action.wifi);
-                                      },
-                                      child: Container(
-                                        width: double.infinity,
-                                        padding: EdgeInsets.all(16),
-                                        child: Text(
-                                          i18n('Configuring Device WiFi'),
+                              // Configuring Device WiFi
+                              Material(
+                                child: InkWell(
+                                  onTap: () async {
+                                    Navigator.pop(c);
+                                    startScanBLEDevice(
+                                      Action.wifi,
+                                      target: List.from(
+                                        stationList.map(
+                                          (s) => getUsnName(s.sn),
                                         ),
                                       ),
+                                    );
+                                  },
+                                  child: Container(
+                                    width: double.infinity,
+                                    padding: EdgeInsets.all(16),
+                                    child: Text(
+                                      i18n('Configuring Device WiFi'),
                                     ),
                                   ),
-                                ],
+                                ),
                               ),
-                            );
-                          },
+                            ],
+                          ),
                         );
                       },
-                    )
-                  ]
-                : [
-                    refreshButton(),
-                  ],
+                    );
+                  },
+                )
+            ],
           ),
           body: Builder(
             builder: (BuildContext c) => loading

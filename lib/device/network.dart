@@ -54,7 +54,7 @@ class _NetworkState extends State<Network> {
             action: action,
 
             /// ble advertising name
-            target: info.bleName,
+            target: [info.bleName],
           );
         },
       ),
