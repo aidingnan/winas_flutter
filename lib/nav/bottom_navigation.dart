@@ -43,26 +43,26 @@ class NavigationIconView {
 }
 
 List<FileNavView> get fileNavViews => [
-      FileNavView(
-        icon: Icon(Icons.people, color: Colors.white),
-        title: i18n('Public Drive'),
-        nav: 'public',
-        color: Colors.orange,
-        onTap: (context) => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return Files(
-                node: Node(
-                  name: i18n('Public Drive'),
-                  tag: 'built-in',
-                  location: 'built-in',
-                ),
-              );
-            },
-          ),
-        ),
-      ),
+      // FileNavView(
+      //   icon: Icon(Icons.people, color: Colors.white),
+      //   title: i18n('Public Drive'),
+      //   nav: 'public',
+      //   color: Colors.orange,
+      //   onTap: (context) => Navigator.push(
+      //     context,
+      //     MaterialPageRoute(
+      //       builder: (context) {
+      //         return Files(
+      //           node: Node(
+      //             name: i18n('Public Drive'),
+      //             tag: 'built-in',
+      //             location: 'built-in',
+      //           ),
+      //         );
+      //       },
+      //     ),
+      //   ),
+      // ),
       FileNavView(
         icon: Icon(Icons.refresh, color: Colors.white),
         title: i18n('Backup Drive'),

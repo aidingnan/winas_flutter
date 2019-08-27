@@ -115,45 +115,45 @@ class _FilesState extends State<Files> {
               showSnackBar(ctx, i18n('File Add to Transfer List'));
             },
           },
-          {
-            'icon': Icons.share,
-            'title': i18n('Share to Public Drive'),
-            'types': node.location == 'home' ? ['file', 'directory'] : [],
-            'action': (BuildContext ctx, Entry entry) async {
-              Navigator.pop(ctx);
+          // {
+          //   'icon': Icons.share,
+          //   'title': i18n('Share to Public Drive'),
+          //   'types': node.location == 'home' ? ['file', 'directory'] : [],
+          //   'action': (BuildContext ctx, Entry entry) async {
+          //     Navigator.pop(ctx);
 
-              final loadingInstance = showLoading(this.context);
+          //     final loadingInstance = showLoading(this.context);
 
-              // get built-in public drive
-              Drive publicDrive = state.drives.firstWhere(
-                  (drive) => drive.tag == 'built-in',
-                  orElse: () => null);
+          //     // get built-in public drive
+          //     Drive publicDrive = state.drives.firstWhere(
+          //         (drive) => drive.tag == 'built-in',
+          //         orElse: () => null);
 
-              String driveUUID = publicDrive?.uuid;
+          //     String driveUUID = publicDrive?.uuid;
 
-              var args = {
-                'type': 'copy',
-                'entries': [entry.name],
-                'policies': {
-                  'dir': ['rename', 'rename'],
-                  'file': ['rename', 'rename']
-                },
-                'dst': {'drive': driveUUID, 'dir': driveUUID},
-                'src': {
-                  'drive': currentNode.driveUUID,
-                  'dir': currentNode.dirUUID
-                },
-              };
-              try {
-                await state.apis.req('xcopy', args);
-                loadingInstance.close();
-                showSnackBar(ctx, i18n('Share to Public Drive Success'));
-              } catch (error) {
-                loadingInstance.close();
-                showSnackBar(ctx, i18n('Share to Public Drive Failed'));
-              }
-            },
-          },
+          //     var args = {
+          //       'type': 'copy',
+          //       'entries': [entry.name],
+          //       'policies': {
+          //         'dir': ['rename', 'rename'],
+          //         'file': ['rename', 'rename']
+          //       },
+          //       'dst': {'drive': driveUUID, 'dir': driveUUID},
+          //       'src': {
+          //         'drive': currentNode.driveUUID,
+          //         'dir': currentNode.dirUUID
+          //       },
+          //     };
+          //     try {
+          //       await state.apis.req('xcopy', args);
+          //       loadingInstance.close();
+          //       showSnackBar(ctx, i18n('Share to Public Drive Success'));
+          //     } catch (error) {
+          //       loadingInstance.close();
+          //       showSnackBar(ctx, i18n('Share to Public Drive Failed'));
+          //     }
+          //   },
+          // },
           {
             'icon': Icons.open_in_new,
             'title': i18n('Share to Other App'),
