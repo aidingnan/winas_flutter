@@ -262,7 +262,6 @@ class Metadata {
     this.rot = m['rot'];
     this.make = m['make'];
     this.model = m['model'];
-    // print('Metadata>>>>>>> $m');
     try {
       // only allow format: "2017:06:17 17:31:18" or "2017:10:07 17:55:33-07:00"
       // hdate: 2017-06-17
@@ -601,7 +600,6 @@ class EntrySort {
 
   void changeType(SortTypes newType) {
     this.type = newType;
-    print('newType $newType');
     this.update();
   }
 
@@ -654,75 +652,122 @@ class EntrySort {
   }
 }
 
-class Config {
-  /// app
-  /// `auto` `en` `zh`
-  String language = 'auto';
-
-  /// user
-  bool gridView = false;
-  bool showArchive = false;
-
+class StationConfig {
   /// station
+  String deviceSN;
   bool autoBackup = false;
   bool cellularBackup = false;
   bool cellularTransfer = true;
 
-  /// runtime
+  StationConfig({
+    this.deviceSN,
+    this.autoBackup,
+    this.cellularBackup,
+    this.cellularTransfer,
+  });
+
+  StationConfig.combine(StationConfig oldConfig, StationConfig newConfig) {
+    this.deviceSN = newConfig.deviceSN ?? oldConfig.deviceSN;
+    this.autoBackup = newConfig.autoBackup ?? oldConfig.autoBackup;
+    this.cellularBackup = newConfig.cellularBackup ?? oldConfig.cellularBackup;
+    this.cellularTransfer =
+        newConfig.cellularTransfer ?? oldConfig.cellularTransfer;
+  }
+
+  StationConfig.fromMap(Map m) {
+    this.deviceSN = m['deviceSN'];
+    this.autoBackup = m['autoBackup'] == true;
+    this.cellularBackup = m['cellularBackup'] == true;
+    this.cellularTransfer = m['cellularTransfer'] == true;
+  }
+
+  @override
+  String toString() {
+    Map<String, dynamic> m = {
+      'deviceSN': deviceSN,
+      'autoBackup': autoBackup,
+      'cellularBackup': cellularBackup,
+      'cellularTransfer': cellularTransfer,
+    };
+    return jsonEncode(m);
+  }
+
+  String toJson() => toString();
+}
+
+class Config {
+  /// `auto` `en` `zh`
+  String language = 'auto';
+  bool gridView = false;
+  bool showArchive = false;
   bool showTaskFab = false;
+
+  /// Map of <device, StationConfig>
+  List<StationConfig> stationConfigs = [];
 
   Config({
     this.gridView,
-    this.autoBackup,
     this.showTaskFab,
     this.showArchive,
-    this.cellularBackup,
-    this.cellularTransfer,
     this.language,
+    this.stationConfigs,
   });
 
   factory Config.initial() => Config(
         gridView: false,
-        autoBackup: false,
         showTaskFab: false,
         showArchive: false,
-        cellularBackup: false,
-        cellularTransfer: true,
         language: 'auto',
+        stationConfigs: [],
       );
 
   Config.combine(Config oldConfig, Config newConfig) {
     this.gridView = newConfig.gridView ?? oldConfig.gridView;
-    this.autoBackup = newConfig.autoBackup ?? oldConfig.autoBackup;
-
     this.showArchive = newConfig.showArchive ?? oldConfig.showArchive;
     this.showTaskFab = newConfig.showTaskFab ?? oldConfig.showTaskFab;
-    this.cellularBackup = newConfig.cellularBackup ?? oldConfig.cellularBackup;
-    this.cellularTransfer =
-        newConfig.cellularTransfer ?? oldConfig.cellularTransfer;
     this.language = newConfig.language ?? oldConfig.language ?? 'auto';
+    this.stationConfigs =
+        newConfig.stationConfigs ?? oldConfig.stationConfigs ?? [];
   }
 
   Config.fromMap(Map m) {
     this.showTaskFab = false;
     this.gridView = m['gridView'] == true;
-    this.autoBackup = m['autoBackup'] == true;
     this.showArchive = m['showArchive'] == true;
-    this.cellularBackup = m['cellularBackup'] == true;
-    this.cellularTransfer = m['cellularTransfer'] == true;
     this.language = m['language'] ?? 'auto';
+    this.stationConfigs = m['stationConfigs'] == null
+        ? []
+        : List.from(
+            jsonDecode(m['stationConfigs'])
+                .map((s) => StationConfig.fromMap(s))
+                .where((s) => s.deviceSN != null),
+          );
+  }
+
+  StationConfig getStationConfigs(String deviceSN) {
+    return stationConfigs.firstWhere((s) => s.deviceSN == deviceSN,
+        orElse: () => null);
+  }
+
+  void setStationConfig(String deviceSN, StationConfig stationConfig) {
+    final index = stationConfigs.indexWhere((s) => s.deviceSN == deviceSN);
+    if (index > -1) {
+      final oldStationConfig = stationConfigs[index];
+      stationConfigs[index] =
+          StationConfig.combine(oldStationConfig, stationConfig);
+    } else {
+      stationConfigs.add(stationConfig);
+    }
   }
 
   @override
   String toString() {
     Map<String, dynamic> m = {
       'gridView': gridView,
-      'autoBackup': autoBackup,
       'showArchive': showArchive,
       'showTaskFab': showTaskFab,
-      'cellularBackup': cellularBackup,
-      'cellularTransfer': cellularTransfer,
       'language': language,
+      'stationConfigs': stationConfigs.toString(),
     };
     return jsonEncode(m);
   }

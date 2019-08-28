@@ -244,13 +244,16 @@ class _BottomNavigationState extends State<BottomNavigation>
     }
 
     loadingInstance.close();
-
-    store.dispatch(UpdateConfigAction(
-      Config.combine(
-        store.state.config,
-        Config(autoBackup: value),
+    store.dispatch(
+      UpdateConfigAction(
+        store.state.config
+          ..setStationConfig(
+            store.state.apis.deviceSN,
+            StationConfig(
+                deviceSN: store.state.apis.deviceSN, autoBackup: value),
+          ),
       ),
-    ));
+    );
 
     if (value == true) {
       backupWorker.start();
@@ -265,9 +268,13 @@ class _BottomNavigationState extends State<BottomNavigation>
   /// 3. refresh token
   void initWorks(Store<AppState> store) {
     final state = store.state;
+    final stationConfig = state.config.getStationConfigs(state.apis.deviceSN);
 
     // init backupWorker
-    backupWorker = BackupWorker(state.apis, state.config.cellularBackup);
+    backupWorker = BackupWorker(
+      state.apis,
+      stationConfig?.cellularBackup == true,
+    );
     // add listener of new intent
     intentListener = Intent.listenToOnNewIntent().listen((filePath) {
       debug('newIntent: $filePath');
@@ -297,7 +304,8 @@ class _BottomNavigationState extends State<BottomNavigation>
       await refreshAndSaveToken(s);
 
       // start autoBackup
-      if (s.state.config.autoBackup == true) {
+      if (s.state.config.getStationConfigs(s.state.apis.deviceSN)?.autoBackup ==
+          true) {
         backupWorker.start();
       }
     };

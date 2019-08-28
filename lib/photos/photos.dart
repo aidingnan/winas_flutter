@@ -302,9 +302,9 @@ class _PhotosState extends State<Photos> {
     );
   }
 
-  String backupStatus(Config config, BackupWorker worker) {
+  String backupStatus(StationConfig config, BackupWorker worker) {
     String text = i18n('Backup Photos');
-    if (config.autoBackup == true) {
+    if (config?.autoBackup == true) {
       if (worker.isFinished) {
         text = i18n('Backup Finished');
       } else if (worker.isPaused) {
@@ -322,6 +322,8 @@ class _PhotosState extends State<Photos> {
 
   List<Widget> renderSlivers(Store<AppState> store) {
     final worker = widget.backupWorker;
+    final stationConfig =
+        store.state.config.getStationConfigs(store.state.apis.deviceSN);
     return <Widget>[
       // backup switch
       SliverToBoxAdapter(
@@ -334,7 +336,7 @@ class _PhotosState extends State<Photos> {
                   children: <Widget>[
                     Center(
                       child: Text(
-                        backupStatus(store.state.config, worker),
+                        backupStatus(stationConfig, worker),
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
@@ -349,14 +351,14 @@ class _PhotosState extends State<Photos> {
                       flex: 1,
                     ),
                     Text(
-                      store.state.config.autoBackup == true
+                      stationConfig?.autoBackup == true
                           ? ''
                           : i18n('Backup Disabled'),
                       style: TextStyle(color: Colors.white),
                     ),
                     Switch(
                         activeColor: Colors.white,
-                        value: store.state.config.autoBackup == true,
+                        value: stationConfig?.autoBackup == true,
                         onChanged: (bool value) =>
                             widget.toggleBackup(context, store, value)),
                   ],

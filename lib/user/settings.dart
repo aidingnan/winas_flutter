@@ -28,6 +28,9 @@ class _SettingsState extends State<Settings> {
       onDispose: (store) => {},
       converter: (store) => store,
       builder: (context, store) {
+        final stationConfig =
+            store.state.config.getStationConfigs(store.state.apis.deviceSN);
+
         return Scaffold(
           appBar: AppBar(
             elevation: 0.0, // no shadow
@@ -61,15 +64,19 @@ class _SettingsState extends State<Settings> {
                               child: InkWell(
                                 onTap: () {
                                   Navigator.pop(c);
-                                  store.dispatch(UpdateConfigAction(
-                                    Config.combine(
-                                      store.state.config,
-                                      Config(
-                                        cellularBackup: true,
-                                        autoBackup: true,
-                                      ),
+                                  store.dispatch(
+                                    UpdateConfigAction(
+                                      store.state.config
+                                        ..setStationConfig(
+                                          store.state.apis.deviceSN,
+                                          StationConfig(
+                                            deviceSN: store.state.apis.deviceSN,
+                                            cellularBackup: true,
+                                            autoBackup: true,
+                                          ),
+                                        ),
                                     ),
-                                  ));
+                                  );
                                   // update backupWorker setting
                                   widget.backupWorker.updateConfig(
                                     shouldBackupViaCellular: true,
@@ -87,15 +94,19 @@ class _SettingsState extends State<Settings> {
                               child: InkWell(
                                 onTap: () {
                                   Navigator.pop(c);
-                                  store.dispatch(UpdateConfigAction(
-                                    Config.combine(
-                                      store.state.config,
-                                      Config(
-                                        cellularBackup: false,
-                                        autoBackup: true,
-                                      ),
+                                  store.dispatch(
+                                    UpdateConfigAction(
+                                      store.state.config
+                                        ..setStationConfig(
+                                          store.state.apis.deviceSN,
+                                          StationConfig(
+                                            deviceSN: store.state.apis.deviceSN,
+                                            cellularBackup: false,
+                                            autoBackup: true,
+                                          ),
+                                        ),
                                     ),
-                                  ));
+                                  );
                                   // update backupWorker setting
                                   widget.backupWorker.updateConfig(
                                     shouldBackupViaCellular: false,
@@ -113,15 +124,19 @@ class _SettingsState extends State<Settings> {
                               child: InkWell(
                                 onTap: () async {
                                   Navigator.pop(c);
-                                  store.dispatch(UpdateConfigAction(
-                                    Config.combine(
-                                      store.state.config,
-                                      Config(
-                                        cellularBackup: false,
-                                        autoBackup: false,
-                                      ),
+                                  store.dispatch(
+                                    UpdateConfigAction(
+                                      store.state.config
+                                        ..setStationConfig(
+                                          store.state.apis.deviceSN,
+                                          StationConfig(
+                                            deviceSN: store.state.apis.deviceSN,
+                                            cellularBackup: false,
+                                            autoBackup: false,
+                                          ),
+                                        ),
                                     ),
-                                  ));
+                                  );
                                   await widget.toggleBackup(
                                     context,
                                     store,
@@ -142,10 +157,10 @@ class _SettingsState extends State<Settings> {
                   );
                 },
                 Text(
-                  store.state.config.autoBackup &&
-                          store.state.config.cellularBackup
+                  stationConfig?.autoBackup == true &&
+                          stationConfig?.cellularBackup == true
                       ? i18n('Both Wi-Fi and Cellular')
-                      : store.state.config.autoBackup
+                      : stationConfig?.autoBackup == true
                           ? i18n('Only Wi-Fi')
                           : i18n('Close'),
                 ),
@@ -165,12 +180,18 @@ class _SettingsState extends State<Settings> {
                               child: InkWell(
                                 onTap: () {
                                   Navigator.pop(c);
-                                  store.dispatch(UpdateConfigAction(
-                                    Config.combine(
-                                      store.state.config,
-                                      Config(cellularTransfer: true),
+                                  store.dispatch(
+                                    UpdateConfigAction(
+                                      store.state.config
+                                        ..setStationConfig(
+                                          store.state.apis.deviceSN,
+                                          StationConfig(
+                                            deviceSN: store.state.apis.deviceSN,
+                                            cellularTransfer: true,
+                                          ),
+                                        ),
                                     ),
-                                  ));
+                                  );
                                 },
                                 child: Container(
                                   width: double.infinity,
@@ -183,12 +204,18 @@ class _SettingsState extends State<Settings> {
                               child: InkWell(
                                 onTap: () {
                                   Navigator.pop(c);
-                                  store.dispatch(UpdateConfigAction(
-                                    Config.combine(
-                                      store.state.config,
-                                      Config(cellularTransfer: false),
+                                  store.dispatch(
+                                    UpdateConfigAction(
+                                      store.state.config
+                                        ..setStationConfig(
+                                          store.state.apis.deviceSN,
+                                          StationConfig(
+                                            deviceSN: store.state.apis.deviceSN,
+                                            cellularTransfer: false,
+                                          ),
+                                        ),
                                     ),
-                                  ));
+                                  );
                                 },
                                 child: Container(
                                   width: double.infinity,
@@ -203,7 +230,7 @@ class _SettingsState extends State<Settings> {
                     },
                   );
                 },
-                Text(store.state.config.cellularTransfer
+                Text(stationConfig?.cellularTransfer == true
                     ? i18n('Both Wi-Fi and Cellular')
                     : i18n('Only Wi-Fi')),
               ),

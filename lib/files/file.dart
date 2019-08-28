@@ -379,7 +379,8 @@ class _FilesState extends State<Files> {
 
   /// checkMobile, return shouldContinue or not
   Future<bool> checkMobile(BuildContext ctx, AppState state) async {
-    if (state.config.cellularTransfer == false) {
+    if (state.config.getStationConfigs(state.apis.deviceSN)?.cellularTransfer !=
+        true) {
       bool isMobile = await state.apis.isMobile();
       if (isMobile) {
         final shouldContinue = await showDialog(
@@ -400,10 +401,13 @@ class _FilesState extends State<Files> {
                 StoreConnector<AppState, VoidCallback>(
                   converter: (store) => () => store.dispatch(
                         UpdateConfigAction(
-                          Config.combine(
-                            store.state.config,
-                            Config(cellularTransfer: true),
-                          ),
+                          store.state.config
+                            ..setStationConfig(
+                                store.state.apis.deviceSN,
+                                StationConfig(
+                                  deviceSN: store.state.apis.deviceSN,
+                                  cellularTransfer: true,
+                                )),
                         ),
                       ),
                   builder: (context, callback) {

@@ -118,7 +118,7 @@ class MyApp extends StatelessWidget {
             // remove apis, device, reset config
             store.dispatch(UpdateApisAction(null));
             store.dispatch(DeviceLoginAction(null));
-            store.dispatch(UpdateConfigAction(Config.initial()));
+            // store.dispatch(UpdateConfigAction(Config.initial()));
             print('afterLogout');
             return StationList(
               request: store.state.cloud,
