@@ -463,7 +463,47 @@ class Worker {
     List<AssetEntity> assetList = await getAssetList();
     total = assetList.length;
 
+    List<AssetEntity> uploadList = [];
+
+    // print('filter uploaded items ${assetList.length}');
+    // filter uploaded entity
     for (AssetEntity entity in assetList) {
+      if (status == Status.running) {
+        try {
+          String id = entity.id;
+          int mtime = entity.createTime;
+
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          String hash = prefs.getString('$id+$mtime');
+
+          if (hash == null) {
+            uploadList.add(entity);
+            continue;
+          }
+
+          // debug('after hash, ${getNow() - time}');
+          final photoEntry = PhotoEntry(id, hash, mtime);
+
+          final targetDir = await getTargetDir(remoteDirs, photoEntry, rootDir);
+
+          // already backuped, continue next
+          if (targetDir == null) {
+            finished += 1;
+            ignored += 1;
+          } else {
+            uploadList.add(entity);
+          }
+        } catch (e) {
+          uploadList.add(entity);
+          continue;
+        }
+      } else {
+        return;
+      }
+    }
+    // print('upload photo one by one ${uploadList.length}');
+    // upload photo one by one
+    for (AssetEntity entity in uploadList) {
       if (status == Status.running) {
         try {
           await uploadSingle(entity, remoteDirs, rootDir);
