@@ -109,7 +109,9 @@ class _FirmwareState extends State<Firmware> {
                 'info',
                 {'deviceSN': state.apis.deviceSN},
               );
-              downloading = winasdInfo.data['upgrade']['download'] != null;
+              final downloadData = winasdInfo.data['upgrade']['download'];
+              downloading =
+                  downloadData != null && downloadData['state'] != 'Failed';
             } catch (e) {
               debug(e);
             }

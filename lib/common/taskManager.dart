@@ -100,7 +100,7 @@ class ThumbTask extends Task {
 
 class TaskManager {
   final List<ThumbTask> thumbTaskQueue = [];
-  final int thumbTaskLimit = 8;
+  final int thumbTaskLimit = 4;
 
   // keep singleton
   static TaskManager _instance;

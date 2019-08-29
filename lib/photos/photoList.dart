@@ -46,7 +46,11 @@ class _PhotoListState extends State<PhotoList> {
         'types': album.types,
         'order': 'newest',
       });
-      items = List.from(res.data.map((m) => Entry.fromSearch(m, album.drives)));
+      items = List.from(
+        res.data
+            .map((m) => Entry.fromSearch(m, album.drives))
+            .where((e) => !e.archived && e.fingerprint == null && !e.deleted),
+      );
       // sort allMedia
       items.sort((a, b) {
         int order = b.hdate.compareTo(a.hdate);

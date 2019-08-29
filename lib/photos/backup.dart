@@ -242,9 +242,9 @@ class Worker {
     return remoteDirs;
   }
 
-  /// if (!isFilter) add remoteList's item
-  Future<Entry> getTargetDir(List<RemoteList> remoteDirs, PhotoEntry photoEntry,
-      Entry rootDir, bool isFilter) async {
+  /// get remote targetDir's list
+  Future<RemoteList> getTargetList(
+      List<RemoteList> remoteDirs, PhotoEntry photoEntry, Entry rootDir) async {
     // get all dirs with matched hdate
     final List<RemoteList> dirsMatchDate = List.from(
         remoteDirs.where((rd) => rd.entry.name.startsWith(photoEntry.hdate)));
@@ -268,12 +268,7 @@ class Worker {
 
         targetDir = remoteList.entry;
 
-        // increase length
-        if (!isFilter) {
-          remoteList.add(Entry(name: photoEntry.id, hash: photoEntry.hash));
-        }
-
-        return targetDir;
+        return remoteList;
       }
     }
 
@@ -306,13 +301,9 @@ class Worker {
 
     final newRemoteList = RemoteList(targetDir, []);
 
-    if (!isFilter) {
-      newRemoteList.add(Entry(name: photoEntry.id, hash: photoEntry.hash));
-    }
-
     remoteDirs.add(newRemoteList);
 
-    return targetDir;
+    return newRemoteList;
   }
 
   /// get Hash from hashViaIsolate or shared_preferences
@@ -354,17 +345,16 @@ class Worker {
     // debug('after hash, ${getNow() - time}');
     final photoEntry = PhotoEntry(id, hash, mtime);
 
-    final targetDir =
-        await getTargetDir(remoteDirs, photoEntry, rootDir, false);
+    final remoteList = await getTargetList(remoteDirs, photoEntry, rootDir);
 
     // already backuped, continue next
-    if (targetDir == null) {
+    if (remoteList == null) {
       finished += 1;
       ignored += 1;
       // debug('backup ignore: $id, ${getNow() - time}');
       return;
     }
-
+    final targetDir = remoteList.entry;
     // debug('before upload: $id, ${getNow() - time}');
     // update cancelIsolate
     cancelUpload = CancelIsolate();
@@ -377,9 +367,8 @@ class Worker {
     String filePath = file.path;
     String fileName = filePath.split('/').last;
 
+    String extension = fileName.contains('.') ? fileName.split('.').last : '';
     if (Platform.isIOS) {
-      String extension = fileName.contains('.') ? fileName.split('.').last : '';
-
       // tofix mtime == 0 or null bug
       DateTime time = (mtime == 0 || mtime == null)
           ? DateTime.now()
@@ -392,12 +381,34 @@ class Worker {
           : '${prefix}_${getTimeString(time)}.$extension';
     }
 
-    if (mtime == 0 || mtime == null) {
-      debug('createTime is 0, $id, $fileName');
+    // autorename, compare fileName with names in remoteList
+    int i = 1;
+    String newName = fileName;
+    while (remoteList.items.any((e) => e.name == newName)) {
+      String pureName;
+      if (fileName.contains('.')) {
+        final list = fileName.split('.');
+        list.removeLast();
+        pureName = list.join('.');
+      } else {
+        pureName = fileName;
+      }
+      newName =
+          extension == '' ? '${pureName}_$i' : '${pureName}_$i.$extension';
+      i += 1;
     }
+
+    fileName = newName;
+
+    remoteList.add(Entry(name: fileName, hash: hash));
 
     if (isAborted) {
       return;
+    }
+
+    // debug files which createTime == 0
+    if (mtime == 0 || mtime == null) {
+      debug('createTime is 0, $id, $fileName');
     }
 
     await uploadViaIsolate(apis, targetDir, filePath, hash, mtime, fileName,
@@ -490,11 +501,11 @@ class Worker {
           // debug('after hash, ${getNow() - time}');
           final photoEntry = PhotoEntry(id, hash, mtime);
 
-          final targetDir =
-              await getTargetDir(remoteDirs, photoEntry, rootDir, true);
+          final targetList =
+              await getTargetList(remoteDirs, photoEntry, rootDir);
 
           // already backuped, continue next
-          if (targetDir == null) {
+          if (targetList == null) {
             finished += 1;
             ignored += 1;
           } else {
