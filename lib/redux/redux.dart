@@ -348,6 +348,7 @@ class Entry {
   Entry(
       {this.name,
       this.uuid,
+      this.hash,
       this.type,
       this.pdir,
       this.pdrv,

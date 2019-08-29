@@ -44,15 +44,12 @@ class RemoteList {
   List<Entry> items;
 
   /// initial value is items' length
-  int length;
+  int get length => items.length;
 
-  RemoteList(this.entry, this.items) {
-    this.length = items.length;
-  }
+  RemoteList(this.entry, this.items);
 
-  /// increace RemoteList's length by one
-  fakeAdd() {
-    length += 1;
+  void add(Entry entry) {
+    items.add(entry);
   }
 }
 
@@ -245,8 +242,9 @@ class Worker {
     return remoteDirs;
   }
 
-  Future<Entry> getTargetDir(
-      List<RemoteList> remoteDirs, PhotoEntry photoEntry, Entry rootDir) async {
+  /// if (!isFilter) add remoteList's item
+  Future<Entry> getTargetDir(List<RemoteList> remoteDirs, PhotoEntry photoEntry,
+      Entry rootDir, bool isFilter) async {
     // get all dirs with matched hdate
     final List<RemoteList> dirsMatchDate = List.from(
         remoteDirs.where((rd) => rd.entry.name.startsWith(photoEntry.hdate)));
@@ -271,7 +269,10 @@ class Worker {
         targetDir = remoteList.entry;
 
         // increase length
-        remoteList.fakeAdd();
+        if (!isFilter) {
+          remoteList.add(Entry(name: photoEntry.id, hash: photoEntry.hash));
+        }
+
         return targetDir;
       }
     }
@@ -304,7 +305,11 @@ class Worker {
     targetDir = Entry.mixNode(mkdirRes.data[0]['data'], currentNode);
 
     final newRemoteList = RemoteList(targetDir, []);
-    newRemoteList.fakeAdd();
+
+    if (!isFilter) {
+      newRemoteList.add(Entry(name: photoEntry.id, hash: photoEntry.hash));
+    }
+
     remoteDirs.add(newRemoteList);
 
     return targetDir;
@@ -349,7 +354,8 @@ class Worker {
     // debug('after hash, ${getNow() - time}');
     final photoEntry = PhotoEntry(id, hash, mtime);
 
-    final targetDir = await getTargetDir(remoteDirs, photoEntry, rootDir);
+    final targetDir =
+        await getTargetDir(remoteDirs, photoEntry, rootDir, false);
 
     // already backuped, continue next
     if (targetDir == null) {
@@ -484,7 +490,8 @@ class Worker {
           // debug('after hash, ${getNow() - time}');
           final photoEntry = PhotoEntry(id, hash, mtime);
 
-          final targetDir = await getTargetDir(remoteDirs, photoEntry, rootDir);
+          final targetDir =
+              await getTargetDir(remoteDirs, photoEntry, rootDir, true);
 
           // already backuped, continue next
           if (targetDir == null) {
