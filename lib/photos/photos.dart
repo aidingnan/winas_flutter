@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:redux/redux.dart';
 import 'package:flutter/material.dart';
+import 'package:open_file/open_file.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 import './backup.dart';
@@ -462,6 +464,18 @@ class _PhotosState extends State<Photos> {
             iconTheme: IconThemeData(color: Colors.black38),
             title: Text(i18n('Album'), style: TextStyle(color: Colors.black87)),
             centerTitle: false,
+            actions: <Widget>[
+              if (Platform.isIOS)
+                FlatButton(
+                  textColor: Theme.of(context).primaryColor,
+                  child: Text(i18n('Backup')),
+                  onPressed: () async {
+                    final cm = await CacheManager.getInstance();
+                    final backupMusicFile = await cm.getBackupMusicFile();
+                    await OpenFile.open(backupMusicFile.path);
+                  },
+                ),
+            ],
           ),
           body: SafeArea(
             child: loading

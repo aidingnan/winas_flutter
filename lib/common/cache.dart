@@ -8,6 +8,7 @@ import 'package:async/async.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:synchronized/synchronized.dart' as synchronized;
 
+import './backupMusic.dart';
 import '../redux/redux.dart';
 
 class Task {
@@ -361,5 +362,17 @@ class CacheManager {
     }
 
     return key;
+  }
+
+  Future<File> getBackupMusicFile() async {
+    String entryPath = _tmpDir() + 'Backup.mp3';
+    File backupMusicFile = File(entryPath);
+    FileStat res = await backupMusicFile.stat();
+    // file already downloaded
+    if (res.type != FileSystemEntityType.notFound) {
+      return backupMusicFile;
+    }
+    await backupMusicFile.writeAsBytes(musicData);
+    return backupMusicFile;
   }
 }
