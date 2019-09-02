@@ -208,6 +208,7 @@ class Apis {
     try {
       sub?.cancel();
     } catch (e) {
+      print('monitorCancel failed');
       print(e);
     }
   }

@@ -444,6 +444,7 @@ Future<String> getAppVersion() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     version = packageInfo.version;
   } catch (e) {
+    print('getAppVersion failed');
     print(e);
     version = '';
   }
@@ -549,6 +550,7 @@ String i18n(String key, [Map<String, String> params]) {
   try {
     result = FlutterI18n.translate(cachedBuildContext, key, params);
   } catch (e) {
+    print('i18n error: $key');
     print(e);
     result = '';
   }
@@ -561,6 +563,7 @@ String i18nPlural(String key, int count) {
   try {
     result = FlutterI18n.plural(cachedBuildContext, translationKey, count);
   } catch (e) {
+    print('i18nPlural failed $key');
     print(e);
     result = '';
   }

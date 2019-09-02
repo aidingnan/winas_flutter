@@ -276,6 +276,7 @@ class Metadata {
       }
     } catch (err) {
       this.hdate = null;
+      print('get hdate failed');
       print(err);
     }
     try {
@@ -297,6 +298,7 @@ class Metadata {
         this.duration = '$hoursString:${this.duration}';
       }
     } catch (err) {
+      print('get duration failed');
       print(err);
       this.duration = null;
     }

@@ -35,6 +35,7 @@ class _DeleteDialogState extends State<DeleteDialog> {
         await widget.xCopyTasks.cancelAllTaskAsync();
       }
     } catch (error) {
+      print('delete failed');
       print(error);
       setState(() {
         loading = false;

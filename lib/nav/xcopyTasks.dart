@@ -103,7 +103,7 @@ class XCopyTasks {
 
     AppState state = store.state;
     final res = await state.apis.req('tasks', null);
-    print('polling res got');
+    // print('polling res got');
     final list = List.from(res.data.map((task) => Task.fromMap(task)));
     tasks = List.from(list.reversed);
     if (tasks.length > 0 && tasks.any((task) => !task.isFinished)) {
@@ -123,7 +123,7 @@ class XCopyTasks {
   }
 
   void startPolling(Store<AppState> store, Function onFinished) {
-    print('startPolling ${status.toString()}');
+    // print('startPolling ${status.toString()}');
     if (status == Status.idle) {
       myStore = store;
       status = Status.polling;

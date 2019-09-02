@@ -19,6 +19,7 @@ class Intent {
     try {
       filePath = await initChannel.invokeMethod('getSharedFile');
     } catch (e) {
+      print('get initIntent failed');
       print(e);
       filePath = null;
     }

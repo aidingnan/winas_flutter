@@ -83,6 +83,7 @@ void isolateHash(SendPort sendPort) {
         port.close();
       },
       onError: (error) {
+        print('isolateHash onError');
         print(error);
         answerSend.send(null);
         port.close();

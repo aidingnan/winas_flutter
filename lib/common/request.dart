@@ -148,6 +148,7 @@ class Request {
       );
       isLAN = res.data['device']['sn'] == deviceSN;
     } catch (error) {
+      print('testLAN error');
       print(error);
       isLAN = false;
     }
@@ -160,7 +161,6 @@ class Request {
       'http://$ip:3001/winasd/info',
       options: Options(connectTimeout: 10000),
     );
-    // print('winasdInfo res $res');
     return res.data;
   }
 
@@ -320,8 +320,6 @@ class Request {
         break;
 
       case 'upgradeDownload':
-        print(args);
-        print('station/${args['deviceSN']}/publish');
         r = tpost(
           'station/${args['deviceSN']}/publish',
           {

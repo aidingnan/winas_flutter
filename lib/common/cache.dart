@@ -151,6 +151,7 @@ class CacheManager {
       try {
         thumbData = await entryFile.readAsBytes();
       } catch (error) {
+        print('getCachedThumbData readAsBytes failed');
         print(error);
         return null;
       }
@@ -178,6 +179,7 @@ class CacheManager {
       try {
         thumbData = await entryFile.readAsBytes();
       } catch (error) {
+        print('getThumbData readAsBytes failed');
         print(error);
         return null;
       }

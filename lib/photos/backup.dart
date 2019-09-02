@@ -482,7 +482,6 @@ class Worker {
 
     List<AssetEntity> uploadList = [];
 
-    // print('filter uploaded items ${assetList.length}');
     // filter uploaded entity
     for (AssetEntity entity in assetList) {
       if (status == Status.running) {
@@ -519,7 +518,6 @@ class Worker {
         return;
       }
     }
-    // print('upload photo one by one ${uploadList.length}');
     // upload photo one by one
     for (AssetEntity entity in uploadList) {
       if (status == Status.running) {
