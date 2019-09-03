@@ -127,7 +127,7 @@ class _FirmwareState extends State<Firmware> {
               debug(e);
             }
 
-            /// TODO: fake latest
+            /// showManualDownload cheat
             if (showManualDownload < 7) {
               latest = true;
             }

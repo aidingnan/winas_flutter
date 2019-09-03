@@ -79,7 +79,7 @@
   "Unknown Status in BLE": "设备异常",
   "Scan BLE Device Title": "蓝牙扫描",
   "Connect BLE Error": "连接口袋网盘失败",
-  "Request Color Code Error": "请求验证失败",
+  "Request Color Code Error": "请求验证过于频繁，请稍后再试",
   "Product Name": "口袋网盘",
   "Product Number in BLE": "设备号: {deviceNumber}",
   "BLE Rescan": "重新扫描",
@@ -392,6 +392,7 @@
   "Backup Disabled": "已关闭",
   "All": "全部",
   "From": "来自",
+  "No Video Preview Text": "仅在Wi-Fi直连时可预览视频",
 
   "==== photos/backup.dart ====": "",
   "Folder Name in Photos Backup": "照片",

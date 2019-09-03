@@ -57,6 +57,7 @@ class _GridVideoState extends State<GridVideo>
   Widget playerWidget;
   bool showDetails = false;
   double detailTop = double.negativeInfinity;
+  bool disableVideoPreview = false;
   Uint8List imageData;
   Uint8List thumbData;
   @override
@@ -74,7 +75,6 @@ class _GridVideoState extends State<GridVideo>
     vpc?.dispose();
     chewieController?.pause();
     chewieController?.dispose();
-    playerWidget = null;
     // prevent memory leak
     info = null;
     playerWidget = null;
@@ -278,8 +278,13 @@ class _GridVideoState extends State<GridVideo>
     final ext = widget.video.metadata.type;
 
     final apis = state.apis;
-    // TODO: preview video
-    if (apis.isCloud) return;
+    // no video preview if isCloud
+    if (apis.isCloud) {
+      setState(() {
+        disableVideoPreview = true;
+      });
+      return;
+    }
 
     final key = await cm.getRandomKey(widget.video, state);
     if (key == null) return;
@@ -470,131 +475,146 @@ class _GridVideoState extends State<GridVideo>
               ),
 
               // large play button in center
-              Positioned.fill(
-                child: Center(
-                  child: !isPlaying && widget.showTitle
-                      ? Container(
-                          height: 64,
-                          width: 64,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.circular(32),
-                          ),
-                          child: IconButton(
-                            icon: Icon(
-                              isPlaying ? Icons.pause : Icons.play_arrow,
-                              color: Colors.black54,
-                              size: 32,
-                            ),
-                            onPressed: () =>
-                                isPlaying ? pauseVideo() : playVideo(),
-                          ),
-                        )
-                      : Container(),
+              if (!isPlaying && widget.showTitle)
+                Positioned.fill(
+                  child: Center(
+                    child: Container(
+                      height: 64,
+                      width: 64,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: BorderRadius.circular(32),
+                      ),
+                      child: IconButton(
+                        icon: Icon(
+                          isPlaying ? Icons.pause : Icons.play_arrow,
+                          color: Colors.black54,
+                          size: 32,
+                        ),
+                        onPressed: () => isPlaying ? pauseVideo() : playVideo(),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+
+              // disableVideoPreview text
+              if (disableVideoPreview == true)
+                Positioned.fill(
+                  child: Center(
+                    child: Container(
+                      height: 160,
+                      padding: EdgeInsets.only(top: 128),
+                      child: Container(
+                        padding: EdgeInsets.fromLTRB(8, 4, 8, 0),
+                        color: Colors.white54,
+                        child: Text(
+                          i18n('No Video Preview Text'),
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
 
               // controller
-              Positioned(
-                left: 8,
-                right: 8,
-                bottom: 16,
-                // final orientation = MediaQuery.of(context).orientation;
-                // final barHeight = orientation == Orientation.portrait ? 30.0 : 47.0;
-                // final buttonPadding = orientation == Orientation.portrait ? 16.0 : 24.0;
-                height: 40,
-                child: playFired && widget.showTitle
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(28),
-                        ),
-                        child: Container(
-                          color: Color.fromRGBO(41, 41, 41, 0.7),
-                          child: Row(
-                            children: <Widget>[
-                              // skipback
-                              Transform(
-                                alignment: Alignment.center,
-                                transform: Matrix4.skewY(0.0)
-                                  ..rotateX(math.pi)
-                                  ..rotateZ(math.pi),
-                                child: IconButton(
-                                  padding: EdgeInsets.all(0),
-                                  icon: Icon(
-                                    Icons.refresh,
-                                    color: Colors.white,
-                                    size: 16,
-                                  ),
-                                  onPressed: _skipBack,
-                                ),
+              if (playFired && widget.showTitle)
+                Positioned(
+                  left: 8,
+                  right: 8,
+                  bottom: 16,
+                  // final orientation = MediaQuery.of(context).orientation;
+                  // final barHeight = orientation == Orientation.portrait ? 30.0 : 47.0;
+                  // final buttonPadding = orientation == Orientation.portrait ? 16.0 : 24.0;
+                  height: 40,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(28),
+                    ),
+                    child: Container(
+                      color: Color.fromRGBO(41, 41, 41, 0.7),
+                      child: Row(
+                        children: <Widget>[
+                          // skipback
+                          Transform(
+                            alignment: Alignment.center,
+                            transform: Matrix4.skewY(0.0)
+                              ..rotateX(math.pi)
+                              ..rotateZ(math.pi),
+                            child: IconButton(
+                              padding: EdgeInsets.all(0),
+                              icon: Icon(
+                                Icons.refresh,
+                                color: Colors.white,
+                                size: 16,
                               ),
-
-                              // play/pause
-                              GestureDetector(
-                                onTap: () =>
-                                    isPlaying ? pauseVideo() : playVideo(),
-                                child: Icon(
-                                  isPlaying ? Icons.pause : Icons.play_arrow,
-                                  color: Colors.white,
-                                  size: 16,
-                                ),
-                              ),
-
-                              // skipforward
-                              IconButton(
-                                padding: EdgeInsets.all(0),
-                                icon: Icon(
-                                  Icons.refresh,
-                                  color: Colors.white,
-                                  size: 16,
-                                ),
-                                onPressed: _skipForward,
-                              ),
-
-                              // play position
-                              Text(
-                                formatDuration(_latestValue.position),
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12.0,
-                                ),
-                              ),
-                              Container(width: 12),
-
-                              // progress bar
-                              Expanded(
-                                flex: 1,
-                                child: CupertinoVideoProgressBar(
-                                  vpc,
-                                  onDragStart: () {
-                                    debug('onDragStart');
-                                  },
-                                  onDragEnd: () {
-                                    debug('onDragEnd');
-                                  },
-                                ),
-                              ),
-                              Container(width: 12),
-
-                              // remaining time
-                              Text(
-                                formatDuration(
-                                  _latestValue.duration ??
-                                      Duration.zero - _latestValue.position ??
-                                      Duration.zero,
-                                ),
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12.0,
-                                ),
-                              ),
-                              Container(width: 12),
-                            ],
+                              onPressed: _skipBack,
+                            ),
                           ),
-                        ),
-                      )
-                    : Container(),
-              )
+
+                          // play/pause
+                          GestureDetector(
+                            onTap: () => isPlaying ? pauseVideo() : playVideo(),
+                            child: Icon(
+                              isPlaying ? Icons.pause : Icons.play_arrow,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                          ),
+
+                          // skipforward
+                          IconButton(
+                            padding: EdgeInsets.all(0),
+                            icon: Icon(
+                              Icons.refresh,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                            onPressed: _skipForward,
+                          ),
+
+                          // play position
+                          Text(
+                            formatDuration(_latestValue.position),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12.0,
+                            ),
+                          ),
+                          Container(width: 12),
+
+                          // progress bar
+                          Expanded(
+                            flex: 1,
+                            child: CupertinoVideoProgressBar(
+                              vpc,
+                              onDragStart: () {
+                                debug('onDragStart');
+                              },
+                              onDragEnd: () {
+                                debug('onDragEnd');
+                              },
+                            ),
+                          ),
+                          Container(width: 12),
+
+                          // remaining time
+                          Text(
+                            formatDuration(
+                              _latestValue.duration ??
+                                  Duration.zero - _latestValue.position ??
+                                  Duration.zero,
+                            ),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12.0,
+                            ),
+                          ),
+                          Container(width: 12),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
             ],
           ),
         );

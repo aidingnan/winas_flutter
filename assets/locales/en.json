@@ -392,6 +392,7 @@
   "Backup Disabled": "Disabled",
   "All": "All",
   "From": "From",
+  "No Video Preview Text": "No video preview",
 
   "==== photos/backup.dart ====": "",
   "Folder Name in Photos Backup": "Photos",

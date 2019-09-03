@@ -52,6 +52,8 @@ class ResetDevice extends StatelessWidget {
                     style: TextStyle(color: Colors.black54),
                   ),
                 ),
+
+                // TODO: Reset Device
                 Container(
                   padding: EdgeInsets.fromLTRB(16, 0, 16, 32),
                   child: Text(
