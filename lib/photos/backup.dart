@@ -34,7 +34,8 @@ class PhotoEntry {
   String hdate;
 
   PhotoEntry(this.id, this.hash, this.date) {
-    this.hdate = prettyDate(date, showMonth: true);
+    this.hdate =
+        date == 0 ? i18n('Unknown Date') : prettyDate(date, showMonth: true);
   }
 }
 
