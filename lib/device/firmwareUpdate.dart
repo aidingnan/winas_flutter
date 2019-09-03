@@ -50,6 +50,17 @@ class _FirmwareState extends State<Firmware> {
   /// left padding of appbar
   double paddingLeft = 16;
 
+  int showManualDownload = 0;
+
+  /// init all states
+  void init() {
+    failed = false;
+    loading = true;
+    downloading = false;
+    downloaded = false;
+    latest = false;
+  }
+
   /// scrollController's listener to get offset
   void listener() {
     setState(() {
@@ -59,6 +70,7 @@ class _FirmwareState extends State<Firmware> {
 
   Future<void> getUpgradeInfo(AppState state) async {
     try {
+      init();
       final res = await state.cloud.req('upgradeList', null);
 
       final local = await state.cloud.req(
@@ -87,7 +99,7 @@ class _FirmwareState extends State<Firmware> {
             (l) => versionCompare(l.tag, currentVersion) == true,
             orElse: () => null);
 
-        // TODO: Fake update
+        // Fake update
         // info = list.last;
 
         if (info != null) {
@@ -101,7 +113,6 @@ class _FirmwareState extends State<Firmware> {
             info.addUUID(uuid);
             downloaded = true;
           } else {
-            // TODO: new version not download
             downloaded = false;
             debug('new version not download');
             try {
@@ -115,7 +126,11 @@ class _FirmwareState extends State<Firmware> {
             } catch (e) {
               debug(e);
             }
-            // latest = true;
+
+            /// TODO: fake latest
+            if (showManualDownload < 7) {
+              latest = true;
+            }
           }
         } else {
           latest = true;
@@ -211,14 +226,21 @@ class _FirmwareState extends State<Firmware> {
       // latest
       slivers.add(
         SliverToBoxAdapter(
-          child: Container(
-            height: 144,
-            child: Center(
+          child: GestureDetector(
+            onTap: () => setState(() {
+              showManualDownload += 1;
+              print('showManualDownload $showManualDownload');
+            }),
+            child: Container(
+              height: 144,
+              child: Center(
                 child: Icon(
-              Icons.check,
-              color: Colors.green,
-              size: 72,
-            )),
+                  Icons.check,
+                  color: Colors.green,
+                  size: 72,
+                ),
+              ),
+            ),
           ),
         ),
       );
