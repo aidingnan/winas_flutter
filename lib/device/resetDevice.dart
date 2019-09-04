@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
+import './confirmDialog.dart';
 import '../redux/redux.dart';
 import '../common/utils.dart';
 
@@ -75,8 +76,25 @@ class ResetDevice extends StatelessWidget {
                       onPressed: () async {
                         final loadingInstance = showLoading(ctx);
                         final isLAN = await state.apis.testLAN();
+                        bool formatDisk = false;
                         if (isLAN) {
                           try {
+                            // formatDisk:
+                            //   null => cancel
+                            //   true => format disk
+                            //   false => do not format disk
+                            formatDisk = await showDialog(
+                              context: ctx,
+                              builder: (BuildContext context) =>
+                                  ConfirmDialog(),
+                            );
+
+                            debug('formatDisk $formatDisk');
+                            if (formatDisk == null) {
+                              loadingInstance.close();
+                              return;
+                            }
+
                             final res =
                                 await state.apis.req('reqLocalAuth', null);
                             final colors = res.data['colors'];
@@ -91,7 +109,8 @@ class ResetDevice extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => _ResetDevice()),
+                                builder: (context) =>
+                                    _ResetDevice(formatDisk: formatDisk)),
                           );
                         } else {
                           loadingInstance.close();
@@ -119,8 +138,8 @@ class ResetDevice extends StatelessWidget {
 }
 
 class _ResetDevice extends StatefulWidget {
-  _ResetDevice({Key key}) : super(key: key);
-
+  _ResetDevice({Key key, this.formatDisk}) : super(key: key);
+  final bool formatDisk;
   @override
   _ResetDeviceState createState() => _ResetDeviceState();
 }
@@ -162,8 +181,12 @@ class _ResetDeviceState extends State<_ResetDevice> {
     try {
       final res = await state.cloud.req('encrypted', null);
       final encrypted = res.data['encrypted'] as String;
-      final resetRes =
-          await state.cloud.unbindDevice(state.apis.lanIp, encrypted, token);
+      final resetRes = await state.cloud.unbindDevice(
+        state.apis.lanIp,
+        encrypted,
+        token,
+        widget.formatDisk == true,
+      );
       debug('resetRes: $resetRes');
       setState(() {
         status = Status.success;
