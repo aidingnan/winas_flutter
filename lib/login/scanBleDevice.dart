@@ -284,8 +284,7 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                                       final bool confirmFormat =
                                           await showDialog(
                                         context: ctx,
-                                        builder: (BuildContext context) =>
-                                            ConfirmDialog(),
+                                        builder: (_) => ConfirmDialog(),
                                       );
 
                                       if (confirmFormat != true) {

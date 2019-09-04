@@ -125,7 +125,7 @@
   "BLE Error": "Bluetooth connection error, please try agian.",
   "Bind Timeout Error": "Connection Timeout, please reboot the device and then try agian.",
   "Format SSD Disk Title": "Format Disk",
-  "Format SSD Disk Text": "Formatting will erase all data on this disk, are you sure to continue?",
+  "Format SSD Disk Text": "The disk used in the PocketDrive need to be format, which will erase all data. Are you sure to continue?",
 
   "==== login/LoginFailed.dart ====": "",
   "Login Failed Title": "Device is not working properly",
