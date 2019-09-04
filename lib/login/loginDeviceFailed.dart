@@ -61,6 +61,7 @@ class _LoginDeviceFailedState extends State<LoginDeviceFailed> {
           Navigator.pop(context);
         },
       );
+
   get okButton => FlatButton(
         textColor: Theme.of(context).primaryColor,
         child: Text(i18n('OK')),

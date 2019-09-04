@@ -84,6 +84,7 @@
   "Product Number in BLE": "Device number: {deviceNumber}",
   "BLE Rescan": "Rescan",
   "BLE No Results Text": "Can't find any device?",
+  "No SSD Found": "SSD not detected",
 
   "==== login/bleHelp.dart ====": "",
   "Help of BLE": "Help",
@@ -123,6 +124,8 @@
   "Bind Device Success": "Authorized",
   "BLE Error": "Bluetooth connection error, please try agian.",
   "Bind Timeout Error": "Connection Timeout, please reboot the device and then try agian.",
+  "Format SSD Disk Title": "Format Disk",
+  "Format SSD Disk Text": "Formatting will erase all data on this disk, are you sure to continue?",
 
   "==== login/LoginFailed.dart ====": "",
   "Login Failed Title": "Device is not working properly",
@@ -318,6 +321,9 @@
   "Reseting Device": "Resetting",
   "Reset Device Success": "PocketDrive has reset",
   "Reset Device Failed": "Failed to reset",
+  "Confirm To RestDevice Title": "Reset PocketDrive",
+  "Confirm To RestDevice Text": "This operation will unbind user and restore to factory settings. Are you sure to continue?",
+  "Confirm To RestDevice checkBoxText": "Erase all stored data in SSD",
 
   "==== device/firmwareUpdate.dart ====": "",
   "Firmware Update": "Firmware update",

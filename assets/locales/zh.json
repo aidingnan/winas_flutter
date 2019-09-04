@@ -84,6 +84,7 @@
   "Product Number in BLE": "设备号: {deviceNumber}",
   "BLE Rescan": "重新扫描",
   "BLE No Results Text": "扫描不到口袋网盘？",
+  "No SSD Found": "未检测到SSD硬盘",
 
   "==== login/bleHelp.dart ====": "",
   "Help of BLE": "帮助",
@@ -123,6 +124,8 @@
   "Bind Device Success": "绑定设备成功",
   "BLE Error": "蓝牙连接错误，请重试",
   "Bind Timeout Error": "连接超时，请重启设备后重试",
+  "Format SSD Disk Title": "格式化SSD硬盘",
+  "Format SSD Disk Text": "口袋网盘目前使用的SSD硬盘需要格式化并清除所有数据后才能正常使用。该操作不可逆，确定要继续吗？",
 
   "==== login/LoginFailed.dart ====": "",
   "Login Failed Title": "设备状态异常",
@@ -318,6 +321,9 @@
   "Reseting Device": "重置中",
   "Reset Device Success": "重置成功",
   "Reset Device Failed": "重置失败",
+  "Confirm To RestDevice Title": "重置口袋网盘",
+  "Confirm To RestDevice Text": "该操作将解绑用户、恢复口袋网盘的出厂设置。确定要继续吗？",
+  "Confirm To RestDevice checkBoxText": "同时擦除SSD硬盘内的数据",
 
   "==== device/firmwareUpdate.dart ====": "",
   "Firmware Update": "系统更新",

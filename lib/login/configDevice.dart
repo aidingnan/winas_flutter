@@ -28,11 +28,18 @@ enum Status {
 }
 
 class ConfigDevice extends StatefulWidget {
-  ConfigDevice({Key key, this.device, this.request, this.action, this.onClose})
+  ConfigDevice(
+      {Key key,
+      this.device,
+      this.request,
+      this.action,
+      this.needFormat,
+      this.onClose})
       : super(key: key);
   final Action action;
   final Request request;
   final BluetoothDevice device;
+  final bool needFormat;
   final Function onClose;
 
   @override

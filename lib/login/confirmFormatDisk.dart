@@ -13,22 +13,18 @@ class ConfirmDialog extends StatefulWidget {
 class _ConfirmDialogState extends State<ConfirmDialog> {
   _ConfirmDialogState();
 
-  /// value of checkBox
-  bool check = false;
-
   void onCancel() {
-    Navigator.pop(this.context, null);
+    Navigator.pop(this.context, false);
   }
 
   void onConfirm() {
-    Navigator.pop(this.context, check == true);
+    Navigator.pop(this.context, true);
   }
 
   @override
   Widget build(BuildContext context) {
-    final title = i18n('Confirm To RestDevice Title');
-    final text = i18n('Confirm To RestDevice Text');
-    final checkBoxText = i18n('Confirm To RestDevice checkBoxText');
+    final title = i18n('Format SSD Disk Title');
+    final text = i18n('Format SSD Disk Text');
 
     return StoreConnector<AppState, AppState>(
       onInit: (store) => {},
@@ -44,23 +40,6 @@ class _ConfirmDialogState extends State<ConfirmDialog> {
               children: <Widget>[
                 Text(text),
                 Container(height: 16),
-                Transform.translate(
-                  offset: Offset(-10, 0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Checkbox(
-                        value: check,
-                        onChanged: (value) {
-                          setState(() {
-                            check = value;
-                          });
-                        },
-                      ),
-                      Text(checkBoxText),
-                    ],
-                  ),
-                )
               ],
             ),
             actions: <Widget>[
