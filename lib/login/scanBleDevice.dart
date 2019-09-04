@@ -155,7 +155,6 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
     try {
       value = manufacturerData[65535][0];
     } catch (e) {
-      debug('parseResult $e');
       value = -1;
     }
 
@@ -190,7 +189,6 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
     try {
       diskValue = manufacturerData[65535][1];
     } catch (e) {
-      debug('parseResult $e');
       diskValue = -1;
     }
 
