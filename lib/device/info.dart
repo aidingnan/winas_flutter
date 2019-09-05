@@ -4,29 +4,20 @@ import '../common/utils.dart';
 
 class Info {
   String bleAddr;
-  String eccName;
   String ssid;
   String sn;
   String usn;
   String bleName;
-  String cert;
   String model;
   String address;
   String macAddress;
-
   String version;
-
   bool rooted;
 
-  String fingerprint;
-  String signer;
-  String certNotBefore;
-  String certNotAfter;
   Info.fromMap(Map m) {
     final device = m['device'];
     final net = m['net'];
 
-    this.eccName = device['ecc'];
     final ble = m['ble'];
     final unknown = i18n('Unknown Status in Info');
     if (ble != null && ble['state'] == "Started") {
@@ -37,7 +28,6 @@ class Info {
     this.sn = device['sn'];
     this.usn = device['usn'];
     this.bleName = 'pan-${this.usn?.substring(0, 4) ?? 'XXXX'}';
-    this.cert = device['cert'];
     this.model = device['model'];
     this.rooted = device['rooted'] == true;
 
@@ -52,11 +42,6 @@ class Info {
       this.macAddress = unknown;
       this.ssid = unknown;
     }
-
-    this.fingerprint = device['fingerprint'];
-    this.signer = device['signer'];
-    this.certNotBefore = prettyDate(device['notBefore']);
-    this.certNotAfter = prettyDate(device['notAfter']);
 
     this.version = m['upgrade']['current'];
   }
