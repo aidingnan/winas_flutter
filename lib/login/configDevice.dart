@@ -335,6 +335,17 @@ class _ConfigDeviceState extends State<ConfigDevice> {
     return ip;
   }
 
+  /// formatDisk
+  Future<void> formatDisk() async {
+    assert(token != null);
+    final device = widget.device;
+    final command = '{"action":"format", "seq": 111, "token": "$token"}';
+    final res =
+        await connectWifi(device, command).timeout(Duration(seconds: 10));
+    debug('formatDisk: $res');
+    if (res['error'] != null) throw res['error'];
+  }
+
   /// try connect to device via ip
   Future<void> connectDevice(
       String ip, String token, Store<AppState> store) async {
@@ -510,7 +521,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
               fakeProgress: 10.0,
               text: i18n('Formating Disk Text'),
             );
-            await Future.delayed(Duration(seconds: 2));
+            await formatDisk();
             newLoading.close();
           } catch (e) {
             debug('Formating Disk failed');
