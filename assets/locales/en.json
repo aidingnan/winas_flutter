@@ -126,6 +126,8 @@
   "Bind Timeout Error": "Connection Timeout, please reboot the device and then try agian.",
   "Format SSD Disk Title": "Format Disk",
   "Format SSD Disk Text": "The disk used in the PocketDrive need to be format, which will erase all data. Are you sure to continue?",
+  "Connecting To WiFi": "Connecting to Wi-Fi",
+  "Connecting to BLE": "Connecting to Bluetooth",
 
   "==== login/LoginFailed.dart ====": "",
   "Login Failed Title": "Device is not working properly",
@@ -139,7 +141,7 @@
   "Confirm to Format Disk Text": "Formatting will erase all data on this disk, are you sure to continue?",
   "Formating Disk Text": "Formating disk",
   "Format Disk Success Text": "Disk format successfully",
-  "Format Disk Failed Text": "Failed to format disk",
+  "Format Disk Failed Text": "Failed to format disk, please reboot the device and then try agian.",
 
   "==== common/utils.dart ====": "",
   "Caching File": "Caching file",

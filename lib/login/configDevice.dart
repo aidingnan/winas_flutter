@@ -17,6 +17,7 @@ enum Status {
   wifi,
   authFailed,
   authTimeout,
+  formatError,
   connecting,
   connectFailed,
   binding,
@@ -501,6 +502,27 @@ class _ConfigDeviceState extends State<ConfigDevice> {
         }
 
         loading.close();
+        if (widget.action == Action.bind && widget.needFormat) {
+          LoadingInstance newLoading;
+          try {
+            newLoading = showLoading(
+              ctx,
+              fakeProgress: 10.0,
+              text: i18n('Formating Disk Text'),
+            );
+            await Future.delayed(Duration(seconds: 2));
+            newLoading.close();
+          } catch (e) {
+            debug('Formating Disk failed');
+            debug(e);
+            newLoading.close();
+            setState(() {
+              status = Status.formatError;
+            });
+            return;
+          }
+        }
+
         setState(() {
           status = Status.wifi;
         });
@@ -515,7 +537,11 @@ class _ConfigDeviceState extends State<ConfigDevice> {
     } else if (status == Status.wifi) {
       if (widget.action == Action.bind) {
         // set Wi-Fi and bind Device in one step
-        this.loadingInstance = showLoading(ctx, fakeProgress: 10.0);
+        this.loadingInstance = showLoading(
+          ctx,
+          fakeProgress: 10.0,
+          text: i18n('Connecting To WiFi'),
+        );
         try {
           await setWifiAndBind(pwd, store);
         } catch (e) {
@@ -527,7 +553,11 @@ class _ConfigDeviceState extends State<ConfigDevice> {
         }
       } else if (pwd is String && pwd.length > 0) {
         // previous progress: set Wi-Fi and connectDevice and login device
-        final loading = showLoading(ctx, fakeProgress: 10.0);
+        final loading = showLoading(
+          ctx,
+          fakeProgress: 10.0,
+          text: i18n('Connecting To WiFi'),
+        );
         try {
           debug('pwd: $pwd');
           final ip = await setWifi(pwd);
@@ -692,7 +722,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
     );
   }
 
-  Widget renderFailed(BuildContext ctx) {
+  Widget renderFailed(BuildContext ctx, String text) {
     return Column(
       children: <Widget>[
         Container(height: 64),
@@ -700,131 +730,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
         Container(
           padding: EdgeInsets.all(64),
           child: Center(
-            child: Text(i18n('Color Code Auth Failed')),
-          ),
-        ),
-        Container(
-          height: 88,
-          padding: EdgeInsets.all(16),
-          width: double.infinity,
-          child: RaisedButton(
-            color: Colors.teal,
-            elevation: 1.0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(48),
-            ),
-            onPressed: () {
-              // return to deviceList
-              Navigator.pushNamedAndRemoveUntil(
-                  context, '/deviceList', (Route<dynamic> route) => false);
-            },
-            child: Row(
-              children: <Widget>[
-                Expanded(child: Container()),
-                Text(
-                  i18n('Back'),
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-                Expanded(child: Container()),
-              ],
-            ),
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget renderTimeout(BuildContext ctx) {
-    return Column(
-      children: <Widget>[
-        Container(height: 64),
-        Icon(Icons.error_outline, color: Colors.redAccent, size: 96),
-        Container(
-          padding: EdgeInsets.all(64),
-          child: Center(
-            child: Text(i18n('Color Code Auth Timeout')),
-          ),
-        ),
-        Container(
-          height: 88,
-          padding: EdgeInsets.all(16),
-          width: double.infinity,
-          child: RaisedButton(
-            color: Colors.teal,
-            elevation: 1.0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(48),
-            ),
-            onPressed: () {
-              // return to ble list
-              Navigator.pop(ctx);
-            },
-            child: Row(
-              children: <Widget>[
-                Expanded(child: Container()),
-                Text(
-                  i18n('Back'),
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-                Expanded(child: Container()),
-              ],
-            ),
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget renderBleError(BuildContext ctx) {
-    return Column(
-      children: <Widget>[
-        Container(height: 64),
-        Icon(Icons.error_outline, color: Colors.redAccent, size: 96),
-        Container(
-          padding: EdgeInsets.all(64),
-          child: Center(
-            child: Text(i18n('BLE Error')),
-          ),
-        ),
-        Container(
-          height: 88,
-          padding: EdgeInsets.all(16),
-          width: double.infinity,
-          child: RaisedButton(
-            color: Colors.teal,
-            elevation: 1.0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(48),
-            ),
-            onPressed: () {
-              // return to ble list
-              Navigator.pop(ctx);
-            },
-            child: Row(
-              children: <Widget>[
-                Expanded(child: Container()),
-                Text(
-                  i18n('Back'),
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-                Expanded(child: Container()),
-              ],
-            ),
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget renderBindTimeoutError(BuildContext ctx) {
-    return Column(
-      children: <Widget>[
-        Container(height: 64),
-        Icon(Icons.error_outline, color: Colors.redAccent, size: 96),
-        Container(
-          padding: EdgeInsets.all(64),
-          child: Center(
-            child: Text(i18n('Bind Timeout Error')),
+            child: Text(text),
           ),
         ),
         Container(
@@ -1006,16 +912,19 @@ class _ConfigDeviceState extends State<ConfigDevice> {
         return renderWifi();
 
       case Status.authFailed:
-        return renderFailed(ctx);
+        return renderFailed(ctx, i18n('Color Code Auth Failed'));
 
       case Status.authTimeout:
-        return renderTimeout(ctx);
+        return renderFailed(ctx, i18n('Color Code Auth Timeout'));
 
       case Status.bleFailed:
-        return renderBleError(ctx);
+        return renderFailed(ctx, i18n('BLE Error'));
+
+      case Status.formatError:
+        return renderFailed(ctx, i18n('Format Disk Failed Text'));
 
       case Status.bindTimeout:
-        return renderBindTimeoutError(ctx);
+        return renderFailed(ctx, i18n('Bind Timeout Error'));
 
       default:
         return renderBind(ctx);

@@ -126,6 +126,8 @@
   "Bind Timeout Error": "连接超时，请重启设备后重试",
   "Format SSD Disk Title": "格式化硬盘",
   "Format SSD Disk Text": "口袋网盘目前安装的硬盘需要格式化后才能正常使用。该操作将清除硬盘上所有数据，确定要继续吗？",
+  "Connecting To WiFi": "正在连接到Wi-Fi",
+  "Connecting to BLE": "蓝牙连接中",
 
   "==== login/LoginFailed.dart ====": "",
   "Login Failed Title": "设备状态异常",
@@ -139,7 +141,7 @@
   "Confirm to Format Disk Text": "格式化硬盘将清空硬盘上的所有数据，该操作不可恢复，确定继续吗？",
   "Formating Disk Text": "正在格式化硬盘",
   "Format Disk Success Text": "格式化硬盘成功",
-  "Format Disk Failed Text": "格式化硬盘失败",
+  "Format Disk Failed Text": "格式化硬盘失败，请重启设备后重试",
 
   "==== common/utils.dart ====": "",
   "Caching File": "缓存文件中",

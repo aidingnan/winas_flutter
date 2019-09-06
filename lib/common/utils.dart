@@ -22,10 +22,13 @@ void showSnackBar(BuildContext ctx, String message) {
 }
 
 class FakeProgress extends StatefulWidget {
-  FakeProgress({Key key, this.targetTime}) : super(key: key);
+  FakeProgress({Key key, this.targetTime, this.text}) : super(key: key);
 
   /// target time that progress should finished (seconds)
   final double targetTime;
+
+  // text to show doing
+  final String text;
   @override
   _FakeProgressState createState() => _FakeProgressState();
 }
@@ -61,6 +64,7 @@ class _FakeProgressState extends State<FakeProgress> {
   }
 
   Widget build(BuildContext context) {
+    final text = widget.text ?? i18n('Progressing');
     return Material(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -75,7 +79,7 @@ class _FakeProgressState extends State<FakeProgress> {
           children: <Widget>[
             Container(
               padding: EdgeInsets.all(16),
-              child: Text(i18n('Progressing'), style: TextStyle(fontSize: 18)),
+              child: Text(text, style: TextStyle(fontSize: 18)),
             ),
             Container(
               padding: EdgeInsets.all(16),
@@ -118,7 +122,8 @@ class LoadingInstance {
 /// Show modal loading
 ///
 /// use `loadingInstance.close()` to finish loading
-LoadingInstance showLoading(BuildContext context, {double fakeProgress}) {
+LoadingInstance showLoading(BuildContext context,
+    {double fakeProgress, String text}) {
   final router = TransparentPageRoute(
     builder: (_) => WillPopScope(
       onWillPop: () => Future.value(false),
@@ -126,7 +131,7 @@ LoadingInstance showLoading(BuildContext context, {double fakeProgress}) {
         constraints: BoxConstraints.expand(),
         child: Center(
           child: fakeProgress != null
-              ? FakeProgress(targetTime: fakeProgress)
+              ? FakeProgress(targetTime: fakeProgress, text: text)
               : CircularProgressIndicator(),
         ),
       ),

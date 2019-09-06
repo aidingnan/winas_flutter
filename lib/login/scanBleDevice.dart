@@ -292,8 +292,11 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
 
                                     BluetoothDevice device;
 
-                                    final loadingInstance =
-                                        showLoading(ctx, fakeProgress: 5.0);
+                                    final loadingInstance = showLoading(
+                                      ctx,
+                                      fakeProgress: 5.0,
+                                      text: i18n('Connecting to BLE'),
+                                    );
 
                                     try {
                                       device = await connectAsync(scanResult);
