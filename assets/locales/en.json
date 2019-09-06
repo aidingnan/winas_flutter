@@ -116,7 +116,7 @@
   "Connecting to Device via Ip": "Connecting",
   "Connect to Device via Ip Failed": "Unable to connect to your device, please make sure the device is connected to the same router as your phone or on the same intranet segment. PocketDrive IP Address:",
   "Binding Device": "Authorizing",
-  "Bind Device Failed": "Authorization fail. Please confirm that the Pocket Drive is equipped with a disk",
+  "Bind Device Failed": "Authorization fail. Please reboot the device and then try agian.",
   "Logging Device": "Logging",
   "Device Login Failed": "Failed to login to PocketDrive",
   "Bind Device Title": "Authorization",

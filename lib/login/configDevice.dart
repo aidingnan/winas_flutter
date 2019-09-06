@@ -182,12 +182,6 @@ class _ConfigDeviceState extends State<ConfigDevice> {
           break;
         case 'CHANNEL':
           setState(() {
-            status = Status.connecting;
-          });
-          setTimeout();
-          break;
-        case 'NTP':
-          setState(() {
             status = Status.binding;
           });
           setTimeout();
