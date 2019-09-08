@@ -240,8 +240,8 @@ class _ConfigDeviceState extends State<ConfigDevice> {
 
       while (started != true) {
         final current = DateTime.now().millisecondsSinceEpoch;
-        if (current - now > 30000)
-          throw 'Timeout of 30 seconds for winas starting';
+        if (current - now > 60000)
+          throw 'Timeout of 60 seconds for winas starting';
         await Future.delayed(Duration(seconds: 2));
 
         // request info via cloud
@@ -249,8 +249,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
           final res = await request.req(
             'info',
             {'deviceSN': sn},
-            Options(connectTimeout: 5000),
-          );
+          ).timeout(Duration(seconds: 6));
           debug('get info in loginViaCloud...');
 
           final winas = res.data['winas'];
