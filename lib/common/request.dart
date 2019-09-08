@@ -194,7 +194,7 @@ class Request {
       data: {
         'encrypted': encrypted,
         'authToken': authToken,
-        'cleanVolume': cleanVolume,
+        'clean': cleanVolume,
       },
       options: Options(connectTimeout: 10000),
     );
