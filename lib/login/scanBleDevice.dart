@@ -160,6 +160,7 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
 
     String status = '';
     switch (value) {
+      case 0:
       case 1:
         status = widget.action == Action.bind
             ? i18n('Device To Be Bound')
@@ -176,13 +177,13 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
         status = i18n('Unknown Status in BLE');
     }
     bool enabled = (widget.action == Action.wifi && value == 2) ||
-        (widget.action == Action.bind && value == 1);
+        (widget.action == Action.bind && (value == 1 || value == 0));
 
     /// disk value
     /// 0x02	未插入ssd	sda size为0（udev设备节点?）	拒绝ble之外所有服务	需用户插入或检查插入ssd
     /// 0x03	文件系统非btrfs	使用btrfs命令	拒绝ble之外所有服务	需用户执行格式化操作
     /// 0x04	btrfs文件系统无法挂载，btrfs文件系统无法读写	使用mount/umount，在mount后做文件读写测试	拒绝ble之外所有服务	文件系统损坏，建议用户在PC上维修，或者尝试格式化
-    /// 0x06	一切正常	通过所有检查	直接使用
+    /// 0x80	一切正常	通过所有检查	直接使用
     int diskValue = -1;
     bool needFormat = false;
 
@@ -203,7 +204,7 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
         needFormat = true;
         break;
 
-      case 6:
+      case 128:
         needFormat = false;
         break;
       // -1 or other value
