@@ -125,13 +125,23 @@ class _ConfigDeviceState extends State<ConfigDevice> {
     String code;
     try {
       res = jsonDecode(String.fromCharCodes(value));
-      debug('onData res $res');
+      // debug('onData res $res');
       success = res['success'];
       error = res['error'];
       if (error != null) {
         code = error['code'];
       }
+
+      if (success != null) {
+        debug('onData success $success');
+      }
+
+      if (code != null) {
+        debug('onData error with code: $code');
+      }
+
       if (code == null && success == null) {
+        debug('Neither success or error with code');
         throw 'Neither success or error with code';
       }
     } catch (e) {

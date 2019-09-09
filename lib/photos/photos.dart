@@ -67,7 +67,7 @@ class _PhotosState extends State<Photos> {
       'count': 1,
     });
     if (res.data is! List || res.data.length == 0) {
-      debug('getCover not List error', res.data);
+      // debug('getCover not List error', res.data);
       return;
     }
 
