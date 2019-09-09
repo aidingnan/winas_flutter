@@ -634,15 +634,27 @@ List<List<String>> getColorCodes() => [
 
 String getUsnName(String sn) {
   try {
-    int number = int.parse(
-      int.parse(sn.substring(4, 16), radix: 16)
-          .toRadixString(2)
-          .substring(0, 13),
-      radix: 2,
-    );
+    // Convert to number List
+    final List<int> list = [];
+    for (int i = 0; i <= 10; i += 2) {
+      list.add(int.parse(sn.substring(4 + i, 6 + i), radix: 16));
+    }
+
+    // Convert to 8-bit bytes List
+    List<String> a = List.from(list.map((f) {
+      String v = f.toRadixString(2);
+      return v.padLeft(8, '0');
+    }));
+
+    // Convert to fullString
+    int number = int.parse(a.join('').substring(0, 13), radix: 2);
     int h1 = (number ~/ 96) + 10;
     int h2 = number % 96 + 3;
-    return 'pan-$h1$h2';
+
+    // get value
+    String v1 = h1.toString().padLeft(2, '0');
+    String v2 = h2.toString().padLeft(2, '0');
+    return 'pan-$v1$v2';
   } catch (e) {
     debug('getUsnName error: $sn');
     return 'pan-xxxx';
