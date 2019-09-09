@@ -159,25 +159,21 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
     }
 
     String status = '';
-    switch (value) {
-      case 0:
-      case 1:
-        status = widget.action == Action.bind
-            ? i18n('Device To Be Bound')
-            : i18n('Device Need To Be Bound');
-        break;
-
-      case 2:
-        status = widget.action == Action.bind
-            ? i18n('Device Already Bound')
-            : i18n('WiFi Configurable');
-        break;
-
-      default:
-        status = i18n('Unknown Status in BLE');
+    if (widget.action == Action.bind) {
+      status = value != 2
+          ? i18n('Device To Be Bound')
+          : i18n('Device Already Bound');
+    } else {
+      status = value != 1
+          ? i18n('WiFi Configurable')
+          : i18n('Device Need To Be Bound');
     }
-    bool enabled = (widget.action == Action.wifi && value == 2) ||
-        (widget.action == Action.bind && (value == 1 || value == 0));
+    if (!([0, 1, 2].contains(value))) {
+      status = i18n('Unknown Status in BLE');
+    }
+
+    bool enabled = (widget.action == Action.wifi && value != 1) ||
+        (widget.action == Action.bind && value != 2);
 
     /// disk value
     /// 0x02	未插入ssd	sda size为0（udev设备节点?）	拒绝ble之外所有服务	需用户插入或检查插入ssd
