@@ -5,12 +5,11 @@ import 'package:flutter/cupertino.dart' hide Action;
 import 'package:flutter_blue/flutter_blue.dart';
 
 import './ble.dart';
-import './bleHelp.dart';
+import './helps.dart';
 import './configDevice.dart';
 import './confirmFormatDisk.dart';
 
 import '../common/utils.dart';
-import '../login/bleHelp.dart';
 import '../common/request.dart';
 
 class ScanBleDevice extends StatefulWidget {

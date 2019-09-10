@@ -3,9 +3,11 @@ import 'package:flutter/material.dart' hide Action;
 import 'package:flutter_redux/flutter_redux.dart';
 
 import './ble.dart';
-import '../redux/redux.dart';
+import './helps.dart';
 import './stationLogin.dart';
 import './scanBleDevice.dart';
+
+import '../redux/redux.dart';
 import '../common/utils.dart';
 import '../common/request.dart';
 import '../files/tokenExpired.dart';
@@ -137,9 +139,9 @@ class _StationListState extends State<StationList> {
 
   SliverFixedExtentList renderPadding(double height) {
     return SliverFixedExtentList(
-      itemExtent: 16,
+      itemExtent: height,
       delegate: SliverChildBuilderDelegate(
-        (context, index) => Container(height: height),
+        (context, index) => Container(),
         childCount: 1,
       ),
     );
@@ -236,6 +238,7 @@ class _StationListState extends State<StationList> {
   List<Widget> renderList(BuildContext ctx, Function callback) {
     List<Station> list = List.from(stationList);
     list.sort((a, b) => a.online - b.online);
+    bool anyOffline = list.any((s) => !s.isOnline);
     return <Widget>[
       SliverToBoxAdapter(
         child: Container(
@@ -324,6 +327,30 @@ class _StationListState extends State<StationList> {
         ),
       ),
       renderPadding(16),
+
+      // show help message when station is offline
+      if (anyOffline)
+        SliverFixedExtentList(
+          itemExtent: 64,
+          delegate: SliverChildBuilderDelegate(
+            (context, index) => Center(
+              child: FlatButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (ctx) => OfflineHelp(),
+                    fullscreenDialog: true,
+                  ),
+                ),
+                child: Text(
+                  i18n('Station Offline Title'),
+                  style: TextStyle(color: Colors.blue, fontSize: 12),
+                ),
+              ),
+            ),
+            childCount: 1,
+          ),
+        ),
 
       // action button
       SliverFixedExtentList(
