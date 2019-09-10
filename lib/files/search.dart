@@ -399,7 +399,7 @@ class _SearchState extends State<Search> {
           physics: AlwaysScrollableScrollPhysics(),
           slivers: <Widget>[
             // images, show GridView
-            _fileType != fileTypes[4]
+            _fileType?.name != fileTypes[4].name
                 ? SliverFixedExtentList(
                     itemExtent: 64,
                     delegate: SliverChildBuilderDelegate(
