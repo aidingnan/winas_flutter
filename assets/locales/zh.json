@@ -128,6 +128,7 @@
   "Connect Device Success": "连接设备成功",
   "Bind Device Success": "绑定设备成功",
   "BLE Error": "蓝牙连接错误，请重试",
+  "Device Already Bound Error": "口袋网盘已被绑定",
   "Bind Timeout Error": "连接超时，请重启设备后重试",
   "Format SSD Disk Title": "格式化硬盘",
   "Format SSD Disk Text": "口袋网盘目前安装的硬盘需要格式化后才能正常使用。该操作将清除硬盘上所有数据，确定要继续吗？",

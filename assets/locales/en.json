@@ -128,6 +128,7 @@
   "Connect Device Success": "Connected",
   "Bind Device Success": "Authorized",
   "BLE Error": "Bluetooth connection error, please try agian.",
+  "Device Already Bound Error": "PocketDrive was already authorized.",
   "Bind Timeout Error": "Connection Timeout, please reboot the device and then try agian.",
   "Format SSD Disk Title": "Format Disk",
   "Format SSD Disk Text": "The disk used in the PocketDrive need to be format, which will erase all data. Are you sure to continue?",

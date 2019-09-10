@@ -17,6 +17,7 @@ enum Status {
   authFailed,
   authTimeout,
   formatError,
+  alreadyBound,
   connecting,
   connectFailed,
   binding,
@@ -173,6 +174,11 @@ class _ConfigDeviceState extends State<ConfigDevice> {
         case 'EBOUND':
           setState(() {
             status = Status.bindFailed;
+          });
+          break;
+        case 'EEXIST':
+          setState(() {
+            status = Status.alreadyBound;
           });
           break;
         default:
@@ -929,6 +935,9 @@ class _ConfigDeviceState extends State<ConfigDevice> {
 
       case Status.authTimeout:
         return renderFailed(ctx, i18n('Color Code Auth Timeout'));
+
+      case Status.alreadyBound:
+        return renderFailed(ctx, i18n('Device Already Bound Error'));
 
       case Status.bleFailed:
         return renderFailed(ctx, i18n('BLE Error'));
