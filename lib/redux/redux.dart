@@ -80,6 +80,18 @@ class Station {
     this.time = m['time'];
     this.isOwner = isOwner;
   }
+  @override
+  String toString() {
+    Map<String, dynamic> m = {
+      'sn': sn,
+      'name': name,
+      'lanIp': lanIp,
+      'isOnline': isOnline,
+    };
+    return jsonEncode(m);
+  }
+
+  String toJson() => toString();
 }
 
 /// current logged device

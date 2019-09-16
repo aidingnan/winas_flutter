@@ -96,6 +96,10 @@
 	<string>App need your agree to use your Microphone</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>App need your agree to visit your album</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>App need your agree to get current wifi name which your iPhone connected</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>App need your agree to get current wifi name which your iPhone connected</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

@@ -11,3 +11,5 @@ NSBluetoothPeripheralUsageDescription="App need to use Bluetooth to scan device"
 NSCameraUsageDescription="App need your agree to use your Camera";
 NSMicrophoneUsageDescription="App need your agree to use your Microphone";
 NSPhotoLibraryUsageDescription="Backup photos need the access to your Photo Library";
+NSLocationWhenInUseUsageDescription="App need your agree to get current wifi name which your iPhone connected;
+NSLocationAlwaysAndWhenInUseUsageDescription="App need your agree to get current wifi name which your iPhone connected";

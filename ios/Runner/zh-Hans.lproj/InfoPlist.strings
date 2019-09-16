@@ -11,3 +11,5 @@ NSBluetoothPeripheralUsageDescription="应用需要使用蓝牙来扫描和发�
 NSCameraUsageDescription="应用需要相机权限来拍摄照片";
 NSMicrophoneUsageDescription="应用需要使用您的手机的麦克风";
 NSPhotoLibraryUsageDescription="备份照片功能需要应用拥有获取相册访问权限";
+NSLocationWhenInUseUsageDescription="应用需要获取手机当前连接的Wi-Fi信息;
+NSLocationAlwaysAndWhenInUseUsageDescription="应用需要获取手机当前连接的Wi-Fi信息";

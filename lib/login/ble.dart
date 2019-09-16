@@ -1,7 +1,8 @@
+import 'dart:io' show Platform;
 import 'dart:async';
 import 'dart:convert';
-import 'package:wifi/wifi.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:connectivity/connectivity.dart';
 
 const LOCAL_AUTH_SERVICE = '60000000-0182-406c-9221-0a6680bd0943';
 const LOCAL_AUTH_SERVICE_INDICATE = '60000002-0182-406c-9221-0a6680bd0943';
@@ -22,7 +23,21 @@ enum Action { wifi, bind }
 
 /// get phone's current wifi's ssid
 Future<String> getWifiSSID() async {
-  String ssid = await Wifi.ssid;
+  if (Platform.isIOS) {
+    LocationAuthorizationStatus status =
+        await Connectivity().getLocationServiceAuthorization();
+    if (status != LocationAuthorizationStatus.authorizedAlways &&
+        status != LocationAuthorizationStatus.authorizedWhenInUse) {
+      LocationAuthorizationStatus result =
+          await Connectivity().requestLocationServiceAuthorization();
+      if (result != LocationAuthorizationStatus.authorizedAlways &&
+          result != LocationAuthorizationStatus.authorizedWhenInUse) {
+        return null;
+      }
+    }
+  }
+
+  String ssid = await (Connectivity().getWifiName());
   if (ssid == '<unknown ssid>') throw 'Get Wifi SSID Failed';
   return ssid;
 }
