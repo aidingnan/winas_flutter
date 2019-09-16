@@ -228,6 +228,10 @@ class Request {
         r = aget('user/phone/check', {"phone": args['phone']});
         break;
 
+      case 'testCloud':
+        r = aget('', null);
+        break;
+
       case 'setLastSN':
         r = tpost('user/deviceInfo', {'sn': args['sn']});
         break;

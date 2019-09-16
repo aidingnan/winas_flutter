@@ -41,6 +41,9 @@ class _LoginPageState extends State<LoginPage> {
     if (Platform.isAndroid) {
       SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
     }
+
+    /// test cloud connectivity
+    request.req('testCloud', null).catchError(debug);
   }
 
   StreamSubscription<fluwx.WeChatAuthResponse> _wxlogin;
