@@ -161,19 +161,14 @@ class _ConfigDeviceState extends State<ConfigDevice> {
             errorText = i18n('Set WiFi Error');
           });
           break;
-        case 'ECHANNEL':
-          setState(() {
-            status = Status.connectFailed;
-          });
-          break;
-        case 'ENTP':
-          setState(() {
-            status = Status.connectFailed;
-          });
-          break;
         case 'EBOUND':
           setState(() {
             status = Status.bindFailed;
+          });
+          break;
+        case 'ETIMEOUT':
+          setState(() {
+            status = Status.bindTimeout;
           });
           break;
         case 'EEXIST':
@@ -237,7 +232,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
 
   void setTimeout() {
     wifiTimer = Timer(
-      Duration(seconds: 60),
+      Duration(seconds: 90),
       () {
         this.onError('Connect Timeout');
       },
@@ -830,7 +825,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
     switch (status) {
       case Status.connecting:
         list.add(iconLine(icon));
-        text = i18n('Connecting to Device via Ip');
+        text = i18n('Waiting PockectDrive Connecting to Cloud');
         break;
 
       case Status.connectFailed:

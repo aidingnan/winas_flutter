@@ -118,7 +118,7 @@
   "Color Code Auth Failed": "验证失败，请重启设备后重试",
   "Back": "返回",
   "Color Code Auth Timeout": "验证超时，请返回上一步然后重试",
-  "Connecting to Device via Ip": "连接中...",
+  "Waiting PockectDrive Connecting to Cloud": "等待口袋网盘连接到云...",
   "Connect to Device via Ip Failed": "无法连接到您的设备，请确认设备与你的手机连接同一路由器或在同一内网网段中。当前设备IP：{ip}",
   "Binding Device": "绑定中...",
   "Bind Device Failed": "绑定失败，请重启设备后重试",

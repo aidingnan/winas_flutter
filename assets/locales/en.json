@@ -118,7 +118,7 @@
   "Color Code Auth Failed": "Authentication failed. Disconnect the power supply and try again after restart.",
   "Back": "Back",
   "Color Code Auth Timeout": "Time out! please get back to previous step and try again.",
-  "Connecting to Device via Ip": "Connecting",
+  "Waiting PockectDrive Connecting to Cloud": "Waiting for the PocketDrvie to connect to the cloud...",
   "Connect to Device via Ip Failed": "Unable to connect to your device, please make sure the device is connected to the same router as your phone or on the same intranet segment. PocketDrive IP Address:",
   "Binding Device": "Authorizing",
   "Bind Device Failed": "Authorization fail. Please reboot the device and then try agian.",
