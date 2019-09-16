@@ -222,16 +222,20 @@ class TransferManager {
       // reload transferItem
       for (TransferItem item in transferList) {
         if (item.transType == TransType.download) {
+          // TransType.download
           item.reload(
               () => _instance._cleanDir(item.filePath).catchError(debug));
-        } else {
-          // update to the correct filePath
+        } else if (item.transType == TransType.shared) {
+          // TransType.shared, need to update to the correct filePath
           final pathList = item.filePath.split('/');
           final truePath = _instance._transDir() +
               pathList[pathList.length - 2] +
               '/' +
               pathList.last;
           item.filePath = truePath;
+          item.reload(() => {});
+        } else {
+          // TransType.upload
           item.reload(() => {});
         }
       }

@@ -49,12 +49,13 @@ class _TransferState extends State<Transfer> {
     final item = items[index];
     item.clean();
     items.removeAt(index);
+    final cm = TransferManager.getInstance();
     if (item.transType == TransType.download) {
-      final cm = TransferManager.getInstance();
       cm.newDownload(item.entry, state);
     } else if (item.transType == TransType.shared) {
-      final cm = TransferManager.getInstance();
       cm.newUploadSharedFile(item.filePath, state);
+    } else if (item.transType == TransType.upload) {
+      cm.newUploadFile(item.filePath, item.targetDir, state);
     }
   }
 
