@@ -118,8 +118,6 @@ class MyApp extends StatelessWidget {
             // remove apis, device, reset config
             store.dispatch(UpdateApisAction(null));
             store.dispatch(DeviceLoginAction(null));
-            // store.dispatch(UpdateConfigAction(Config.initial()));
-            print('afterLogout');
             return StationList(
               request: store.state.cloud,
               afterLogout: true,
@@ -128,7 +126,12 @@ class MyApp extends StatelessWidget {
         },
         home: (store?.state?.account?.id != null && store?.state?.apis != null)
             ? BottomNavigation()
-            : LoginPage(),
+            : (store?.state?.account?.id != null && store?.state?.cloud != null)
+                ? StationList(
+                    request: store.state.cloud,
+                    afterLogout: true,
+                  )
+                : LoginPage(),
         localizationsDelegates: [
           flutterI18nDelegate,
           GlobalMaterialLocalizations.delegate,
