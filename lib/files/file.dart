@@ -17,6 +17,7 @@ import './fileRow.dart';
 import './newFolder.dart';
 import './xcopyDialog.dart';
 
+import '../nav/taskFab.dart';
 import '../redux/redux.dart';
 import '../common/cache.dart';
 import '../common/utils.dart';
@@ -25,7 +26,7 @@ import '../common/eventBus.dart';
 import '../transfer/manager.dart';
 import '../transfer/transfer.dart';
 import '../icons/winas_icons.dart';
-import '../nav/taskFab.dart';
+import '../login/stationLogin.dart';
 
 class Files extends StatefulWidget {
   Files({Key key, this.node, this.fileNavViews, this.justonce})
@@ -243,6 +244,25 @@ class _FilesState extends State<Files> {
         location: 'built-in',
       );
     }
+
+    // check current device, refresh LANIP
+    if (state.apis.isCloud == null || state.apis.sub == null) {
+      final res = await reqStationList(state.cloud);
+      List<Station> list = res['stationList'];
+      Station currentStation = list
+          .firstWhere((s) => s.sn == state.apis.deviceSN, orElse: () => null);
+      // no current device
+      if (currentStation == null || currentStation.isOnline != true) {
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/deviceList', (Route<dynamic> route) => false);
+        return;
+      }
+      // update Lan Ip
+      if (currentStation?.lanIp is String) {
+        state.apis.updateLanIp(currentStation.lanIp);
+      }
+    }
+
     // restart monitorStart
     if (state.apis.sub == null) {
       state.apis.monitorStart();

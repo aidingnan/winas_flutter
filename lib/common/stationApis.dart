@@ -56,6 +56,11 @@ class Apis {
 
   String toJson() => toString();
 
+  void updateLanIp(String newIP) {
+    this.lanIp = newIP;
+    this.lanAdrress = 'http://${this.lanIp}:3000';
+  }
+
   /// handle data.data response
   void interceptDio() {
     InterceptorsWrapper interceptorsWrapper = InterceptorsWrapper(
