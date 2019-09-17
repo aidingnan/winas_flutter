@@ -73,8 +73,8 @@ class _XCopyViewState extends State<_XCopyView> {
   Future _refresh(AppState state) async {
     if (node.tag == 'root') {
       // show root: public and home
-      Drive publicDrive = state.drives
-          .firstWhere((drive) => drive.tag == 'built-in', orElse: () => null);
+      // Drive publicDrive = state.drives
+      //     .firstWhere((drive) => drive.tag == 'built-in', orElse: () => null);
       Drive homeDrive = state.drives
           .firstWhere((drive) => drive.tag == 'home', orElse: () => null);
       entries = [
@@ -84,12 +84,12 @@ class _XCopyViewState extends State<_XCopyView> {
             type: 'home',
             pdir: homeDrive.uuid,
             pdrv: homeDrive.uuid),
-        Entry(
-            name: i18n('Public Drive'),
-            uuid: publicDrive.uuid,
-            type: 'public',
-            pdir: publicDrive.uuid,
-            pdrv: publicDrive.uuid),
+        // Entry(
+        //     name: i18n('Public Drive'),
+        //     uuid: publicDrive.uuid,
+        //     type: 'public',
+        //     pdir: publicDrive.uuid,
+        //     pdrv: publicDrive.uuid),
       ];
       dirs = List.from(entries);
       loading = false;
