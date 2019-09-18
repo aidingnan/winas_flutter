@@ -65,6 +65,8 @@ class Apis {
   void interceptDio() {
     InterceptorsWrapper interceptorsWrapper = InterceptorsWrapper(
       onResponse: (Response response) {
+        // only handle ResponseType.json
+        if (response.request.responseType != ResponseType.json) return response;
         bool isCloud = false;
         try {
           if (response.data is Map && response.data['data'] != null) {
@@ -355,9 +357,6 @@ class Apis {
 
   Future download(String ep, Map<String, dynamic> qs, String downloadPath,
       {Function onProgress, CancelToken cancelToken}) async {
-    // remove interceptors
-    dio.interceptors.length = 0;
-
     // download via cloud pipe
     if (isCloud ?? true) {
       final url = '$cloudAddress/station/$deviceSN/pipe';

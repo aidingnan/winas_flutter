@@ -193,7 +193,6 @@ class _FilesState extends State<Files> {
     myScrollController?.dispose();
     refreshListener = null;
     myScrollController = null;
-    currentNode = null;
     entries = [];
     dirs = [];
     files = [];
