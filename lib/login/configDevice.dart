@@ -93,11 +93,8 @@ class _ConfigDeviceState extends State<ConfigDevice> {
   Future<String> checkCode(BluetoothDevice device, List<String> code) async {
     final authCommand =
         '{"action":"auth","seq":2,"body":{"color":["${code[2]}","${code[3]}"]}}';
-    debug(authCommand);
     final res = await getLocalAuth(device, authCommand);
-    debug('checkCode res: $res');
     String token = res['data']['token'];
-    debug(token);
     return token;
   }
 
@@ -126,7 +123,6 @@ class _ConfigDeviceState extends State<ConfigDevice> {
     String code;
     try {
       res = jsonDecode(String.fromCharCodes(value));
-      // debug('onData res $res');
       success = res['success'];
       error = res['error'];
       if (error != null) {
@@ -332,7 +328,6 @@ class _ConfigDeviceState extends State<ConfigDevice> {
         '{"action":"addAndActive", "seq": 123, "token": "$token", "body":{"ssid":"$ssid", "pwd":"$wifiPwd"}}';
     final wifiRes =
         await connectWifi(device, wifiCommand).timeout(Duration(seconds: 20));
-    debug('wifiRes: $wifiRes');
     final ip = wifiRes['data']['address'];
     currentIP = ip;
     return ip;

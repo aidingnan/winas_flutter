@@ -107,7 +107,6 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
   Future reqAuth(BluetoothDevice device) async {
     final reqCommand = '{"action":"req","seq":1}';
     final res = await getLocalAuth(device, reqCommand);
-    debug('reqAuth: $res');
     final colors = res['data']['colors'];
     return colors;
   }

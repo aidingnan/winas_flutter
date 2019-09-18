@@ -148,8 +148,7 @@ class Request {
       );
       isLAN = res.data['device']['sn'] == deviceSN;
     } catch (error) {
-      print('testLAN error');
-      print(error);
+      print('testLAN error: $error');
       isLAN = false;
     }
     return isLAN;

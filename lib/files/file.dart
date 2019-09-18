@@ -271,7 +271,7 @@ class _FilesState extends State<Files> {
     // test network
     if (state.apis.isCloud == null || isRetry || needTestLAN) {
       await state.apis.testLAN();
-      debug('testLAN: ${state.apis.lanIp} isCloud: ${state.apis.isCloud}');
+      print('testLAN: ${state.apis.lanIp} isCloud: ${state.apis.isCloud}');
     }
 
     // request listNav

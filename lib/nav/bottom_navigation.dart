@@ -128,7 +128,7 @@ class _BottomNavigationState extends State<BottomNavigation>
       // stations apis
       store.dispatch(UpdateApisAction(store.state.apis));
 
-      debug('refreshAndSaveToken success');
+      print('refreshAndSaveToken success');
     }
   }
 

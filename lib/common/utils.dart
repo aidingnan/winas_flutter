@@ -593,6 +593,7 @@ Future<String> getLogs() async {
 }
 
 void debug(dynamic text, [dynamic t2, dynamic t3]) {
+  final String trace = StackTrace.current.toString().split('\n')[1];
   String log =
       (text ?? '').toString() + (t2 ?? '').toString() + (t3 ?? '').toString();
   DateTime time = DateTime.now();
@@ -600,9 +601,9 @@ void debug(dynamic text, [dynamic t2, dynamic t3]) {
   if (text is DioError && text?.response?.data != null) {
     log += '\ntext.response.data: ${text.response.data}';
   }
-
-  print('$time: $log');
-  writeLog('$time: $log \n', 'log.txt').catchError(print);
+  final str = '$time:\n$trace\n$log';
+  print(str);
+  writeLog(str, 'log.txt').catchError(print);
 }
 
 String getTimeString(DateTime time) {
