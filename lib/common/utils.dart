@@ -416,18 +416,22 @@ Future getMachineId() async {
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
   String deviceName;
   String machineId;
+  String model;
   if (Platform.isIOS) {
     IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
     deviceName = iPhoneModel(iosInfo.utsname.machine);
     machineId = iosInfo.identifierForVendor;
+    model = deviceName + iosInfo.systemVersion;
   } else {
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
     deviceName = androidInfo.model;
     machineId = androidInfo.androidId;
+    model = deviceName + ', Version ' + androidInfo.version.release;
   }
   return {
     'deviceName': deviceName,
     'machineId': machineId,
+    'model': model,
   };
 }
 

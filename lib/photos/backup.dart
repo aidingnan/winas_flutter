@@ -472,6 +472,7 @@ class Worker {
     final data = await getMachineId();
     deviceName = data['deviceName'];
     machineId = data['machineId'];
+    final String model = data['model'];
     final Entry rootDir = await getDir();
     assert(rootDir is Entry);
 
@@ -518,6 +519,10 @@ class Worker {
       } else {
         return;
       }
+    }
+
+    if (assetList.length == uploadList.length) {
+      debug('Photo total count in $model: $total');
     }
     // upload photo one by one
     for (AssetEntity entity in uploadList) {
