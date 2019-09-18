@@ -102,7 +102,7 @@ class _StationListState extends State<StationList> {
     try {
       final result = await reqStationList(widget.request);
       stationList = result['stationList'];
-      debug(stationList);
+      print(stationList);
       setState(() {});
     } catch (error) {
       debug(error);

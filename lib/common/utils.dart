@@ -6,6 +6,7 @@ import 'package:device_info/device_info.dart';
 import 'package:package_info/package_info.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter_umplus/flutter_umplus.dart';
 
 import './iPhoneCodeMap.dart';
 
@@ -597,13 +598,13 @@ void debug(dynamic text, [dynamic t2, dynamic t3]) {
   String log =
       (text ?? '').toString() + (t2 ?? '').toString() + (t3 ?? '').toString();
   DateTime time = DateTime.now();
-
   if (text is DioError && text?.response?.data != null) {
     log += '\ntext.response.data: ${text.response.data}';
   }
   final str = '$time:\n$trace\n$log';
   print(str);
   writeLog(str, 'log.txt').catchError(print);
+  FlutterUmplus.event('DEBUG_LOG', label: str);
 }
 
 String getTimeString(DateTime time) {

@@ -126,7 +126,7 @@ class _LoginState extends State<Login> {
         });
         final future = Future.delayed(const Duration(milliseconds: 100),
             () => FocusScope.of(context).requestFocus(myFocusNode));
-        future.then((res) => debug('100ms later'));
+        future.then((res) => print('100ms later'));
       }
     } else {
       // login

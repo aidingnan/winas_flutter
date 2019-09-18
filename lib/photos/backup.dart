@@ -539,15 +539,15 @@ class Worker {
     }
 
     if (finished == total) {
-      debug('upload all assetList');
+      print('upload all assetList');
       await updateStatus(rootDir);
-      debug('updateStatus finished');
+      print('updateStatus finished');
       status = Status.finished;
       finished = 0;
       ignored = 0;
       total = 0;
     } else {
-      debug('not all upload success');
+      print('not all upload success');
       status = Status.failed;
       throw 'backup failed';
     }
@@ -604,7 +604,7 @@ class BackupWorker {
 
   monitorStart() {
     sub = Connectivity().onConnectivityChanged.listen((ConnectivityResult res) {
-      debug('Network Changed to $res in backup');
+      print('Network Changed to $res in backup');
       if (res == ConnectivityResult.wifi) {
         isMobile = false;
       } else if (res == ConnectivityResult.mobile) {
@@ -640,7 +640,7 @@ class BackupWorker {
       monitorStart();
       worker = Worker(apis);
       worker.start();
-      debug('backup started');
+      // debug('backup started');
     }
   }
 
@@ -649,7 +649,7 @@ class BackupWorker {
     worker = null;
     monitorCancel();
     status = Status.aborted;
-    debug('backup aborted');
+    // debug('backup aborted');
   }
 
   /// pause backup

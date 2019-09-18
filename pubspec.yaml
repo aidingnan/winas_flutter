@@ -72,6 +72,9 @@ dependencies:
   # keep screen on
   wakelock: 0.1.2+8
 
+  # umeng
+  flutter_umplus: 0.0.1
+
   # i18n
   # flutter_i18n: 0.6.3
 

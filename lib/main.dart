@@ -6,6 +6,7 @@ import 'package:intl/intl_standalone.dart';
 import 'package:redux_persist/redux_persist.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter_umplus/flutter_umplus.dart';
 import 'package:flutter_i18n/flutter_i18n_delegate.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -86,6 +87,15 @@ void main() async {
 
   // keep screen on
   Wakelock.enable().catchError(print);
+
+  // umeng
+  FlutterUmplus.init(
+    '5d81d3bc0cafb29b6b00089f',
+    channel: null,
+    reportCrash: true,
+    logEnable: true,
+    encrypt: true,
+  );
 
   runApp(MyApp(initialState, store, flutterI18nDelegate));
 }
