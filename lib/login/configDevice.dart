@@ -238,7 +238,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
   /// login Via Cloud, without lcoal ip
   Future loginViaCloud(Store<AppState> store, String sn) async {
     try {
-      debug('loginViaCloud start');
+      print('loginViaCloud start');
       final request = widget.request;
 
       bool started = false;
@@ -256,7 +256,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
             'info',
             {'deviceSN': sn},
           ).timeout(Duration(seconds: 6));
-          debug('get info in loginViaCloud...');
+          print('get info in loginViaCloud...');
 
           final winas = res.data['winas'];
           final channel = res.data['channel'];
@@ -275,14 +275,14 @@ class _ConfigDeviceState extends State<ConfigDevice> {
           continue;
         }
       }
-      debug('winas started');
+      print('winas started');
       final result = await reqStationList(request);
       final stationList = result['stationList'] as List;
       final currentDevice = stationList.firstWhere(
           (s) => s.sn == sn && s.sn != null,
           orElse: () => null) as Station;
       final account = store.state.account;
-      debug('stationLogin ....');
+      print('stationLogin ....');
       await stationLogin(context, request, currentDevice, account, store);
     } catch (e) {
       debug(e);
@@ -316,7 +316,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
     setTimeout();
     await connectWifiAndBind(device, wifiCommand, bleRes)
         .timeout(Duration(seconds: 20));
-    debug('setWifiAndBind fired');
+    print('setWifiAndBind fired');
   }
 
   /// only set Wifi
@@ -340,7 +340,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
     final command = '{"action":"format", "seq": 111, "token": "$token"}';
     final res =
         await connectWifi(device, command).timeout(Duration(seconds: 10));
-    debug('formatDisk: $res');
+    print('formatDisk: $res');
     if (res['error'] != null) throw res['error'];
   }
 
@@ -386,8 +386,6 @@ class _ConfigDeviceState extends State<ConfigDevice> {
       return;
     }
 
-    debug('connect');
-    debug(widget.action);
     // switch by Action, bind device or login device directly
     if (widget.action == Action.bind) {
       bindDevice(ip, token, store).catchError(debug);
@@ -398,7 +396,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
 
   /// start to bind device
   Future<void> bindDevice(String ip, String token, store) async {
-    debug('bindDevice start');
+    print('bindDevice start');
     final request = widget.request;
 
     setState(() {
@@ -409,7 +407,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
       final res = await request.req('encrypted', null);
       final encrypted = res.data['encrypted'] as String;
       final bindRes = await request.deviceBind(ip, encrypted);
-      debug('bindRes $bindRes');
+      print('bindRes $bindRes');
     } catch (e) {
       debug('bind device error $e');
       setState(() {
@@ -491,9 +489,6 @@ class _ConfigDeviceState extends State<ConfigDevice> {
 
   void nextStep(BuildContext ctx, Store<AppState> store) async {
     if (status == Status.auth) {
-      debug('code is $selected');
-      // reset token
-
       final loading = showLoading(ctx);
       // fired, not time out
       timeoutCheck = false;
@@ -568,7 +563,6 @@ class _ConfigDeviceState extends State<ConfigDevice> {
           text: i18n('Connecting To WiFi'),
         );
         try {
-          debug('pwd: $pwd');
           final ip = await setWifi(pwd);
 
           // check ip
@@ -616,7 +610,6 @@ class _ConfigDeviceState extends State<ConfigDevice> {
         ),
       ),
     ];
-    debug('selected: $selected');
     List<Widget> options = List.from(
       colorCodes.map(
         (code) => Material(
@@ -628,7 +621,6 @@ class _ConfigDeviceState extends State<ConfigDevice> {
                 activeColor: Colors.teal,
                 groupValue: selected,
                 onChanged: (value) {
-                  debug('on tap $code');
                   setState(() {
                     selected = value;
                   });

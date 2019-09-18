@@ -81,10 +81,10 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
       if (index > -1) return;
       results.add(scanResult);
 
-      debug('get device >>>>>>>>>>>');
-      debug(id);
-      debug(scanResult.device.name);
-      debug(scanResult.advertisementData.manufacturerData);
+      print('get device >>>>>>>>>>>');
+      print(id);
+      print(scanResult.device.name);
+      print(scanResult.advertisementData.manufacturerData);
 
       if (mounted) {
         setState(() {});
@@ -117,7 +117,7 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
     FlutterBlue flutterBlue = FlutterBlue.instance;
     // cancel previous BLE device connection
     deviceConnection?.cancel();
-    debug('connecting ${scanResult.device.name} ...');
+    print('connecting ${scanResult.device.name} ...');
     bool done = false;
     deviceConnection = flutterBlue
         .connect(device, timeout: Duration(seconds: 60), autoConnect: false)
