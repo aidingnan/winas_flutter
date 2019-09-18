@@ -90,7 +90,9 @@ void main() async {
 
   // umeng
   FlutterUmplus.init(
-    '5d81d3bc0cafb29b6b00089f',
+    Platform.isAndroid
+        ? '5d81d3bc0cafb29b6b00089f'
+        : '5d81f1a20cafb23f590005ab',
     channel: null,
     reportCrash: true,
     logEnable: true,

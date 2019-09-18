@@ -288,7 +288,9 @@ class _FilesState extends State<Files> {
       }
       return;
     }
-
+    if (!this.mounted) {
+      return;
+    }
     // assert(listNav.data is Map<String, List>);
     // mix currentNode's dirUUID, driveUUID
     List<Entry> rawEntries = List.from(listNav.data['entries']
