@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:redux/redux.dart';
 import 'package:flutter/material.dart';
 
 import './stationList.dart';
@@ -12,7 +13,7 @@ import '../common/stationApis.dart';
 
 /// Login to device
 stationLogin(BuildContext context, Request request, Station currentDevice,
-    Account account, store,
+    Account account, Store<AppState> store,
     {bool shouldShowDialog = false}) async {
   assert(currentDevice != null);
 
@@ -129,6 +130,9 @@ stationLogin(BuildContext context, Request request, Station currentDevice,
 
   // set lastUserDeviceSn
   request.req('setLastSN', {'sn': deviceSN}).catchError(print);
+
+  // log login event via umeng
+  loginLog(account.username, deviceSN).catchError(print);
 }
 
 /// Request station list

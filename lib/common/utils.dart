@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 import 'package:dio/dio.dart';
+
 import 'package:flutter/material.dart';
 import 'package:device_info/device_info.dart';
 import 'package:package_info/package_info.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_umplus/flutter_umplus.dart';
 
+import './appConfig.dart';
 import './iPhoneCodeMap.dart';
 
 /// showSnackBar, require BuildContext to find Scaffold
@@ -412,7 +414,11 @@ Widget sliverActionButton(String title, Function action, Widget rightItem) {
   return SliverToBoxAdapter(child: actionButton(title, action, rightItem));
 }
 
-Future getMachineId() async {
+// save machineData
+Map<String, String> machineData;
+
+Future<Map<String, String>> getMachineId() async {
+  if (machineData != null) return machineData;
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
   String deviceName;
   String machineId;
@@ -428,11 +434,12 @@ Future getMachineId() async {
     machineId = androidInfo.androidId;
     model = deviceName + ', Version ' + androidInfo.version.release;
   }
-  return {
+  machineData = {
     'deviceName': deviceName,
     'machineId': machineId,
     'model': model,
   };
+  return machineData;
 }
 
 Future<String> getClientId() async {
@@ -608,7 +615,30 @@ void debug(dynamic text, [dynamic t2, dynamic t3]) {
   final str = '#### $time ####\n$trace\n$log\n';
   print(str);
   writeLog(str, 'log.txt').catchError(print);
-  FlutterUmplus.event('DEBUG_LOG', label: str);
+
+  // upload to umeng
+  if (AppConfig.umeng != false) {
+    getMachineId().then((data) {
+      final debugStr = [data['machineId'], '$time', trace, log].join(';');
+      FlutterUmplus.event('DEBUG_LOG', label: debugStr);
+    });
+  }
+}
+
+Future<void> loginLog(String accountId, String deviceSN) async {
+  // check AppConfig.umeng
+  if (AppConfig.umeng == false) return;
+
+  final data = await getMachineId();
+  DateTime time = DateTime.now();
+  String deviceName = data['deviceName'];
+  String machineId = data['machineId'];
+  String model = data['model'];
+  String usn = getUsnName(deviceSN);
+  String str = ['$time', accountId, usn, deviceSN, deviceName, machineId, model]
+      .join(';');
+  print('LOGIN_LOG: $str');
+  FlutterUmplus.event('LOGIN_LOG', label: str);
 }
 
 String getTimeString(DateTime time) {

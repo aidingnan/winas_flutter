@@ -716,6 +716,8 @@ class Config {
   bool gridView = false;
   bool showArchive = false;
   bool showTaskFab = false;
+  // whether allow umeng to collect info or not
+  bool umeng;
 
   /// Map of <device, StationConfig>
   List<StationConfig> stationConfigs = [];
@@ -726,6 +728,7 @@ class Config {
     this.showArchive,
     this.language,
     this.stationConfigs,
+    this.umeng,
   });
 
   factory Config.initial() => Config(
@@ -734,6 +737,7 @@ class Config {
         showArchive: false,
         language: 'auto',
         stationConfigs: [],
+        umeng: null,
       );
 
   Config.combine(Config oldConfig, Config newConfig) {
@@ -743,6 +747,7 @@ class Config {
     this.language = newConfig.language ?? oldConfig.language ?? 'auto';
     this.stationConfigs =
         newConfig.stationConfigs ?? oldConfig.stationConfigs ?? [];
+    this.umeng = newConfig.umeng ?? oldConfig.umeng;
   }
 
   Config.fromMap(Map m) {
@@ -750,6 +755,7 @@ class Config {
     this.gridView = m['gridView'] == true;
     this.showArchive = m['showArchive'] == true;
     this.language = m['language'] ?? 'auto';
+    this.umeng = m['umeng'] is bool ? m['umeng'] : null;
     this.stationConfigs = m['stationConfigs'] == null
         ? []
         : List.from(
@@ -783,6 +789,7 @@ class Config {
       'showTaskFab': showTaskFab,
       'language': language,
       'stationConfigs': stationConfigs.toString(),
+      'umeng': umeng,
     };
     return jsonEncode(m);
   }

@@ -4,6 +4,8 @@ import 'package:path_provider/path_provider.dart';
 class AppConfig {
   static bool isDev = false;
 
+  static bool umeng = true;
+
   /// cloud address
   static String get cloudAddress => AppConfig.isDev
       ? 'https://test.aidingnan.com/c/v1'

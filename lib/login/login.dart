@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:fluwx/fluwx.dart' as fluwx;
+import 'package:url_launcher/url_launcher.dart';
+
 import 'package:flutter_redux/flutter_redux.dart';
 
 import './registry.dart';
@@ -265,9 +267,33 @@ class _LoginPageState extends State<LoginPage> {
                   ),
 
                   // license
-                  Text(i18n('Licence Hint'),
-                      style: TextStyle(fontSize: 12.0, color: Colors.white),
-                      textAlign: TextAlign.left),
+                  GestureDetector(
+                    onTap: () async {
+                      String url = 'https://www.aidingnan.com/support';
+                      if (await canLaunch(url)) {
+                        await launch(url);
+                      } else {
+                        debug('Could not launch $url');
+                      }
+                    },
+                    child: Text.rich(
+                      TextSpan(children: [
+                        TextSpan(
+                          text: i18n('Licence Hint Part 1'),
+                          style: TextStyle(fontSize: 12.0, color: Colors.white),
+                        ),
+                        TextSpan(
+                          text: i18n('Licence Hint Part 2'),
+                          style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            fontSize: 12.0,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ]),
+                    ),
+                  ),
 
                   Container(height: 64.0),
                 ],

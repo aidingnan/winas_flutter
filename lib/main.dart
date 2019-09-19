@@ -89,15 +89,19 @@ void main() async {
   Wakelock.enable().catchError(print);
 
   // umeng
-  FlutterUmplus.init(
-    Platform.isAndroid
-        ? '5d81d3bc0cafb29b6b00089f'
-        : '5d81f1a20cafb23f590005ab',
-    channel: null,
-    reportCrash: true,
-    logEnable: true,
-    encrypt: true,
-  );
+  if (store?.state?.config?.umeng != false) {
+    FlutterUmplus.init(
+      Platform.isAndroid
+          ? '5d81d3bc0cafb29b6b00089f'
+          : '5d81f1a20cafb23f590005ab',
+      channel: null,
+      reportCrash: true,
+      logEnable: true,
+      encrypt: true,
+    );
+  } else {
+    AppConfig.umeng = false;
+  }
 
   runApp(MyApp(initialState, store, flutterI18nDelegate));
 }
