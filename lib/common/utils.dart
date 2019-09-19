@@ -421,7 +421,7 @@ Future getMachineId() async {
     IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
     deviceName = iPhoneModel(iosInfo.utsname.machine);
     machineId = iosInfo.identifierForVendor;
-    model = deviceName + iosInfo.systemVersion;
+    model = deviceName + ', Version ' + iosInfo.systemVersion;
   } else {
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
     deviceName = androidInfo.model;
@@ -605,7 +605,7 @@ void debug(dynamic text, [dynamic t2, dynamic t3]) {
   if (text is DioError && text?.response?.data != null) {
     log += '\ntext.response.data: ${text.response.data}';
   }
-  final str = '$time:\n$trace\n$log';
+  final str = '#### $time ####\n$trace\n$log\n';
   print(str);
   writeLog(str, 'log.txt').catchError(print);
   FlutterUmplus.event('DEBUG_LOG', label: str);

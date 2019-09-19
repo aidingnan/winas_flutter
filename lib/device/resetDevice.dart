@@ -89,7 +89,6 @@ class ResetDevice extends StatelessWidget {
                                   ConfirmDialog(),
                             );
 
-                            debug('formatDisk $formatDisk');
                             if (formatDisk == null) {
                               loadingInstance.close();
                               return;
@@ -181,13 +180,12 @@ class _ResetDeviceState extends State<_ResetDevice> {
     try {
       final res = await state.cloud.req('encrypted', null);
       final encrypted = res.data['encrypted'] as String;
-      final resetRes = await state.cloud.unbindDevice(
+      await state.cloud.unbindDevice(
         state.apis.lanIp,
         encrypted,
         token,
         widget.formatDisk == true,
       );
-      debug('resetRes: $resetRes');
       setState(() {
         status = Status.success;
       });
@@ -202,8 +200,6 @@ class _ResetDeviceState extends State<_ResetDevice> {
 
   void nextStep(BuildContext ctx, AppState state) async {
     if (status == Status.auth) {
-      debug('code is $selected');
-
       final loadingInstance = showLoading(ctx);
       try {
         String token = await checkCode(state, selected);
@@ -236,7 +232,6 @@ class _ResetDeviceState extends State<_ResetDevice> {
         ),
       ),
     ];
-    debug('selected: $selected');
     List<Widget> options = List.from(
       colorCodes.map(
         (code) => Material(
@@ -248,7 +243,6 @@ class _ResetDeviceState extends State<_ResetDevice> {
                 activeColor: Colors.teal,
                 groupValue: selected,
                 onChanged: (value) {
-                  debug('on tap $code');
                   setState(() {
                     selected = value;
                   });
