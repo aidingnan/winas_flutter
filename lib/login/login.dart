@@ -8,8 +8,10 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 import './registry.dart';
+import './confirmUEIP.dart';
 import './stationLogin.dart';
 import './accountLogin.dart';
+
 import '../redux/redux.dart';
 import '../common/utils.dart';
 import '../common/request.dart';
@@ -46,6 +48,9 @@ class _LoginPageState extends State<LoginPage> {
 
     /// test cloud connectivity
     request.req('testCloud', null).catchError(debug);
+
+    /// Confirm User Experience Improvement Program
+    _confirmUEIP().catchError(print);
   }
 
   StreamSubscription<fluwx.WeChatAuthResponse> _wxlogin;
@@ -60,6 +65,17 @@ class _LoginPageState extends State<LoginPage> {
     isWeChatInstalled = await fluwx.isWeChatInstalled();
     if (this.mounted) {
       setState(() {});
+    }
+  }
+
+  Future<void> _confirmUEIP() async {
+    await Future.delayed(Duration.zero);
+    if (AppConfig.umeng == null) {
+      showDialog(
+        context: context,
+        // Confirm User Experience Improvement Program
+        builder: (BuildContext context) => ConfirmUEIP(),
+      );
     }
   }
 

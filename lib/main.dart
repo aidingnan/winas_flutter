@@ -89,7 +89,8 @@ void main() async {
   Wakelock.enable().catchError(print);
 
   // umeng
-  if (store?.state?.config?.umeng != false) {
+  AppConfig.umeng = store?.state?.config?.umeng;
+  if (AppConfig.umeng != false) {
     FlutterUmplus.init(
       Platform.isAndroid
           ? '5d81d3bc0cafb29b6b00089f'
@@ -99,8 +100,6 @@ void main() async {
       logEnable: true,
       encrypt: true,
     );
-  } else {
-    AppConfig.umeng = false;
   }
 
   runApp(MyApp(initialState, store, flutterI18nDelegate));
