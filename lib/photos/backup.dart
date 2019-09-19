@@ -520,7 +520,6 @@ class Worker {
         return;
       }
     }
-
     if (assetList.length == uploadList.length) {
       debug('Photo total count in $model: $total');
     }

@@ -289,7 +289,7 @@ class _PhotoListState extends State<PhotoList> {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(
       onInit: (store) =>
-          getList(widget.album, context, store.state).catchError(debug),
+          getList(widget.album, context, store.state).catchError(print),
       onDispose: (store) => {},
       converter: (store) => store.state,
       builder: (ctx, state) {
