@@ -63,6 +63,9 @@ class _ConfigDeviceState extends State<ConfigDevice> {
   /// Error for set wifi Error;
   String errorText;
 
+  /// reason for bind timeout
+  String timeoutReason;
+
   /// loadingInstance for connect wifi
   LoadingInstance loadingInstance;
 
@@ -106,6 +109,39 @@ class _ConfigDeviceState extends State<ConfigDevice> {
   bool wifiError = false;
   Timer wifiTimer;
 
+  String handleEWIFI(String reason) {
+    // no reason
+    if (reason == null) return i18n('Set WiFi Error');
+    // parse reason
+    switch (reason) {
+      case 'EINTERNAL':
+        return i18n('Set WiFi Error EINTERNAL');
+      case 'ENOTFOUND':
+        return i18n('Set WiFi Error ENOTFOUND');
+      case 'EASSOCREJ':
+        return i18n('Set WiFi Error EASSOCREJ');
+      case 'EFAIL':
+        return i18n('Set WiFi Error EFAIL');
+      default:
+        return i18n('Set WiFi Error');
+    }
+  }
+
+  String getTimeoutReason() {
+    if (timeoutReason == null) return i18n('Bind Timeout Error');
+    // parse reason
+    switch (timeoutReason) {
+      case 'EUNHEALTHY':
+        return i18n('Bind Timeout Error EUNHEALTHY');
+      case 'ECHANNEL':
+        return i18n('Bind Timeout Error ECHANNEL');
+      case 'EUNKNOWN':
+        return i18n('Bind Timeout Error EUNKNOWN');
+      default:
+        return i18n('Bind Timeout Error');
+    }
+  }
+
   /// onData res {seq: 123, success: WIFI, data: {address: 10.10.9.201, prefix: 24}}
   ///
   /// onData res {seq: 123, success: CHANNEL}
@@ -121,20 +157,22 @@ class _ConfigDeviceState extends State<ConfigDevice> {
     var error;
     String success;
     String code;
+    String reason;
     try {
       res = jsonDecode(String.fromCharCodes(value));
       success = res['success'];
       error = res['error'];
       if (error != null) {
         code = error['code'];
+        reason = error['reason'];
       }
 
       if (success != null) {
-        debug('onData success $success');
+        print('onData success $success');
       }
 
       if (code != null) {
-        debug('onData error with code: $code');
+        debug('onData error with code: $code, reason: $reason');
       }
 
       if (code == null && success == null) {
@@ -154,7 +192,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
         case 'EWIFI':
           this.loadingInstance.close();
           setState(() {
-            errorText = i18n('Set WiFi Error');
+            errorText = handleEWIFI(reason);
           });
           break;
         case 'EBOUND':
@@ -165,6 +203,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
         case 'ETIMEOUT':
           setState(() {
             status = Status.bindTimeout;
+            timeoutReason = reason;
           });
           break;
         case 'EEXIST':
@@ -926,7 +965,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
         return renderFailed(ctx, i18n('Format Disk Failed Text'));
 
       case Status.bindTimeout:
-        return renderFailed(ctx, i18n('Bind Timeout Error'));
+        return renderFailed(ctx, getTimeoutReason());
 
       default:
         return renderBind(ctx);

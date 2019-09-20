@@ -122,7 +122,7 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
     deviceConnection = flutterBlue
         .connect(device, timeout: Duration(seconds: 60), autoConnect: false)
         .listen((s) {
-      debug(s);
+      print(s);
       if (done) return;
       if (s == BluetoothDeviceState.connected) {
         done = true;
