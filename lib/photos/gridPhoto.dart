@@ -460,7 +460,6 @@ class _GridPhotoState extends State<GridPhoto>
     if (imageData == null || info == null) {
       info = await _getImage(thumbData);
     }
-    // debug('get Thumb: ${widget.photo.name}');
     if (thumbData != null && this.mounted) {
       setState(() {});
     }
@@ -477,7 +476,6 @@ class _GridPhotoState extends State<GridPhoto>
     // imageData = await cm.getLargePhoto(widget.photo, state);
 
     info = await _getImage(imageData);
-    // debug('get RawImage: ${widget.photo.name}');
     if (imageData != null && this.mounted) {
       setState(() {});
     }

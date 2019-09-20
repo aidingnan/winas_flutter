@@ -240,7 +240,6 @@ class TransferManager {
         }
       }
     } catch (error) {
-      // debug('load TransferItem error: $error');
       transferList = [];
     }
     return;
@@ -435,7 +434,6 @@ class TransferManager {
     File(filePath)
       ..stat().then(
         (stat) {
-          debug('newUploadSharedFile $stat');
           if (stat.type != FileSystemEntityType.notFound) {
             String name = filePath.split('/').last;
             TransferItem item = TransferItem(
@@ -490,7 +488,6 @@ class TransferManager {
     File(filePath)
       ..stat().then(
         (stat) {
-          debug('new Upload File $stat');
           if (stat.type != FileSystemEntityType.notFound) {
             String name = filePath.split('/').last;
             TransferItem item = TransferItem(

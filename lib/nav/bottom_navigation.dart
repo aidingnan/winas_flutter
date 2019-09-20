@@ -277,7 +277,7 @@ class _BottomNavigationState extends State<BottomNavigation>
     );
     // add listener of new intent
     intentListener = Intent.listenToOnNewIntent().listen((filePath) {
-      debug('newIntent: $filePath');
+      print('newIntent: $filePath');
       if (filePath != null) {
         final cm = TransferManager.getInstance();
         cm.newUploadSharedFile(filePath, state);

@@ -23,12 +23,11 @@ class _UpgradeDialogState extends State<UpgradeDialog> {
     final deviceSN = state.apis.deviceSN;
     final info = widget.info;
     try {
-      final result = await state.cloud.req('upgradeCheckout', {
+      await state.cloud.req('upgradeCheckout', {
         'tag': info.tag,
         'deviceSN': deviceSN,
         'uuid': info.uuid,
       });
-      debug('result', result);
       int now = DateTime.now().millisecondsSinceEpoch;
       bool isOnline = false;
 
@@ -57,7 +56,6 @@ class _UpgradeDialogState extends State<UpgradeDialog> {
                   .firstWhere((s) => s.sn == deviceSN, orElse: () => null)
                   ?.isOnline ==
               true;
-          debug('isOnline: $isOnline');
         } catch (e) {
           debug(e);
         }

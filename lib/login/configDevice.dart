@@ -474,7 +474,6 @@ class _ConfigDeviceState extends State<ConfigDevice> {
       final account = store.state.account as Account;
       await stationLogin(context, request, currentDevice, account, store);
     } catch (e) {
-      debug('loginFailed');
       debug(e);
       setState(() {
         status = Status.loginFailed;
@@ -517,7 +516,6 @@ class _ConfigDeviceState extends State<ConfigDevice> {
             await formatDisk();
             newLoading.close();
           } catch (e) {
-            debug('Formating Disk failed');
             debug(e);
             newLoading.close();
             setState(() {

@@ -32,7 +32,7 @@ class _DeviceInfoState extends State<DeviceInfo> {
   void onCheat() {
     count += 1;
     if (count > 7) {
-      debug('onCheat: click 7 times');
+      // debug('onCheat: click 7 times');
       count = 0;
       showDialog(
         context: context,

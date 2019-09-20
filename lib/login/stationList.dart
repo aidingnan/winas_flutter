@@ -74,15 +74,11 @@ class _StationListState extends State<StationList> {
         shouldShowDialog: true,
       );
     } catch (error) {
-      debug('login failed >>>>>');
       if (error is DioError) {
         debug(error.message);
-        debug(error.response.statusCode);
-        debug(error.response.statusMessage);
       } else {
         debug(error);
       }
-      debug('<<<<<<<<<>>>>>>>>>');
       loadingInstance.close();
       if (error is! String || !error.startsWith('EMBEDVOLUMEFAILED')) {
         showSnackBar(

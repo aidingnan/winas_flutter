@@ -65,7 +65,7 @@ class _RootDialogState extends State<RootDialog> {
                   .firstWhere((s) => s.sn == deviceSN, orElse: () => null)
                   ?.isOnline ==
               true;
-          debug('isOnline: $isOnline');
+          print('isOnline: $isOnline');
         } catch (e) {
           debug(e);
         }

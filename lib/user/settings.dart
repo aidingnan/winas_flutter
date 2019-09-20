@@ -257,7 +257,6 @@ class _SettingsState extends State<Settings> {
                                   }
 
                                   await i18nRefresh(getCurrentLocale());
-                                  // debug('>>>>>>>>>>>>>>>>>>>>>>>> $code');
                                   store.dispatch(UpdateConfigAction(
                                     Config.combine(
                                       store.state.config,

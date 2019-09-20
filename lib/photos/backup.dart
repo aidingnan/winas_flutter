@@ -472,7 +472,6 @@ class Worker {
     final data = await getMachineId();
     deviceName = data['deviceName'];
     machineId = data['machineId'];
-    final String model = data['model'];
     final Entry rootDir = await getDir();
     assert(rootDir is Entry);
 
@@ -521,7 +520,7 @@ class Worker {
       }
     }
     if (assetList.length == uploadList.length) {
-      debug('Photo total count in $model: $total');
+      debug('Photo count: $total');
     }
     // upload photo one by one
     for (AssetEntity entity in uploadList) {
@@ -529,8 +528,8 @@ class Worker {
         try {
           await uploadSingle(entity, remoteDirs, rootDir);
         } catch (e) {
-          debug('backup failed: ${entity.id}');
-          debug(e);
+          print('backup failed: ${entity.id}');
+          print(e);
           String id = entity.id;
           int mtime = entity.createTime;
 
@@ -577,8 +576,8 @@ class Worker {
     ignored = 0;
     total = 0;
     this.startAsync().catchError((e) {
-      debug('backup failed, retry ${retry * retry} minutes later');
-      debug(e);
+      print('backup failed, retry ${retry * retry} minutes later');
+      print(e);
       retryLater();
     });
   }

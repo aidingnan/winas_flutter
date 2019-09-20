@@ -65,9 +65,6 @@ class _WeChatState extends State<WeChat> {
     );
 
     _wxlogin = fluwx.responseFromAuth.listen((data) {
-      debug('responseFromAuth>>>>');
-      debug(data);
-      debug('<<<<<');
       code = data?.code;
       if (code != null) {
         final args = {
@@ -115,8 +112,6 @@ class _WeChatState extends State<WeChat> {
     _wxlogin?.cancel();
 
     final loadingInstance = showLoading(context);
-    debug('wechatInfo $wechatInfo');
-    debug('unionid ${wechatInfo[0]['unionid']}');
     try {
       await state.cloud.req('unbindWechat', {
         'unionid': wechatInfo[0]['unionid'],

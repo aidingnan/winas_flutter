@@ -173,7 +173,6 @@ class _PageViewerState extends State<PageViewer> {
                   },
                   itemCount: widget.list.length,
                   onPageChanged: (int index) {
-                    debug('current index $index');
                     if (mounted) {
                       setState(() {
                         currentItem = widget.list[index];

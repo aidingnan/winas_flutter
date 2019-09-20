@@ -103,7 +103,7 @@ class _FirmwareState extends State<Firmware> {
         // info = list.last;
 
         if (info != null) {
-          debug('find newer version, tag: ${info.tag}');
+          print('find newer version, tag: ${info.tag}');
           List roots = List.from(local.data['roots']);
           final downloadedVersion = roots
               .firstWhere((r) => r['version'] == info.tag, orElse: () => null);
@@ -114,7 +114,7 @@ class _FirmwareState extends State<Firmware> {
             downloaded = true;
           } else {
             downloaded = false;
-            debug('new version not download');
+            print('new version not download');
             try {
               final winasdInfo = await state.cloud.req(
                 'info',
@@ -152,12 +152,11 @@ class _FirmwareState extends State<Firmware> {
   Future<void> downloadUpgrade(BuildContext ctx, AppState state) async {
     try {
       final deviceSN = state.apis.deviceSN;
-      final result = await state.cloud.req('upgradeDownload', {
+      await state.cloud.req('upgradeDownload', {
         'tag': info.tag,
         'deviceSN': deviceSN,
       });
 
-      debug('result', result);
       showSnackBar(ctx, i18n('Download Started Text', {'tag': info.tag}));
       setState(() {
         downloading = true;

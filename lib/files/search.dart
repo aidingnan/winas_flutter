@@ -82,7 +82,7 @@ class _SearchState extends State<Search> {
 
   _onSearch(AppState state) async {
     FocusScope.of(this.context).requestFocus(FocusNode());
-    debug('onSearch $_fileType $_searchText');
+    print('onSearch $_fileType $_searchText');
     if (_fileType == null && _searchText == null) return;
     setState(() {
       loading = true;
@@ -112,7 +112,7 @@ class _SearchState extends State<Search> {
     try {
       var res = await state.apis.req('search', args);
       assert(res != null && res.data is List);
-      debug('search results\' length: ${res.data.length}');
+      print('search results\' length: ${res.data.length}');
       final list = res.data;
 
       // filter archived files and deleted files

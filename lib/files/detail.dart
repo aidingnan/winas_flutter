@@ -72,7 +72,7 @@ class _DetailState extends State<Detail> {
   }
 
   Future getNamePath(AppState state) async {
-    debug("entry $entry");
+    print("entry $entry");
     try {
       // request entries/path
       final res = await state.apis
