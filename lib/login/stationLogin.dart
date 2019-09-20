@@ -132,7 +132,7 @@ stationLogin(BuildContext context, Request request, Station currentDevice,
   request.req('setLastSN', {'sn': deviceSN}).catchError(print);
 
   // log login event via umeng
-  loginLog(account.username, deviceSN).catchError(print);
+  loginLog(account.id, deviceSN).catchError(print);
 }
 
 /// Request station list
