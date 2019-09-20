@@ -50,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
     request.req('testCloud', null).catchError(debug);
 
     /// Confirm User Experience Improvement Program
-    _confirmUEIP().catchError(print);
+    // confirmUEIP().catchError(print);
   }
 
   StreamSubscription<fluwx.WeChatAuthResponse> _wxlogin;
@@ -68,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<void> _confirmUEIP() async {
+  Future<void> confirmUEIP() async {
     await Future.delayed(Duration.zero);
     if (AppConfig.umeng == null) {
       showDialog(

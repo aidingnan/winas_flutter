@@ -6,7 +6,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import '../redux/redux.dart';
 import '../common/utils.dart';
 import '../photos/backup.dart';
-import '../common/appConfig.dart';
+// import '../common/appConfig.dart';
 
 class Settings extends StatefulWidget {
   Settings({Key key, this.backupWorker, this.toggleBackup}) : super(key: key);
@@ -324,69 +324,69 @@ class _SettingsState extends State<Settings> {
                       : i18n('Current Language'),
                 ),
               ),
-              actionButton(
-                i18n('User Experience Improvement Program'),
-                () {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (BuildContext c) {
-                      return SafeArea(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Material(
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.pop(c);
-                                  store.dispatch(
-                                    UpdateConfigAction(
-                                      Config.combine(
-                                        store.state.config,
-                                        Config(umeng: true),
-                                      ),
-                                    ),
-                                  );
-                                  AppConfig.umeng = true;
-                                },
-                                child: Container(
-                                  width: double.infinity,
-                                  padding: EdgeInsets.all(16),
-                                  child: Text(i18n('Join')),
-                                ),
-                              ),
-                            ),
-                            Material(
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.pop(c);
-                                  store.dispatch(
-                                    UpdateConfigAction(
-                                      Config.combine(
-                                        store.state.config,
-                                        Config(umeng: false),
-                                      ),
-                                    ),
-                                  );
-                                  AppConfig.umeng = false;
-                                },
-                                child: Container(
-                                  width: double.infinity,
-                                  padding: EdgeInsets.all(16),
-                                  child: Text(i18n('Do not join')),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  );
-                },
-                Text(AppConfig.umeng == false
-                    ? i18n('Do not join')
-                    : i18n('Join')),
-              ),
+              // actionButton(
+              //   i18n('User Experience Improvement Program'),
+              //   () {
+              //     showModalBottomSheet(
+              //       context: context,
+              //       builder: (BuildContext c) {
+              //         return SafeArea(
+              //           child: Column(
+              //             crossAxisAlignment: CrossAxisAlignment.start,
+              //             mainAxisSize: MainAxisSize.min,
+              //             children: <Widget>[
+              //               Material(
+              //                 child: InkWell(
+              //                   onTap: () {
+              //                     Navigator.pop(c);
+              //                     store.dispatch(
+              //                       UpdateConfigAction(
+              //                         Config.combine(
+              //                           store.state.config,
+              //                           Config(umeng: true),
+              //                         ),
+              //                       ),
+              //                     );
+              //                     AppConfig.umeng = true;
+              //                   },
+              //                   child: Container(
+              //                     width: double.infinity,
+              //                     padding: EdgeInsets.all(16),
+              //                     child: Text(i18n('Join')),
+              //                   ),
+              //                 ),
+              //               ),
+              //               Material(
+              //                 child: InkWell(
+              //                   onTap: () {
+              //                     Navigator.pop(c);
+              //                     store.dispatch(
+              //                       UpdateConfigAction(
+              //                         Config.combine(
+              //                           store.state.config,
+              //                           Config(umeng: false),
+              //                         ),
+              //                       ),
+              //                     );
+              //                     AppConfig.umeng = false;
+              //                   },
+              //                   child: Container(
+              //                     width: double.infinity,
+              //                     padding: EdgeInsets.all(16),
+              //                     child: Text(i18n('Do not join')),
+              //                   ),
+              //                 ),
+              //               ),
+              //             ],
+              //           ),
+              //         );
+              //       },
+              //     );
+              //   },
+              //   Text(AppConfig.umeng == false
+              //       ? i18n('Do not join')
+              //       : i18n('Join')),
+              // ),
             ],
           ),
         );
