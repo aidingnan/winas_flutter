@@ -8,10 +8,11 @@
   "WeChat not Installed": "未检测到微信应用，请先安装微信",
   "Welcoming Text": "欢迎使用口袋网盘",
   "Login via WeChat": "使用微信登录注册",
+  "User Experience Improvement Program": "用户体验改善计划",
   "User Experience Improvement Program Title": "口袋网盘用户体验改善计划隐私声明",
   "User Experience Improvement Program Text": "欢迎您使用“口袋网盘”，为了改善产品的用户体验，口袋网盘会对产品的各功能使用情况进行统计，我们可以通过分析统计数据持续不断地提升产品操作体验、运行性能，改善功能设计等，并且推出对用户有帮助的创新安全服务。在统计时，我们只对口袋网盘产品自身的内容进行统计，绝不涉及用户的个人隐私数据。",
   "Join": "参与改善",
-  "Do not join": "拒绝",
+  "Do not join": "不参与",
 
   "==== login/accountLogin.dart ====": "",
   "Phone Number": "手机号",
