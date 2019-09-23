@@ -69,7 +69,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>weixin</string>
@@ -88,18 +88,22 @@
 	</dict>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>App need your agree to use music</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>App need your agree to use Bluetooth to connect to PocketDrive</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>App need your agree to use Bluetooth</string>
 	<key>NSCameraUsageDescription</key>
 	<string>App need your agree to use your Camera</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>App need your agree to get current wifi name which your iPhone connected</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>App need your agree to get current wifi name which your iPhone connected</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>App need your agree to get current wifi name which your iPhone connected</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>App need your agree to use your Microphone</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>App need your agree to visit your album</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>App need your agree to get current wifi name which your iPhone connected</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>App need your agree to get current wifi name which your iPhone connected</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
