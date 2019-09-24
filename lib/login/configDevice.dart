@@ -175,6 +175,14 @@ class _ConfigDeviceState extends State<ConfigDevice> {
         debug('onData error with code: $code, reason: $reason');
       }
 
+      if (['EASSOCREJ', 'EUNHEALTHY'].contains(reason)) {
+        debug(error);
+      }
+
+      if (reason != null) {
+        print(res);
+      }
+
       if (code == null && success == null) {
         debug('Neither success or error with code');
         throw 'Neither success or error with code';
