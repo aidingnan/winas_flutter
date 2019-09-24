@@ -87,23 +87,23 @@
 		<true/>
 	</dict>
 	<key>NSAppleMusicUsageDescription</key>
-	<string>App need your agree to use music</string>
+	<string>App needs your agree to use music</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>App need your agree to use Bluetooth to connect to PocketDrive</string>
+	<string>App needs your agree to use Bluetooth to connect to PocketDrive</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>App need your agree to use Bluetooth</string>
+	<string>App needs your agree to use Bluetooth</string>
 	<key>NSCameraUsageDescription</key>
-	<string>App need your agree to use your Camera</string>
+	<string>App needs Camera permission to take photos to set a profile</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>App need your agree to get current wifi name which your iPhone connected</string>
+	<string>App needs your agree to get current wifi name which your iPhone connected</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>App need your agree to get current wifi name which your iPhone connected</string>
+	<string>App needs your agree to get current wifi name which your iPhone connected</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>App need your agree to get current wifi name which your iPhone connected</string>
+	<string>App needs your agree to get current wifi name which your iPhone connected</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>App need your agree to use your Microphone</string>
+	<string>App needs your agree to use your Microphone</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>App need your agree to visit your album</string>
+	<string>App needs your agree to visit your album</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

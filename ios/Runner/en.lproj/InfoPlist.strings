@@ -6,12 +6,12 @@
   Copyright © 2019 The Chromium Authors. All rights reserved.
 */
 CFBundleDisplayName="Pocket Drive";
-NSAppleMusicUsageDescription="App need your agree to access to Music";
-NSBluetoothPeripheralUsageDescription="App need to use Bluetooth to scan device";
-NSCameraUsageDescription="App need your agree to use your Camera";
-NSMicrophoneUsageDescription="App need your agree to use your Microphone";
-NSPhotoLibraryUsageDescription="Backup photos need the access to your Photo Library";
-NSLocationWhenInUseUsageDescription="App need your agree to get current wifi name which your iPhone connected";
-NSLocationAlwaysAndWhenInUseUsageDescription="App need your agree to get current wifi name which your iPhone connected";
-NSBluetoothAlwaysUsageDescription="App need to use Bluetooth to scan device";
-NSLocationAlwaysUsageDescription="App need your agree to get current wifi name which your iPhone connected";
+NSAppleMusicUsageDescription="App needs Music permission to upload music";
+NSBluetoothPeripheralUsageDescription="App needs to use Bluetooth to scan device";
+NSCameraUsageDescription="App needs Camera permission to take photos to set the profile";
+NSMicrophoneUsageDescription="App needs your agree to use your Microphone";
+NSPhotoLibraryUsageDescription="Backup photos needs the access to your Photo Library";
+NSLocationWhenInUseUsageDescription="App needs your agree to get current wifi name which your iPhone connected";
+NSLocationAlwaysAndWhenInUseUsageDescription="App needs your agree to get current wifi name which your iPhone connected";
+NSBluetoothAlwaysUsageDescription="App needs to use Bluetooth to scan device";
+NSLocationAlwaysUsageDescription="App needs your agree to get current wifi name which your iPhone connected";
