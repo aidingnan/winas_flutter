@@ -48,13 +48,47 @@ void main() async {
     middleware: [persistor.createMiddleware()],
   );
 
+  // check if test or production mode
+  try {
+    await AppConfig.checkDev();
+  } catch (e) {
+    print('checkDev failed $e');
+  }
+
+  // keep screen on
+  Wakelock.enable().catchError(print);
+
+  // umeng
+  AppConfig.umeng = store?.state?.config?.umeng;
+  if (AppConfig.umeng != false) {
+    FlutterUmplus.init(
+      Platform.isAndroid
+          ? '5d81d3bc0cafb29b6b00089f'
+          : '5d81f1a20cafb23f590005ab',
+      channel: null,
+      reportCrash: true,
+      logEnable: true,
+      encrypt: true,
+    );
+  }
+
   // init language
   String lan = store?.state?.config?.language;
 
-  // TODO:need fix ios13 locale bug
   if (lan != 'en' && lan != 'zh') {
     // load system locale
     try {
+      // fix bug in iOS 13, waiting for Platform.localeName to get value
+      int waitCount = 0;
+      while (waitCount < 10) {
+        if (Platform.localeName != null) {
+          break;
+        }
+        // print('Platform.localeName is null $waitCount');
+        await Future.delayed(Duration(milliseconds: 50));
+        waitCount += 1;
+      }
+
       final String systemLocale = await findSystemLocale();
       final List<String> systemLocaleSplitted = systemLocale.split('_');
       lan = systemLocaleSplitted[0];
@@ -78,30 +112,6 @@ void main() async {
     await flutterI18nDelegate.load(null);
   } catch (e) {
     print('flutterI18nDelegate load failed $e');
-  }
-
-  // check if test or production mode
-  try {
-    await AppConfig.checkDev();
-  } catch (e) {
-    print('checkDev failed $e');
-  }
-
-  // keep screen on
-  Wakelock.enable().catchError(print);
-
-  // umeng
-  AppConfig.umeng = store?.state?.config?.umeng;
-  if (AppConfig.umeng != false) {
-    FlutterUmplus.init(
-      Platform.isAndroid
-          ? '5d81d3bc0cafb29b6b00089f'
-          : '5d81f1a20cafb23f590005ab',
-      channel: null,
-      reportCrash: true,
-      logEnable: true,
-      encrypt: true,
-    );
   }
 
   runApp(MyApp(initialState, store, flutterI18nDelegate));
