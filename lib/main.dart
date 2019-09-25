@@ -50,17 +50,18 @@ void main() async {
 
   // init language
   String lan = store?.state?.config?.language;
-  // quick fix ios13 locale bug
-  // if (lan != 'en' && lan != 'zh') {
-  //   // load system locale
-  //   try {
-  //     final String systemLocale = await findSystemLocale();
-  //     final List<String> systemLocaleSplitted = systemLocale.split('_');
-  //     lan = systemLocaleSplitted[0];
-  //   } catch (e) {
-  //     lan = 'zh';
-  //   }
-  // }
+
+  // TODO:need fix ios13 locale bug
+  if (lan != 'en' && lan != 'zh') {
+    // load system locale
+    try {
+      final String systemLocale = await findSystemLocale();
+      final List<String> systemLocaleSplitted = systemLocale.split('_');
+      lan = systemLocaleSplitted[0];
+    } catch (e) {
+      lan = 'zh';
+    }
+  }
 
   // only support `en` and `zh`, default is `zh`
   Locale locale = lan == 'en' ? Locale('en') : Locale('zh');

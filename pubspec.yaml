@@ -54,7 +54,7 @@ dependencies:
   # handle file
   open_file: 2.0.3
   share_extend: 1.0.9
-  file_picker: 1.3.5
+  file_picker: 1.4.2
 
   # async utility
   async: 2.3.0
