@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 
 import './manager.dart';
 import './removable.dart';
@@ -31,7 +32,7 @@ class _TransferState extends State<Transfer> {
   _autoRefresh({bool isFirst = false}) async {
     list = TransferManager.getList();
 
-    // only order by startTime
+    // order by status, startTime, entry.name
     list.sort((a, b) {
       if (b.order != a.order) return b.order - a.order;
       if (b.startTime != a.startTime) return b.startTime - a.startTime;
@@ -60,15 +61,14 @@ class _TransferState extends State<Transfer> {
   /// Resume task
   ///
   /// clean current, start a new task
-  void resumeTask(List<TransferItem> items, int index, AppState state) {
-    final item = items[index];
+  void resumeTask(List<TransferItem> items, TransferItem item, AppState state) {
     item.clean();
-    items.removeAt(index);
+    items.remove(item);
     newTask(item, state);
   }
 
-  Widget renderStatus(List<TransferItem> items, int index, AppState state) {
-    final item = items[index];
+  Widget renderStatus(
+      List<TransferItem> items, TransferItem item, AppState state) {
     switch (item.status) {
       case 'finished':
         return Center(child: Icon(Icons.check_circle_outline));
@@ -133,7 +133,7 @@ class _TransferState extends State<Transfer> {
                         child: Text(i18n('Retry Transfer Task')),
                         onPressed: () {
                           Navigator.pop(context);
-                          resumeTask(items, index, state);
+                          resumeTask(items, item, state);
                         })
                   ],
                 ),
@@ -155,7 +155,7 @@ class _TransferState extends State<Transfer> {
       onDismissed: () {
         setState(() {
           item.clean();
-          items.removeAt(index);
+          items.remove(item);
           final cm = TransferManager.getInstance();
           cm.syncData();
           showSnackBar(ctx, i18n('Delete Success'));
@@ -195,10 +195,10 @@ class _TransferState extends State<Transfer> {
               item.pause();
             } else if (item.status == 'paused') {
               // resume task
-              resumeTask(items, index, state);
+              resumeTask(items, item, state);
             } else if (item.status == 'failed') {
               // resume task
-              resumeTask(items, index, state);
+              resumeTask(items, item, state);
             }
           },
           child: Row(
@@ -279,7 +279,7 @@ class _TransferState extends State<Transfer> {
                         padding: EdgeInsets.all(16),
                         width: 72,
                         height: 72,
-                        child: renderStatus(items, index, state),
+                        child: renderStatus(items, items[index], state),
                       ),
                     ],
                   ),
@@ -413,19 +413,22 @@ class _TransferState extends State<Transfer> {
                       )
                     : Container(
                         color: Colors.grey[200],
-                        child: CustomScrollView(
+                        child: DraggableScrollbar.semicircle(
                           controller: myScrollController,
-                          physics: AlwaysScrollableScrollPhysics(),
-                          slivers: <Widget>[
-                            SliverFixedExtentList(
-                              itemExtent: 72,
-                              delegate: SliverChildBuilderDelegate(
-                                (BuildContext ctx, int index) =>
-                                    renderRow(ctx, list, index, state),
-                                childCount: list.length,
-                              ),
-                            )
-                          ],
+                          child: CustomScrollView(
+                            controller: myScrollController,
+                            physics: AlwaysScrollableScrollPhysics(),
+                            slivers: <Widget>[
+                              SliverFixedExtentList(
+                                itemExtent: 72,
+                                delegate: SliverChildBuilderDelegate(
+                                  (BuildContext ctx, int index) =>
+                                      renderRow(ctx, list, index, state),
+                                  childCount: list.length,
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       ),
           ),

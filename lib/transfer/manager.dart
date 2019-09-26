@@ -490,6 +490,12 @@ class TransferManager {
     // remove finished
     taskQueue.removeWhere((t) => !['working', 'init'].contains(t.status));
 
+    taskQueue.sort((a, b) {
+      if (b.order != a.order) return b.order - a.order;
+      if (b.startTime != a.startTime) return b.startTime - a.startTime;
+      return b.entry.name.compareTo(a.entry.name);
+    });
+
     // calc number of task left to run
     int freeNum =
         taskLimit - taskQueue.where((t) => t.status == 'working').length;
