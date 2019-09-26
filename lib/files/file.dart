@@ -502,7 +502,7 @@ class _FilesState extends State<Files> {
   }
 
   /// upload new file to current directroy
-  void upload(String filePath, AppState state) {
+  void upload(List<File> files, AppState state) {
     final cm = TransferManager.getInstance();
     Entry targetDir = Entry(
       uuid: currentNode.dirUUID,
@@ -510,7 +510,9 @@ class _FilesState extends State<Files> {
       name: currentNode.name,
       location: currentNode.location,
     );
-    cm.newUploadFile(filePath, targetDir, state);
+    for (int i = 0; i < files.length; i++) {
+      cm.newUploadFile(files[i].path, targetDir, state);
+    }
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -535,21 +537,26 @@ class _FilesState extends State<Files> {
                     // close showModalBottomSheet
                     Navigator.pop(this.context);
 
-                    File file;
+                    List<File> files;
                     try {
-                      file = await FilePicker.getFile(type: FileType.IMAGE);
-                      if (file == null) return;
+                      files =
+                          await FilePicker.getMultiFile(type: FileType.IMAGE);
+                      if (files is! List || files.length == 0) return;
                       if (Platform.isIOS) {
-                        String dirPath = file.parent.path;
-                        String fileName = file.path.split('/').last;
-                        String extension = fileName.contains('.')
-                            ? fileName.split('.').last
-                            : '';
-                        DateTime time = (await file.stat()).modified;
-                        String newName = extension == ''
-                            ? 'IMG_${getTimeString(time)}'
-                            : 'IMG_${getTimeString(time)}.$extension';
-                        file = await file.rename('$dirPath' + '/' + newName);
+                        for (int i = 0; i < files.length; i++) {
+                          File file = files[i];
+                          String dirPath = file.parent.path;
+                          String fileName = file.path.split('/').last;
+                          String extension = fileName.contains('.')
+                              ? fileName.split('.').last
+                              : '';
+                          DateTime time = (await file.stat()).modified;
+                          String newName = extension == ''
+                              ? 'IMG_${getTimeString(time)}'
+                              : 'IMG_${getTimeString(time)}.$extension';
+                          files[i] =
+                              await file.rename('$dirPath' + '/' + newName);
+                        }
                       }
                     } catch (e) {
                       debug(e);
@@ -557,11 +564,9 @@ class _FilesState extends State<Files> {
                         this.context,
                         i18n('Pick Image Failed Text'),
                       );
+                      return;
                     }
-
-                    if (file != null) {
-                      upload(file.path, state);
-                    }
+                    upload(files, state);
                   },
                   Icon(Icons.image, color: Colors.white),
                   Colors.blue,
@@ -572,21 +577,26 @@ class _FilesState extends State<Files> {
                     // close showModalBottomSheet
                     Navigator.pop(this.context);
 
-                    File file;
+                    List<File> files;
                     try {
-                      file = await FilePicker.getFile(type: FileType.VIDEO);
-                      if (file == null) return;
+                      files =
+                          await FilePicker.getMultiFile(type: FileType.VIDEO);
+                      if (files is! List || files.length == 0) return;
                       if (Platform.isIOS) {
-                        String dirPath = file.parent.path;
-                        String fileName = file.path.split('/').last;
-                        String extension = fileName.contains('.')
-                            ? fileName.split('.').last
-                            : '';
-                        DateTime time = (await file.stat()).modified;
-                        String newName = extension == ''
-                            ? 'VID_${getTimeString(time)}'
-                            : 'VID_${getTimeString(time)}.$extension';
-                        file = await file.rename('$dirPath' + '/' + newName);
+                        for (int i = 0; i < files.length; i++) {
+                          File file = files[i];
+                          String dirPath = file.parent.path;
+                          String fileName = file.path.split('/').last;
+                          String extension = fileName.contains('.')
+                              ? fileName.split('.').last
+                              : '';
+                          DateTime time = (await file.stat()).modified;
+                          String newName = extension == ''
+                              ? 'VID_${getTimeString(time)}'
+                              : 'VID_${getTimeString(time)}.$extension';
+                          files[i] =
+                              await file.rename('$dirPath' + '/' + newName);
+                        }
                       }
                     } catch (e) {
                       debug(e);
@@ -597,7 +607,7 @@ class _FilesState extends State<Files> {
                       return;
                     }
 
-                    upload(file.path, state);
+                    upload(files, state);
                   },
                   Icon(Icons.videocam, color: Colors.white),
                   Colors.green,
@@ -607,17 +617,16 @@ class _FilesState extends State<Files> {
                   () async {
                     // close showModalBottomSheet
                     Navigator.pop(this.context);
-                    String filePath;
+                    List<File> files;
                     try {
-                      filePath =
-                          await FilePicker.getFilePath(type: FileType.ANY);
-                      if (filePath == null) return;
+                      files = await FilePicker.getMultiFile(type: FileType.ANY);
+                      if (files is! List || files.length == 0) return;
                     } catch (e) {
                       debug(e);
                       showSnackBar(this.context, i18n('Pick File Failed Text'));
                       return;
                     }
-                    upload(filePath, state);
+                    upload(files, state);
                   },
                   Icon(Icons.insert_drive_file, color: Colors.white),
                   Colors.lightBlue,
