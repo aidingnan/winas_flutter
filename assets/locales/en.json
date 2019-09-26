@@ -434,6 +434,7 @@
   "Transfer Task Failed": "Failed",
   "Retry Transfer Task": "Retry",
   "Transfer Task Paused": "Paused",
+  "Transfer Task Waiting": "Waiting",
   "Transfer Tasks": "Transfer tasks",
   "Start All Transfer Tasks": "Start all",
   "Pause All Transfer Tasks": "Pause all",

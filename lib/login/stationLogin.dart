@@ -125,7 +125,7 @@ stationLogin(BuildContext context, Request request, Station currentDevice,
 
   if (user['uuid'] != null) {
     // init TransferManager, load TransferItem
-    TransferManager.init(user['uuid']).catchError(print);
+    TransferManager.init(user['uuid'], store.state).catchError(print);
   }
 
   // set lastUserDeviceSn

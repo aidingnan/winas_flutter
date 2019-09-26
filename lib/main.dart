@@ -39,7 +39,8 @@ void main() async {
   }
   if (initialState?.localUser?.uuid != null) {
     // init TransferManager, load TransferItem
-    TransferManager.init(initialState.localUser.uuid).catchError(print);
+    TransferManager.init(initialState.localUser.uuid, initialState)
+        .catchError(print);
   }
   // Create Store with Persistor middleware
   final store = Store<AppState>(

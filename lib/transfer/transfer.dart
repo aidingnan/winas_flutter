@@ -32,13 +32,28 @@ class _TransferState extends State<Transfer> {
     list = TransferManager.getList();
 
     // only order by startTime
-    list.sort((a, b) => b.startTime - a.startTime);
+    list.sort((a, b) {
+      if (b.order != a.order) return b.order - a.order;
+      if (b.startTime != a.startTime) return b.startTime - a.startTime;
+      return b.entry.name.compareTo(a.entry.name);
+    });
 
     await Future.delayed(
         isFirst ? Duration(milliseconds: 100) : Duration(seconds: 1));
     if (this.mounted) {
       setState(() {});
       _autoRefresh();
+    }
+  }
+
+  void newTask(TransferItem item, AppState state) {
+    final cm = TransferManager.getInstance();
+    if (item.transType == TransType.download) {
+      cm.newDownload(item.entry, state);
+    } else if (item.transType == TransType.shared) {
+      cm.newUploadSharedFile(item.filePath, state);
+    } else if (item.transType == TransType.upload) {
+      cm.newUploadFile(item.filePath, item.targetDir, state);
     }
   }
 
@@ -49,14 +64,7 @@ class _TransferState extends State<Transfer> {
     final item = items[index];
     item.clean();
     items.removeAt(index);
-    final cm = TransferManager.getInstance();
-    if (item.transType == TransType.download) {
-      cm.newDownload(item.entry, state);
-    } else if (item.transType == TransType.shared) {
-      cm.newUploadSharedFile(item.filePath, state);
-    } else if (item.transType == TransType.upload) {
-      cm.newUploadFile(item.filePath, item.targetDir, state);
-    }
+    newTask(item, state);
   }
 
   Widget renderStatus(List<TransferItem> items, int index, AppState state) {
@@ -148,6 +156,8 @@ class _TransferState extends State<Transfer> {
         setState(() {
           item.clean();
           items.removeAt(index);
+          final cm = TransferManager.getInstance();
+          cm.syncData();
           showSnackBar(ctx, i18n('Delete Success'));
         });
       },
@@ -178,6 +188,9 @@ class _TransferState extends State<Transfer> {
                 );
               }
             } else if (item.status == 'working') {
+              // pause task
+              item.pause();
+            } else if (item.status == 'init') {
               // pause task
               item.pause();
             } else if (item.status == 'paused') {
@@ -257,7 +270,9 @@ class _TransferState extends State<Transfer> {
                             ? item.speed
                             : item.status == 'paused'
                                 ? i18n('Transfer Task Paused')
-                                : '',
+                                : item.status == 'init'
+                                    ? i18n('Transfer Task Waiting')
+                                    : '',
                         style: TextStyle(fontSize: 12),
                       ),
                       Container(
@@ -291,7 +306,7 @@ class _TransferState extends State<Transfer> {
             brightness: Brightness.light,
             iconTheme: IconThemeData(color: Colors.black38),
             title: Text(
-              i18n('Transfer Tasks'),
+              i18n('Transfer Tasks') + '(${list.length})',
               style: TextStyle(color: Colors.black87),
             ),
             actions: <Widget>[
@@ -311,18 +326,13 @@ class _TransferState extends State<Transfer> {
                               child: InkWell(
                                 onTap: () async {
                                   Navigator.pop(c);
-                                  List<Entry> resumeList = [];
                                   for (int i = list.length - 1; i >= 0; i--) {
                                     TransferItem item = list[i];
                                     if (item.status == 'paused') {
                                       item.clean();
                                       list.removeAt(i);
-                                      resumeList.add(item.entry);
+                                      newTask(item, state);
                                     }
-                                  }
-                                  final cm = TransferManager.getInstance();
-                                  for (Entry entry in resumeList) {
-                                    cm.newDownload(entry, state);
                                   }
                                 },
                                 child: Container(
@@ -338,7 +348,10 @@ class _TransferState extends State<Transfer> {
                                 onTap: () {
                                   Navigator.pop(c);
                                   for (TransferItem item in list) {
-                                    if (item.status == 'working') item.pause();
+                                    if (item.status == 'working' ||
+                                        item.status == 'init') {
+                                      item.pause();
+                                    }
                                   }
                                 },
                                 child: Container(
@@ -357,6 +370,8 @@ class _TransferState extends State<Transfer> {
                                     item.clean();
                                   }
                                   list.clear();
+                                  final cm = TransferManager.getInstance();
+                                  cm.syncData();
                                 },
                                 child: Container(
                                   width: double.infinity,

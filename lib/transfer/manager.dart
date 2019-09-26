@@ -39,7 +39,7 @@ class TransferItem {
   String filePath = '';
 
   CancelToken cancelToken;
-  Function deleteFile;
+  Function callback;
 
   /// status of TransferItem: init, working, paused, finished, failed;
   String status = 'init';
@@ -50,7 +50,8 @@ class TransferItem {
   TransferItem.fromMap(Map m) {
     this.entry = Entry.fromMap(jsonDecode(m['entry']));
     this.uuid = m['uuid'];
-    this.status = m['status'] == 'working' ? 'paused' : m['status'];
+    this.status =
+        ['working', 'init'].contains(m['status']) ? 'paused' : m['status'];
     this.finishedTime = m['finishedTime'];
     this.startTime = m['startTime'];
     this.finishedSize = m['finishedSize'] ?? 0;
@@ -117,15 +118,15 @@ class TransferItem {
     }
   }
 
-  void start(CancelToken cancelToken, Function deleteFile) {
-    this.deleteFile = deleteFile;
+  void start(CancelToken cancelToken, Function cleanAndSave) {
+    this.callback = cleanAndSave;
     this.cancelToken = cancelToken;
     this.startTime = DateTime.now().millisecondsSinceEpoch;
     this.status = 'working';
   }
 
-  void reload(Function deleteFile) {
-    this.deleteFile = deleteFile;
+  void reload(Function cleanAndSave) {
+    this.callback = cleanAndSave;
   }
 
   void pause() {
@@ -139,7 +140,9 @@ class TransferItem {
 
   void clean() {
     this.pause();
-    this.deleteFile();
+    if (this.callback is Function) {
+      this.callback();
+    }
   }
 
   void resume() {
@@ -168,7 +171,7 @@ class TransferItem {
   int get order {
     switch (status) {
       case 'init':
-        return 30;
+        return 60;
       case 'working':
         return 100;
       case 'paused':
@@ -200,8 +203,10 @@ class TransferManager {
   /// local user uuid
   static String userUUID;
 
+  static AppState state;
+
   /// init and load TransferItems
-  static Future<void> init(String uuid) async {
+  static Future<void> init(String uuid, AppState appState) async {
     assert(uuid != null);
 
     TransferManager newInstance = TransferManager._();
@@ -209,6 +214,9 @@ class TransferManager {
 
     // current user
     userUUID = uuid;
+
+    // update current appState
+    state = appState;
 
     // mkdir
     Directory root = await getApplicationDocumentsDirectory();
@@ -233,10 +241,10 @@ class TransferManager {
               '/' +
               pathList.last;
           item.filePath = truePath;
-          item.reload(() => {});
+          item.reload(() => _instance._save().catchError(debug));
         } else {
           // TransType.upload
-          item.reload(() => {});
+          item.reload(() => _instance._save().catchError(debug));
         }
       }
     } catch (error) {
@@ -269,6 +277,12 @@ class TransferManager {
 
   static synchronized.Lock _lock = synchronized.Lock();
 
+  // sync data to disk
+  void syncData() {
+    _save().catchError(debug);
+  }
+
+  // async method of save data
   Future<void> _save() async {
     await _lock.synchronized(() async {
       String json = jsonEncode(transferList);
@@ -282,11 +296,150 @@ class TransferManager {
 
   Future<void> _cleanDir(String path) async {
     File file = File(path);
-    await file.delete(recursive: true);
+    try {
+      await file.delete(recursive: true);
+    } catch (e) {
+      debug(e);
+    }
+
     await _save();
   }
 
-  Future<void> _downloadFile(TransferItem item, AppState state) async {
+  Future<Entry> getTargetDir(Drive drive, String dirname) async {
+    final uuid = drive.uuid;
+    final listNav = await state.apis.req('listNavDir', {
+      'driveUUID': uuid,
+      'dirUUID': uuid,
+    });
+
+    final currentNode = Node(
+      name: 'Backup',
+      driveUUID: uuid,
+      dirUUID: uuid,
+      tag: 'backup',
+      location: 'backup',
+    );
+
+    List<Entry> rawEntries = List.from(listNav.data['entries']
+        .map((entry) => Entry.mixNode(entry, currentNode)));
+
+    final photosDir =
+        rawEntries.firstWhere((e) => e.name == dirname, orElse: () => null);
+    return photosDir;
+  }
+
+  /// upload file in Isolate
+  Future<void> _uploadAsync(Entry targetDir, String filePath, String hash,
+      CancelToken cancelToken, Function onProgress) async {
+    final fileName = filePath.split('/').last;
+    File file = File(filePath);
+    final FileStat stat = await file.stat();
+
+    final formDataOptions = {
+      'op': 'newfile',
+      'size': stat.size,
+      'sha256': hash,
+      'bctime': stat.modified.millisecondsSinceEpoch,
+      'bmtime': stat.modified.millisecondsSinceEpoch,
+      'policy': ['rename', 'rename'],
+    };
+
+    final args = {
+      'driveUUID': targetDir.pdrv,
+      'dirUUID': targetDir.uuid,
+      'fileName': fileName,
+      'file': UploadFileInfo(file, jsonEncode(formDataOptions)),
+    };
+
+    await state.apis
+        .uploadAsync(args, cancelToken: cancelToken, onProgress: onProgress);
+  }
+
+  // call _uploadAsync
+  Future<void> uploadSharedFile(TransferItem item) async {
+    final filePath = item.filePath;
+    CancelToken cancelToken = CancelToken();
+    item.start(cancelToken, () => _instance._save().catchError(debug));
+    try {
+      await _save();
+
+      // get target dir
+      final targetDirName = i18n('Folder Name For Shared Files From Other App');
+
+      final Drive drive =
+          state.drives.firstWhere((d) => d.tag == 'home', orElse: () => null);
+      Entry targetDir = await getTargetDir(drive, targetDirName);
+
+      if (targetDir == null) {
+        // make backup root directory
+        await state.apis.req('mkdir', {
+          'dirname': targetDirName,
+          'dirUUID': drive.uuid,
+          'driveUUID': drive.uuid,
+        });
+
+        // retry getPhotosDir
+        targetDir = await getTargetDir(drive, targetDirName);
+      }
+      // update targetDir
+      item.targetDir = targetDir;
+
+      // hash
+      final hash = await hashViaIsolate(filePath);
+
+      // upload async
+      await _uploadAsync(targetDir, filePath, hash, cancelToken,
+          (int a, int b) => item.update(a));
+
+      item.finish();
+
+      await _save();
+
+      schedule();
+    } catch (error) {
+      debug(error);
+      // DioErrorType.CANCEL is not error
+      if (error is! DioError || (error?.type != DioErrorType.CANCEL)) {
+        item.fail(error);
+      }
+      schedule();
+    }
+  }
+
+  // call _uploadAsync
+  Future<void> uploadFile(TransferItem item) async {
+    final filePath = item.filePath;
+    CancelToken cancelToken = CancelToken();
+    item.start(cancelToken, () => _instance._save().catchError(debug));
+    try {
+      await _save();
+
+      // get target dir
+      Entry targetDir = item.targetDir;
+
+      // hash
+      final hash = await hashViaIsolate(filePath);
+
+      // upload async
+      await _uploadAsync(targetDir, filePath, hash, cancelToken,
+          (int a, int b) => item.update(a));
+
+      item.finish();
+
+      await _save();
+      schedule();
+    } catch (error) {
+      // DioErrorType.CANCEL is not error
+      if (error is! DioError || (error?.type != DioErrorType.CANCEL)) {
+        debug(error);
+        item.fail(error);
+      }
+      schedule();
+    }
+  }
+
+  // call state.apis.download
+  Future<void> downloadFile(TransferItem item) async {
     Entry entry = item.entry;
 
     // use unique transferItem uuid
@@ -312,179 +465,73 @@ class TransferManager {
       await File(transPath).rename(entryPath);
       item.finish();
       await _save();
+
+      schedule();
     } catch (error) {
       debug(error);
       // DioErrorType.CANCEL is not error
       if (error is DioError && (error?.type != DioErrorType.CANCEL)) {
         item.fail(error);
       }
+      schedule();
+    }
+  }
+
+  static List<TransferItem> taskQueue = [];
+  final taskLimit = 2;
+
+  void addToTaskQueue(TransferItem item) {
+    taskQueue.add(item);
+    schedule();
+  }
+
+  void schedule() {
+    // print('schedule, ${taskQueue.length}');
+    // remove finished
+    taskQueue.removeWhere((t) => !['working', 'init'].contains(t.status));
+
+    // calc number of task left to run
+    int freeNum =
+        taskLimit - taskQueue.where((t) => t.status == 'working').length;
+
+    // run pending tasks
+    if (freeNum > 0) {
+      taskQueue.where((t) => t.status == 'init').take(freeNum).forEach((t) {
+        // TransferItem.run()
+        switch (t.transType) {
+          case TransType.download:
+            downloadFile(t);
+            break;
+          case TransType.upload:
+            uploadFile(t);
+            break;
+          case TransType.shared:
+            uploadSharedFile(t);
+            break;
+          default:
+        }
+      });
     }
   }
 
   /// creat a new download task
-  newDownload(Entry entry, AppState state) {
+  void newDownload(Entry entry, AppState newState) {
+    // update current appState
+    state = newState;
+
     TransferItem item = TransferItem(
       entry: entry,
       transType: TransType.download,
     );
     transferList.add(item);
-    _downloadFile(item, state).catchError((onError) => item.fail(onError));
-  }
-
-  Future<Entry> getTargetDir(
-      AppState state, Drive drive, String dirname) async {
-    final uuid = drive.uuid;
-    final listNav = await state.apis.req('listNavDir', {
-      'driveUUID': uuid,
-      'dirUUID': uuid,
-    });
-
-    final currentNode = Node(
-      name: 'Backup',
-      driveUUID: uuid,
-      dirUUID: uuid,
-      tag: 'backup',
-      location: 'backup',
-    );
-
-    List<Entry> rawEntries = List.from(listNav.data['entries']
-        .map((entry) => Entry.mixNode(entry, currentNode)));
-
-    final photosDir =
-        rawEntries.firstWhere((e) => e.name == dirname, orElse: () => null);
-    return photosDir;
-  }
-
-  /// upload file in Isolate
-  Future<void> uploadAsync(AppState state, Entry targetDir, String filePath,
-      String hash, CancelToken cancelToken, Function onProgress) async {
-    final fileName = filePath.split('/').last;
-    File file = File(filePath);
-    final FileStat stat = await file.stat();
-
-    final formDataOptions = {
-      'op': 'newfile',
-      'size': stat.size,
-      'sha256': hash,
-      'bctime': stat.modified.millisecondsSinceEpoch,
-      'bmtime': stat.modified.millisecondsSinceEpoch,
-      'policy': ['rename', 'rename'],
-    };
-
-    final args = {
-      'driveUUID': targetDir.pdrv,
-      'dirUUID': targetDir.uuid,
-      'fileName': fileName,
-      'file': UploadFileInfo(file, jsonEncode(formDataOptions)),
-    };
-
-    await state.apis
-        .uploadAsync(args, cancelToken: cancelToken, onProgress: onProgress);
-  }
-
-  Future<void> uploadSharedFile(TransferItem item, AppState state) async {
-    final filePath = item.filePath;
-    CancelToken cancelToken = CancelToken();
-    item.start(cancelToken, () => {});
-    try {
-      await _save();
-
-      // get target dir
-      final targetDirName = i18n('Folder Name For Shared Files From Other App');
-
-      final Drive drive =
-          state.drives.firstWhere((d) => d.tag == 'home', orElse: () => null);
-      Entry targetDir = await getTargetDir(state, drive, targetDirName);
-
-      if (targetDir == null) {
-        // make backup root directory
-        await state.apis.req('mkdir', {
-          'dirname': targetDirName,
-          'dirUUID': drive.uuid,
-          'driveUUID': drive.uuid,
-        });
-
-        // retry getPhotosDir
-        targetDir = await getTargetDir(state, drive, targetDirName);
-      }
-      // update targetDir
-      item.targetDir = targetDir;
-
-      // hash
-      final hash = await hashViaIsolate(filePath);
-
-      // upload async
-      await uploadAsync(state, targetDir, filePath, hash, cancelToken,
-          (int a, int b) => item.update(a));
-
-      item.finish();
-
-      await _save();
-    } catch (error) {
-      debug(error);
-      // DioErrorType.CANCEL is not error
-      if (error is! DioError || (error?.type != DioErrorType.CANCEL)) {
-        item.fail(error);
-      }
-    }
-  }
-
-  /// creat a new shared task. handle shared file from other app
-  newUploadSharedFile(String filePath, AppState state) {
-    File(filePath)
-      ..stat().then(
-        (stat) {
-          if (stat.type != FileSystemEntityType.notFound) {
-            String name = filePath.split('/').last;
-            TransferItem item = TransferItem(
-              entry: Entry(name: name, size: stat.size),
-              transType: TransType.shared,
-              filePath: filePath,
-            );
-            transferList.add(item);
-            uploadSharedFile(item, state).catchError((error) {
-              debug(error);
-              // DioErrorType.CANCEL is not error
-              if (error is! DioError || (error?.type != DioErrorType.CANCEL)) {
-                item.fail(error);
-              }
-            });
-          }
-        },
-      ).catchError(debug);
-  }
-
-  Future<void> uploadFile(TransferItem item, AppState state) async {
-    final filePath = item.filePath;
-    CancelToken cancelToken = CancelToken();
-    item.start(cancelToken, () => {});
-    try {
-      await _save();
-
-      // get target dir
-      Entry targetDir = item.targetDir;
-
-      // hash
-      final hash = await hashViaIsolate(filePath);
-
-      // upload async
-      await uploadAsync(state, targetDir, filePath, hash, cancelToken,
-          (int a, int b) => item.update(a));
-
-      item.finish();
-
-      await _save();
-    } catch (error) {
-      debug(error);
-      // DioErrorType.CANCEL is not error
-      if (error is! DioError || (error?.type != DioErrorType.CANCEL)) {
-        item.fail(error);
-      }
-    }
+    addToTaskQueue(item);
+    Future.delayed(Duration.zero, () => schedule());
   }
 
   /// creat a new upload task
-  newUploadFile(String filePath, Entry targetDir, AppState state) {
+  void newUploadFile(String filePath, Entry targetDir, AppState newState) {
+    // update current appState
+    state = newState;
     File(filePath)
       ..stat().then(
         (stat) {
@@ -497,13 +544,29 @@ class TransferManager {
               targetDir: targetDir,
             );
             transferList.add(item);
-            uploadFile(item, state).catchError((error) {
-              debug(error);
-              // DioErrorType.CANCEL is not error
-              if (error is! DioError || (error?.type != DioErrorType.CANCEL)) {
-                item.fail(error);
-              }
-            });
+            addToTaskQueue(item);
+          }
+        },
+      ).catchError(debug);
+  }
+
+  /// creat a new shared task. handle shared file from other app
+  void newUploadSharedFile(String filePath, AppState newState) {
+    // update current appState
+    state = newState;
+
+    File(filePath)
+      ..stat().then(
+        (stat) {
+          if (stat.type != FileSystemEntityType.notFound) {
+            String name = filePath.split('/').last;
+            TransferItem item = TransferItem(
+              entry: Entry(name: name, size: stat.size),
+              transType: TransType.shared,
+              filePath: filePath,
+            );
+            transferList.add(item);
+            addToTaskQueue(item);
           }
         },
       ).catchError(debug);
