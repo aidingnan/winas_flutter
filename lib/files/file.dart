@@ -539,10 +539,11 @@ class _FilesState extends State<Files> {
 
                     List<File> files;
                     try {
-                      files =
-                          await FilePicker.getMultiFile(type: FileType.IMAGE);
-                      if (files is! List || files.length == 0) return;
                       if (Platform.isIOS) {
+                        final File res =
+                            await FilePicker.getFile(type: FileType.IMAGE);
+                        if (res == null) return;
+                        files.add(res);
                         for (int i = 0; i < files.length; i++) {
                           File file = files[i];
                           String dirPath = file.parent.path;
@@ -557,6 +558,10 @@ class _FilesState extends State<Files> {
                           files[i] =
                               await file.rename('$dirPath' + '/' + newName);
                         }
+                      } else {
+                        files =
+                            await FilePicker.getMultiFile(type: FileType.IMAGE);
+                        if (files is! List || files.length == 0) return;
                       }
                     } catch (e) {
                       debug(e);
@@ -579,10 +584,11 @@ class _FilesState extends State<Files> {
 
                     List<File> files;
                     try {
-                      files =
-                          await FilePicker.getMultiFile(type: FileType.VIDEO);
-                      if (files is! List || files.length == 0) return;
                       if (Platform.isIOS) {
+                        final File res =
+                            await FilePicker.getFile(type: FileType.IMAGE);
+                        if (res == null) return;
+                        files.add(res);
                         for (int i = 0; i < files.length; i++) {
                           File file = files[i];
                           String dirPath = file.parent.path;
@@ -597,6 +603,10 @@ class _FilesState extends State<Files> {
                           files[i] =
                               await file.rename('$dirPath' + '/' + newName);
                         }
+                      } else {
+                        files =
+                            await FilePicker.getMultiFile(type: FileType.VIDEO);
+                        if (files is! List || files.length == 0) return;
                       }
                     } catch (e) {
                       debug(e);
