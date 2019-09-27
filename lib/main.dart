@@ -56,6 +56,10 @@ void main() async {
     print('checkDev failed $e');
   }
 
+  // get deviceUUID
+  final deviceUUID = await AppConfig.getDeviceUUID();
+  print('deviceUUID: $deviceUUID');
+
   // keep screen on
   Wakelock.enable().catchError(print);
 

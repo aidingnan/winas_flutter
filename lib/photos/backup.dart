@@ -9,6 +9,8 @@ import '../redux/redux.dart';
 import '../common/utils.dart';
 import '../common/isolate.dart';
 import '../common/eventBus.dart';
+import '../common/appConfig.dart';
+
 import '../common/stationApis.dart';
 
 /// `idle`: init state
@@ -60,6 +62,7 @@ class Worker {
   Worker(this.apis);
   String machineId;
   String deviceName;
+  String deviceId;
   CancelToken cancelToken;
 
   CancelIsolate cancelUpload;
@@ -113,7 +116,8 @@ class Worker {
     Drive backupDrive = drives.firstWhere(
       (d) =>
           d?.client?.id == machineId ||
-          (d?.client?.idList is List && d.client.idList.contains(machineId)),
+          (d?.client?.idList is List && d.client.idList.contains(machineId)) ||
+          (d?.client?.didList is List && d.client.didList.contains(deviceId)),
       orElse: () => null,
     );
 
@@ -154,6 +158,8 @@ class Worker {
         'label': deviceName,
         'client': {
           'id': machineId,
+          'idList': [machineId],
+          'didList': [deviceId],
           'status': 'Idle',
           'disabled': false,
           'lastBackupTime': 0,
@@ -477,6 +483,8 @@ class Worker {
     final data = await getMachineId();
     deviceName = data['deviceName'];
     machineId = data['machineId'];
+    deviceId = await AppConfig.getDeviceUUID();
+
     final Entry rootDir = await getDir();
     assert(rootDir is Entry);
 

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:uuid/uuid.dart';
 import 'package:path_provider/path_provider.dart';
 
 class AppConfig {
@@ -32,5 +33,29 @@ class AppConfig {
       await devFile.create();
       AppConfig.isDev = true;
     }
+  }
+
+  static Future<String> getDeviceUUID() async {
+    Directory root = await getApplicationDocumentsDirectory();
+    File devFile = File("${root.path}/deviceUUID");
+    bool devFileExists = await devFile.exists();
+    String uuid;
+    if (devFileExists == true) {
+      try {
+        uuid = await devFile.readAsString();
+      } catch (e) {
+        print('read old uuid failed $e');
+        uuid = null;
+      }
+    }
+    if (uuid is! String || uuid.length != 36) {
+      uuid = Uuid().v4();
+      try {
+        await devFile.writeAsString(uuid);
+      } catch (e) {
+        print('write new uuid failed $e');
+      }
+    }
+    return uuid;
   }
 }

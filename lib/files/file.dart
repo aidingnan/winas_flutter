@@ -545,28 +545,29 @@ class _FilesState extends State<Files> {
                             await MultiImagePicker.pickImages(
                           maxImages: 100,
                         );
-                        print('resultList $resultList');
 
                         if (resultList == null || resultList.length == 0)
                           return;
                         files = [];
                         final loadingInstance = showLoading(this.context);
-
+                        final cm = await CacheManager.getInstance();
                         for (int i = 0; i < resultList.length; i++) {
                           String filePath = await resultList[i].filePath;
                           File file = File(filePath);
-                          // String dirPath = file.parent.path;
-                          // String fileName = filePath.split('/').last;
-                          // String extension = fileName.contains('.')
-                          //     ? fileName.split('.').last
-                          //     : '';
-                          // DateTime time = (await file.stat()).modified;
-                          // String newName = extension == ''
-                          //     ? 'IMG_${getTimeString(time)}'
-                          //     : 'IMG_${getTimeString(time)}.$extension';
-                          // File newFile =
-                          //     await file.rename('$dirPath' + '/' + newName);
-                          files.add(file);
+
+                          // create a new dir in trans dir
+                          String dirPath = await cm.transChildDir();
+                          String fileName = filePath.split('/').last;
+                          String extension = fileName.contains('.')
+                              ? fileName.split('.').last
+                              : '';
+                          DateTime time = (await file.stat()).modified;
+                          String newName = extension == ''
+                              ? 'IMG_${getTimeString(time)}'
+                              : 'IMG_${getTimeString(time)}.$extension';
+                          File newFile =
+                              await file.copy('$dirPath' + '/' + newName);
+                          files.add(newFile);
                         }
                         loadingInstance.close();
                       } else {

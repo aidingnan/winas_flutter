@@ -47,6 +47,12 @@ class CacheManager {
     return _rootDir + '/trans/';
   }
 
+  Future<String> transChildDir() async {
+    String childDir = _instance._transDir() + Uuid().v4();
+    await Directory(childDir).create(recursive: true);
+    return childDir;
+  }
+
   String _thumbnailDir() {
     return _rootDir + '/thumnail/';
   }

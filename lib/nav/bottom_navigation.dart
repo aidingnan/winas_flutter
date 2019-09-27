@@ -18,6 +18,7 @@ import '../common/eventBus.dart';
 import '../transfer/manager.dart';
 import '../files/backupView.dart';
 import '../device/myStation.dart';
+import '../common/appConfig.dart';
 import '../transfer/transfer.dart';
 import '../files/tokenExpired.dart';
 import '../files/deviceNotOnline.dart';
@@ -138,6 +139,7 @@ class _BottomNavigationState extends State<BottomNavigation>
       final data = await getMachineId();
       final deviceName = data['deviceName'];
       final machineId = data['machineId'];
+      final deviceId = await AppConfig.getDeviceUUID();
       // debug('deviceName $deviceName, machineId $machineId');
       final res = await store.state.apis.req('drives', null);
       // get current drives data
@@ -148,7 +150,9 @@ class _BottomNavigationState extends State<BottomNavigation>
       Drive backupDrive = drives.firstWhere(
         (d) =>
             d?.client?.id == machineId ||
-            (d?.client?.idList is List && d.client.idList.contains(machineId)),
+            (d?.client?.idList is List &&
+                d.client.idList.contains(machineId)) ||
+            (d?.client?.didList is List && d.client.didList.contains(deviceId)),
         orElse: () => null,
       );
 
@@ -202,7 +206,9 @@ class _BottomNavigationState extends State<BottomNavigation>
                         );
                         final client = res.data['client'];
                         List idList = client['idList'] ?? [client['id']];
+                        List didList = client['didList'] ?? [];
                         idList.add(machineId);
+                        didList.add(deviceId);
                         final props = {
                           'op': 'backup',
                           'client': {
@@ -210,6 +216,7 @@ class _BottomNavigationState extends State<BottomNavigation>
                             'lastBackupTime': client['lastBackupTime'],
                             'id': client['id'],
                             'idList': idList,
+                            'didList': didList,
                             'disabled': false,
                             'type': client['type'],
                           }

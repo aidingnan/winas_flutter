@@ -233,17 +233,14 @@ class TransferManager {
           // TransType.download
           item.reload(
               () => _instance._cleanDir(item.filePath).catchError(debug));
-        } else if (item.transType == TransType.shared) {
-          // TransType.shared, need to update to the correct filePath
+        } else {
+          // TransType.shared or upload, need to update to the correct filePath
           final pathList = item.filePath.split('/');
           final truePath = _instance._transDir() +
               pathList[pathList.length - 2] +
               '/' +
               pathList.last;
           item.filePath = truePath;
-          item.reload(() => _instance._save().catchError(debug));
-        } else {
-          // TransType.upload
           item.reload(() => _instance._save().catchError(debug));
         }
       }
@@ -353,6 +350,9 @@ class TransferManager {
 
     await state.apis
         .uploadAsync(args, cancelToken: cancelToken, onProgress: onProgress);
+
+    // delete cache in trans
+    await file.parent.delete(recursive: true);
   }
 
   // call _uploadAsync
@@ -564,15 +564,18 @@ class TransferManager {
     File(filePath)
       ..stat().then(
         (stat) {
+          String name = filePath.split('/').last;
+          TransferItem item = TransferItem(
+            entry: Entry(name: name, size: stat.size),
+            transType: TransType.shared,
+            filePath: filePath,
+          );
           if (stat.type != FileSystemEntityType.notFound) {
-            String name = filePath.split('/').last;
-            TransferItem item = TransferItem(
-              entry: Entry(name: name, size: stat.size),
-              transType: TransType.shared,
-              filePath: filePath,
-            );
             transferList.add(item);
             addToTaskQueue(item);
+          } else {
+            item.fail(i18n('Target File Not Found'));
+            transferList.add(item);
           }
         },
       ).catchError(debug);
