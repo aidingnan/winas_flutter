@@ -543,20 +543,9 @@ class _FilesState extends State<Files> {
                       if (Platform.isIOS) {
                         List<Asset> resultList =
                             await MultiImagePicker.pickImages(
-                          maxImages: 3,
-                          materialOptions: MaterialOptions(
-                            actionBarTitle: "Action bar",
-                            allViewTitle: "All view title",
-                            actionBarColor: "#aaaaaa",
-                            actionBarTitleColor: "#bbbbbb",
-                            lightStatusBar: false,
-                            statusBarColor: '#abcdef',
-                            startInAllView: true,
-                            selectCircleStrokeColor: "#000000",
-                            selectionLimitReachedText:
-                                "You can't select any more.",
-                          ),
+                          maxImages: 100,
                         );
+                        print('resultList $resultList');
 
                         if (resultList == null || resultList.length == 0)
                           return;
@@ -564,18 +553,18 @@ class _FilesState extends State<Files> {
                         for (int i = 0; i < resultList.length; i++) {
                           String filePath = await resultList[i].filePath;
                           File file = File(filePath);
-                          String dirPath = file.parent.path;
-                          String fileName = filePath.split('/').last;
-                          String extension = fileName.contains('.')
-                              ? fileName.split('.').last
-                              : '';
-                          DateTime time = (await file.stat()).modified;
-                          String newName = extension == ''
-                              ? 'IMG_${getTimeString(time)}'
-                              : 'IMG_${getTimeString(time)}.$extension';
-                          File newFile =
-                              await file.rename('$dirPath' + '/' + newName);
-                          files.add(newFile);
+                          // String dirPath = file.parent.path;
+                          // String fileName = filePath.split('/').last;
+                          // String extension = fileName.contains('.')
+                          //     ? fileName.split('.').last
+                          //     : '';
+                          // DateTime time = (await file.stat()).modified;
+                          // String newName = extension == ''
+                          //     ? 'IMG_${getTimeString(time)}'
+                          //     : 'IMG_${getTimeString(time)}.$extension';
+                          // File newFile =
+                          //     await file.rename('$dirPath' + '/' + newName);
+                          files.add(file);
                         }
                       } else {
                         files =
@@ -605,9 +594,9 @@ class _FilesState extends State<Files> {
                     try {
                       if (Platform.isIOS) {
                         final File res =
-                            await FilePicker.getFile(type: FileType.IMAGE);
+                            await FilePicker.getFile(type: FileType.VIDEO);
                         if (res == null) return;
-                        files.add(res);
+                        files = [res];
                         for (int i = 0; i < files.length; i++) {
                           File file = files[i];
                           String dirPath = file.parent.path;
