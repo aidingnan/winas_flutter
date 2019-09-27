@@ -550,6 +550,8 @@ class _FilesState extends State<Files> {
                         if (resultList == null || resultList.length == 0)
                           return;
                         files = [];
+                        final loadingInstance = showLoading(this.context);
+
                         for (int i = 0; i < resultList.length; i++) {
                           String filePath = await resultList[i].filePath;
                           File file = File(filePath);
@@ -566,17 +568,20 @@ class _FilesState extends State<Files> {
                           //     await file.rename('$dirPath' + '/' + newName);
                           files.add(file);
                         }
+                        loadingInstance.close();
                       } else {
                         files =
                             await FilePicker.getMultiFile(type: FileType.IMAGE);
                         if (files is! List || files.length == 0) return;
                       }
                     } catch (e) {
-                      debug(e);
-                      showSnackBar(
-                        this.context,
-                        i18n('Pick Image Failed Text'),
-                      );
+                      if (e is! NoImagesSelectedException) {
+                        debug(e);
+                        showSnackBar(
+                          this.context,
+                          i18n('Pick Image Failed Text'),
+                        );
+                      }
                       return;
                     }
                     upload(files, state);

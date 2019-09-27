@@ -40,11 +40,11 @@ dependencies:
   image_cropper: 1.0.0
   multi_image_picker: 4.5.6
 
-  # photo_manager: 0.3.3
-  photo_manager:
-    git:
-      url: https://github.com/juncaixinchi/flutter_photo_manager
-      ref: 6791042cbb03ec029ff43104091707bc27ec4c71
+  photo_manager: 0.4.3
+  # photo_manager:
+  #   git:
+  #     url: https://github.com/juncaixinchi/flutter_photo_manager
+  #     ref: 6791042cbb03ec029ff43104091707bc27ec4c71
 
   # video
   chewie: 0.9.7

@@ -93,11 +93,16 @@ class Worker {
     if (isAborted) return [];
     final result = await PhotoManager.requestPermission();
     if (!result) return [];
-    List<AssetPathEntity> pathList = await PhotoManager.getAssetPathList();
+    List<AssetPathEntity> pathList =
+        await PhotoManager.getAssetPathList(type: RequestType.all);
     List<AssetEntity> localAssetList = await pathList[0].assetList;
 
     /// older(small) first
-    localAssetList.sort((a, b) => a.createTime - b.createTime);
+    localAssetList.sort((a, b) {
+      int timeA = a.createDtSecond ?? a.modifiedDateSecond;
+      int timeB = b.createDtSecond ?? b.modifiedDateSecond;
+      return timeA - timeB;
+    });
     return localAssetList;
   }
 
@@ -338,7 +343,7 @@ class Worker {
     // final time = getNow();
 
     String id = entity.id;
-    int mtime = entity.createTime;
+    int mtime = entity.createDtSecond ?? entity.modifiedDateSecond;
 
     // debug('before hash: $id, ${getNow() - time}');
     String hash = await getHash('$id+$mtime', entity);
@@ -478,6 +483,7 @@ class Worker {
     final remoteDirs = await getRemoteDirs(rootDir);
 
     if (isAborted) return;
+
     List<AssetEntity> assetList = await getAssetList();
     total = assetList.length;
 
@@ -488,7 +494,8 @@ class Worker {
       if (status == Status.running) {
         try {
           String id = entity.id;
-          int mtime = entity.createTime;
+
+          int mtime = entity.createDtSecond ?? entity.modifiedDateSecond;
 
           SharedPreferences prefs = await SharedPreferences.getInstance();
           String hash = prefs.getString('$id+$mtime');
@@ -531,7 +538,7 @@ class Worker {
           print('backup failed: ${entity.id}');
           print(e);
           String id = entity.id;
-          int mtime = entity.createTime;
+          int mtime = entity.createDtSecond ?? entity.modifiedDateSecond;
 
           /// clean hash cache
           cleanHash('$id+$mtime').catchError(debug);
