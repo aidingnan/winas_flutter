@@ -443,7 +443,7 @@
 
   "==== transfer/manager.dart ====": "",
   "Folder Name For Shared Files From Other App": "来自手机的文件",
-  "Target File Not Found": "源文件未找到（可能是应用缓存被清理），请重新尝试上传",
+  "Target File Not Found": "源文件未找到（可能是应用缓存被清理）",
 
   "==== user/user.dart ====": "",
   "Account Detail": "查看并编辑个人资料",

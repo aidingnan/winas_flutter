@@ -541,16 +541,20 @@ class TransferManager {
     File(filePath)
       ..stat().then(
         (stat) {
+          String name = filePath.split('/').last;
+          TransferItem item = TransferItem(
+            entry: Entry(name: name, size: stat.size),
+            transType: TransType.upload,
+            filePath: filePath,
+            targetDir: targetDir,
+          );
+
           if (stat.type != FileSystemEntityType.notFound) {
-            String name = filePath.split('/').last;
-            TransferItem item = TransferItem(
-              entry: Entry(name: name, size: stat.size),
-              transType: TransType.upload,
-              filePath: filePath,
-              targetDir: targetDir,
-            );
             transferList.add(item);
             addToTaskQueue(item);
+          } else {
+            item.fail(i18n('Target File Not Found'));
+            transferList.add(item);
           }
         },
       ).catchError(debug);
