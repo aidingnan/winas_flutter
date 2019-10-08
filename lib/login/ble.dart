@@ -63,7 +63,8 @@ Future getLocalAuth(BluetoothDevice device, String command) async {
     (c) => c.uuid.toString() == LOCAL_AUTH_SERVICE_WRITE,
     orElse: () => null,
   );
-  await device.setNotifyValue(localAuthNotify, true);
+
+  await localAuthNotify.setNotifyValue(true);
 
   final res = await writeDataAsync(
     command,
@@ -94,7 +95,8 @@ Future connectWifi(BluetoothDevice device, String command) async {
     (c) => c.uuid.toString() == NET_SETTING_SERVICE_WRITE,
     orElse: () => null,
   );
-  await device.setNotifyValue(localAuthNotify, true);
+
+  await localAuthNotify.setNotifyValue(true);
 
   final json = await writeDataAsync(
     command,
@@ -141,15 +143,11 @@ Future<void> connectWifiAndBind(
     (c) => c.uuid.toString() == NET_SETTING_SERVICE_WRITE,
     orElse: () => null,
   );
-  await device.setNotifyValue(netNotify, true);
+  await netNotify.setNotifyValue(true);
 
-  bleRes.addStream(device.onValueChanged(netNotify));
+  bleRes.addStream(netNotify.value);
 
-  await device.writeCharacteristic(
-    netWrite,
-    command.codeUnits,
-    type: CharacteristicWriteType.withResponse,
-  );
+  await netWrite.write(command.codeUnits);
 }
 
 /// write data to BLE Characteristic
@@ -161,32 +159,31 @@ void writeData(
   Function callback,
 ) {
   bool fired = false;
+  StreamSubscription<List<int>> listener;
 
-  device.onValueChanged(notifyCharact).first.then((value) {
+  listener = notifyCharact.value.listen((value) {
     if (!fired) {
+      // filter noise value
+      if (value is! List || value.length == 0) return;
+
       fired = true;
+      listener.cancel();
+
       var res;
       try {
-        res = jsonDecode(String.fromCharCodes(value));
+        if (value is! List || value.length == 0) {
+          res = null;
+        } else {
+          res = jsonDecode(String.fromCharCodes(value));
+        }
       } catch (e) {
         callback(e, null);
       }
       callback(null, res);
     }
-  }).catchError((error) {
-    if (!fired) {
-      fired = true;
-      callback(error, null);
-    }
   });
 
-  device
-      .writeCharacteristic(
-    writeCharact,
-    data.codeUnits,
-    type: CharacteristicWriteType.withResponse,
-  )
-      .catchError((error) {
+  writeCharact.write(data.codeUnits).catchError((error) {
     if (!fired) {
       fired = true;
       callback(error, null);

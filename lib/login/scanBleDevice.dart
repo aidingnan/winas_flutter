@@ -111,42 +111,6 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
     return colors;
   }
 
-  /// connect to selected BLE device
-  void connect(ScanResult scanResult, Function callback) {
-    final device = scanResult.device;
-    FlutterBlue flutterBlue = FlutterBlue.instance;
-    // cancel previous BLE device connection
-    deviceConnection?.cancel();
-    print('connecting ${scanResult.device.name} ...');
-    bool done = false;
-    deviceConnection = flutterBlue
-        .connect(device, timeout: Duration(seconds: 60), autoConnect: false)
-        .listen((s) {
-      print(s);
-      if (done) return;
-      if (s == BluetoothDeviceState.connected) {
-        done = true;
-        callback(null, device);
-      } else {
-        done = true;
-        callback('Disconnected', null);
-      }
-    });
-  }
-
-  /// async function of `connect`
-  Future<BluetoothDevice> connectAsync(ScanResult scanResult) async {
-    Completer<BluetoothDevice> c = Completer();
-    connect(scanResult, (error, BluetoothDevice value) {
-      if (error != null) {
-        c.completeError(error);
-      } else {
-        c.complete(value);
-      }
-    });
-    return c.future;
-  }
-
   parseResult(ScanResult scanResult) {
     final manufacturerData = scanResult.advertisementData.manufacturerData;
     int value = -1;
@@ -294,7 +258,8 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                                     );
 
                                     try {
-                                      device = await connectAsync(scanResult);
+                                      device = scanResult.device;
+                                      await device.connect();
                                     } catch (e) {
                                       debug(e);
 

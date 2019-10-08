@@ -98,12 +98,12 @@ dependencies:
   draggable_scrollbar:
     git: https://github.com/juncaixinchi/flutter-draggable-scrollbar.git
 
-  # flutter_blue: 0.5.0
+  flutter_blue: 0.6.2
   # fix BLE connection bug
-  flutter_blue:
-    git:
-      url: https://github.com/juncaixinchi/flutter_blue
-      ref: 8799945a93b6a4a0a0cc5315e0208108f9f172cd
+  # flutter_blue:
+  #   git:
+  #     url: https://github.com/juncaixinchi/flutter_blue
+  #     ref: 8799945a93b6a4a0a0cc5315e0208108f9f172cd
 
 dev_dependencies:
   flutter_test:
