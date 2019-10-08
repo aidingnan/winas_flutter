@@ -988,7 +988,10 @@ class _ConfigDeviceState extends State<ConfigDevice> {
     bool hasBack = status == Status.auth || status == Status.wifi;
     // whether fab enable or not
     bool enabled = (status == Status.auth && selected != null) ||
-        (status == Status.wifi && pwd is String && pwd.length > 0);
+        (status == Status.wifi &&
+            pwd is String &&
+            pwd.length > 0 &&
+            ssid != null);
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0, // no shadow
