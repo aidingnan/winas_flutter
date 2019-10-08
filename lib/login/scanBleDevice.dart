@@ -41,6 +41,11 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
 
     /// Disconnect from device
     deviceConnection?.cancel();
+
+    /// cancel all ble device connections
+    results.forEach((ScanResult s) {
+      s.device.disconnect().catchError(print);
+    });
   }
 
   List<ScanResult> results = [];
@@ -50,6 +55,9 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
   Future<void> startBLESearch() async {
     FlutterBlue flutterBlue = FlutterBlue.instance;
     error = null;
+
+    await flutterBlue.stopScan();
+
     scanSubscription?.cancel();
 
     try {
@@ -289,13 +297,16 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                                       ctx,
                                       MaterialPageRoute(
                                         builder: (context) => ConfigDevice(
-                                          device: device,
-                                          request: widget.request,
-                                          action: widget.action,
-                                          needFormat: needFormat == true,
-                                          onClose: () =>
-                                              deviceConnection?.cancel(),
-                                        ),
+                                            device: device,
+                                            request: widget.request,
+                                            action: widget.action,
+                                            needFormat: needFormat == true,
+                                            onClose: () {
+                                              deviceConnection?.cancel();
+                                              device
+                                                  .disconnect()
+                                                  .catchError(print);
+                                            }),
                                       ),
                                     );
                                   },
