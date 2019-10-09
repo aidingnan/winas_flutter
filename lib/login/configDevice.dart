@@ -92,6 +92,13 @@ class _ConfigDeviceState extends State<ConfigDevice> {
     super.dispose();
   }
 
+  String userId;
+
+  /// debugLog with userId and deviceName
+  void debugLog(String log) {
+    debug(log, userId: userId, deviceName: widget.device.name);
+  }
+
   /// check color code
   Future<String> checkCode(BluetoothDevice device, List<String> code) async {
     final authCommand =
@@ -172,11 +179,11 @@ class _ConfigDeviceState extends State<ConfigDevice> {
       }
 
       if (code != null) {
-        debug('onData error with code: $code, reason: $reason');
+        debugLog('onData error with code: $code, reason: $reason');
       }
 
       if (['EASSOCREJ', 'EUNHEALTHY'].contains(reason)) {
-        debug(error);
+        debugLog(error);
       }
 
       if (reason != null) {
@@ -184,7 +191,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
       }
 
       if (code == null && success == null) {
-        debug('Neither success or error with code');
+        debugLog('Neither success or error with code');
         throw 'Neither success or error with code';
       }
     } catch (e) {
@@ -244,7 +251,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
           setState(() {
             status = Status.logging;
           });
-          loginViaCloud(store, sn).catchError(debug);
+          loginViaCloud(store, sn).catchError(debugLog);
           break;
         default:
           break;
@@ -253,7 +260,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
   }
 
   void onError(error) {
-    debug(error);
+    debugLog(error);
     wifiError = true;
     wifiTimer?.cancel();
     bleRes?.cancel();
@@ -318,7 +325,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
             }
           }
         } catch (e) {
-          debug(e);
+          debugLog(e);
           continue;
         }
       }
@@ -332,7 +339,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
       print('stationLogin ....');
       await stationLogin(context, request, currentDevice, account, store);
     } catch (e) {
-      debug(e);
+      debugLog(e);
       setState(() {
         status = Status.loginFailed;
       });
@@ -412,7 +419,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
           res = await request.winasdInfo(ip);
           timeIsOK = await request.timeDate(ip);
         } catch (e) {
-          debug(e);
+          debugLog(e);
           continue;
         }
 
@@ -426,7 +433,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
       deviceSN = infoRes['device']['sn'] as String;
       if (deviceSN == null) throw 'Failed to get deviceSN from winasd';
     } catch (e) {
-      debug(e);
+      debugLog(e);
       setState(() {
         status = Status.connectFailed;
       });
@@ -435,9 +442,9 @@ class _ConfigDeviceState extends State<ConfigDevice> {
 
     // switch by Action, bind device or login device directly
     if (widget.action == Action.bind) {
-      bindDevice(ip, token, store).catchError(debug);
+      bindDevice(ip, token, store).catchError(debugLog);
     } else if (widget.action == Action.wifi) {
-      loginDevice(ip, token, store).catchError(debug);
+      loginDevice(ip, token, store).catchError(debugLog);
     }
   }
 
@@ -456,13 +463,13 @@ class _ConfigDeviceState extends State<ConfigDevice> {
       final bindRes = await request.deviceBind(ip, encrypted);
       print('bindRes $bindRes');
     } catch (e) {
-      debug('bind device error $e');
+      debugLog('bind device error $e');
       setState(() {
         status = Status.bindFailed;
       });
       return;
     }
-    loginDevice(ip, token, store).catchError(debug);
+    loginDevice(ip, token, store).catchError(debugLog);
   }
 
   /// try login to device
@@ -521,7 +528,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
       final account = store.state.account as Account;
       await stationLogin(context, request, currentDevice, account, store);
     } catch (e) {
-      debug(e);
+      debugLog(e);
       setState(() {
         status = Status.loginFailed;
       });
@@ -547,7 +554,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
         try {
           ssid = await getWifiSSID();
         } catch (e) {
-          debug(e);
+          debugLog(e);
           ssid = null;
         }
 
@@ -563,7 +570,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
             await formatDisk();
             newLoading.close();
           } catch (e) {
-            debug(e);
+            debugLog(e);
             newLoading.close();
             setState(() {
               status = Status.formatError;
@@ -576,7 +583,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
           status = Status.wifi;
         });
       } catch (e) {
-        debug(e);
+        debugLog(e);
 
         loading.close();
         setState(() {
@@ -594,7 +601,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
         try {
           await setWifiAndBind(pwd, store);
         } catch (e) {
-          debug(e);
+          debugLog(e);
           this.loadingInstance.close();
           setState(() {
             errorText = i18n('Set WiFi Error');
@@ -619,10 +626,10 @@ class _ConfigDeviceState extends State<ConfigDevice> {
           setState(() {
             status = Status.connecting;
           });
-          connectDevice(ip, token, store).catchError(debug);
+          connectDevice(ip, token, store).catchError(debugLog);
           loading.close();
         } catch (e) {
-          debug(e);
+          debugLog(e);
           loading.close();
           setState(() {
             errorText = i18n('Set WiFi Error');
@@ -1010,7 +1017,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
                           ssid = await getWifiSSID();
                         } catch (e) {
                           ssid = null;
-                          debug(e);
+                          debugLog(e);
                         } finally {
                           setState(() {});
                         }
@@ -1027,7 +1034,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
           : Builder(
               builder: (ctx) {
                 return StoreConnector<AppState, Store<AppState>>(
-                    onInit: (store) => {},
+                    onInit: (store) => userId = store.state.account.id,
                     onDispose: (store) => {},
                     converter: (store) => store,
                     builder: (context, store) {

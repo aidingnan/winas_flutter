@@ -535,7 +535,7 @@ class Worker {
       }
     }
     if (assetList.length == uploadList.length) {
-      debug('Photo count: $total');
+      infoLog(apis.userUUID, 'PhotoCount', total.toString());
     }
     // upload photo one by one
     for (AssetEntity entity in uploadList) {

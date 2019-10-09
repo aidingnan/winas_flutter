@@ -604,10 +604,9 @@ Future<String> getLogs() async {
   return logs;
 }
 
-void debug(dynamic text, [dynamic t2, dynamic t3]) {
+void debug(dynamic text, {String userId, String deviceName}) {
   final String trace = StackTrace.current.toString().split('\n')[1];
-  String log =
-      (text ?? '').toString() + (t2 ?? '').toString() + (t3 ?? '').toString();
+  String log = (text ?? '').toString();
   DateTime time = DateTime.now();
   if (text is DioError && text?.response?.data != null) {
     log += '\ntext.response.data: ${text.response.data}';
@@ -619,7 +618,14 @@ void debug(dynamic text, [dynamic t2, dynamic t3]) {
   // upload to umeng
   if (AppConfig.umeng != false) {
     getMachineId().then((data) {
-      final debugStr = [data['machineId'], '$time', trace, log].join(';');
+      final debugStr = [
+        data['machineId'],
+        '$time',
+        userId ?? 'Na',
+        deviceName ?? 'Na',
+        trace,
+        log
+      ].join(';');
       FlutterUmplus.event('DEBUG_LOG', label: debugStr);
     });
   }
@@ -639,6 +645,18 @@ Future<void> loginLog(String accountId, String deviceSN) async {
       .join(';');
   print('LOGIN_LOG: $str');
   FlutterUmplus.event('LOGIN_LOG', label: str);
+}
+
+Future<void> infoLog(String userId, String type, String data) async {
+  // check AppConfig.umeng
+  if (AppConfig.umeng == false) return;
+
+  final data = await getMachineId();
+  DateTime time = DateTime.now();
+  String machineId = data['machineId'];
+  String str = ['$time', machineId, userId, type, data].join(';');
+  print('INFO_LOG: $str');
+  FlutterUmplus.event('INFO_LOG', label: str);
 }
 
 String getTimeString(DateTime time) {
