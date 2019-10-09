@@ -95,7 +95,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
   String userId;
 
   /// debugLog with userId and deviceName
-  void debugLog(String log) {
+  void debugLog(dynamic log) {
     debug(log, userId: userId, deviceName: widget.device.name);
   }
 

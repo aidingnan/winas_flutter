@@ -234,13 +234,17 @@ class TransferManager {
           item.reload(
               () => _instance._cleanDir(item.filePath).catchError(debug));
         } else {
-          // TransType.shared or upload, need to update to the correct filePath
+          // TransType.shared or isIOS, need to update to the correct filePath
           final pathList = item.filePath.split('/');
-          final truePath = _instance._transDir() +
-              pathList[pathList.length - 2] +
-              '/' +
-              pathList.last;
-          item.filePath = truePath;
+
+          if (item.transType == TransType.shared || Platform.isIOS) {
+            final truePath = _instance._transDir() +
+                pathList[pathList.length - 2] +
+                '/' +
+                pathList.last;
+            item.filePath = truePath;
+          }
+
           item.reload(() => _instance._save().catchError(debug));
         }
       }
@@ -350,12 +354,9 @@ class TransferManager {
 
     await state.apis
         .uploadAsync(args, cancelToken: cancelToken, onProgress: onProgress);
-
-    // delete cache in trans
-    await file.parent.delete(recursive: true);
   }
 
-  // call _uploadAsync
+  // call _uploadAsync, need clean files in trans
   Future<void> uploadSharedFile(TransferItem item) async {
     final filePath = item.filePath;
     CancelToken cancelToken = CancelToken();
@@ -390,6 +391,9 @@ class TransferManager {
       // upload async
       await _uploadAsync(targetDir, filePath, hash, cancelToken,
           (int a, int b) => item.update(a));
+
+      // delete cache in trans
+      await File(filePath).parent.delete(recursive: true);
 
       item.finish();
 
