@@ -43,6 +43,8 @@ class _LoginState extends State<Login> {
 
   String _password = '';
 
+  bool _showPassword = false;
+
   String _error;
 
   _currentTextField() {
@@ -85,9 +87,18 @@ class _LoginState extends State<Login> {
             height: 0.8,
           ),
           prefixIcon: Icon(Icons.lock, color: Colors.white),
+          suffixIcon: GestureDetector(
+            onTap: () => setState(() {
+              _showPassword = !_showPassword;
+            }),
+            child: Icon(
+              _showPassword ? Icons.visibility_off : Icons.visibility,
+              color: Colors.white,
+            ),
+          ),
           errorText: _error),
       style: TextStyle(fontSize: 24, color: Colors.white),
-      obscureText: true,
+      obscureText: !_showPassword,
     );
   }
 

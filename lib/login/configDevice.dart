@@ -63,6 +63,8 @@ class _ConfigDeviceState extends State<ConfigDevice> {
   /// Error for set wifi Error;
   String errorText;
 
+  bool _showPassword = false;
+
   /// reason for bind timeout
   String timeoutReason;
 
@@ -757,10 +759,20 @@ class _ConfigDeviceState extends State<ConfigDevice> {
             : Container(
                 padding: EdgeInsets.all(16),
                 child: TextField(
+                  obscureText: !_showPassword,
                   autofocus: true,
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.lock, color: Colors.teal),
                     errorText: errorText,
+                    suffixIcon: GestureDetector(
+                      onTap: () => setState(() {
+                        _showPassword = !_showPassword;
+                      }),
+                      child: Icon(
+                        _showPassword ? Icons.visibility_off : Icons.visibility,
+                        color: Colors.teal,
+                      ),
+                    ),
                   ),
                   onChanged: (text) {
                     setState(() {
