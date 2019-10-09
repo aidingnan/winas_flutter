@@ -1,3 +1,4 @@
+/// see https://www.theiphonewiki.com/wiki/List_of_iPhones
 const Map<String, String> iPhoneCodeMap = {
   'iPhone1,1': 'iPhone',
   'iPhone1,2': 'iPhone 3G',
@@ -32,6 +33,9 @@ const Map<String, String> iPhoneCodeMap = {
   'iPhone11,4': 'iPhone XS Max',
   'iPhone11,6': 'iPhone XS Max',
   'iPhone11,8': 'iPhone XR',
+  'iPhone12,1': 'iPhone 11',
+  'iPhone12,3': 'iPhone 11 Pro',
+  'iPhone12,5': 'iPhone 11 Pro Max',
 };
 
 /// convert machine code to model
