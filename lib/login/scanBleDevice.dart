@@ -54,6 +54,7 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
 
   Future<void> startBLESearch() async {
     FlutterBlue flutterBlue = FlutterBlue.instance;
+    flutterBlue.setLogLevel(LogLevel.emergency);
     error = null;
 
     await flutterBlue.stopScan();

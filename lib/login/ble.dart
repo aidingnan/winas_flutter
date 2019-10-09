@@ -145,7 +145,7 @@ Future<void> connectWifiAndBind(
   );
   await netNotify.setNotifyValue(true);
 
-  bleRes.addStream(netNotify.value);
+  bleRes.addStream(netNotify.changedValue);
 
   await netWrite.write(command.codeUnits);
 }
@@ -161,7 +161,7 @@ void writeData(
   bool fired = false;
   StreamSubscription<List<int>> listener;
 
-  listener = notifyCharact.value.listen((value) {
+  listener = notifyCharact.changedValue.listen((value) {
     if (!fired) {
       // filter noise value
       if (value is! List || value.length == 0) return;
