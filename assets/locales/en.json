@@ -125,7 +125,7 @@
   "Phone Not Connect to WiFi Text 2": "Please connect to a Wi-Fi network and refresh.",
   "WiFi Password Input Text Part 1": "PocketDrive will be connected to ",
   "WiFi Password Input Text Part 2": ", please enter the password for this Wi-Fi:",
-  "Color Code Auth Failed": "Authentication failed. Disconnect the power supply and try again after restart.",
+  "Color Code Auth Failed": "Authentication failed. Please try again.",
   "Back": "Back",
   "Color Code Auth Timeout": "Time out! please get back to previous step and try again.",
   "Waiting PockectDrive Connecting to Cloud": "Waiting for the PocketDrvie to connect to the cloud...",
