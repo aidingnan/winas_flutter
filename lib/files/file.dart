@@ -561,7 +561,8 @@ class _FilesState extends State<Files> {
                           String extension = fileName.contains('.')
                               ? fileName.split('.').last
                               : '';
-                          DateTime time = (await file.stat()).modified;
+                          DateTime time =
+                              (await file.stat()).modified ?? DateTime.now();
                           String newName = extension == ''
                               ? 'IMG_${getTimeString(time)}'
                               : 'IMG_${getTimeString(time)}.$extension';
@@ -610,7 +611,8 @@ class _FilesState extends State<Files> {
                           String extension = fileName.contains('.')
                               ? fileName.split('.').last
                               : '';
-                          DateTime time = (await file.stat()).modified;
+                          DateTime time =
+                              (await file.stat()).modified ?? DateTime.now();
                           String newName = extension == ''
                               ? 'VID_${getTimeString(time)}'
                               : 'VID_${getTimeString(time)}.$extension';
