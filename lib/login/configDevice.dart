@@ -6,6 +6,7 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 import './ble.dart';
+import './helps.dart';
 import './stationLogin.dart';
 import '../redux/redux.dart';
 import '../common/utils.dart';
@@ -784,6 +785,25 @@ class _ConfigDeviceState extends State<ConfigDevice> {
                   style: TextStyle(fontSize: 24, color: Colors.black87),
                 ),
               ),
+        if (ssid != null)
+          Container(
+            height: 64,
+            child: Center(
+              child: FlatButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (ctx) => WifiHelp(),
+                    fullscreenDialog: true,
+                  ),
+                ),
+                child: Text(
+                  i18n('WiFi Connection Help Title'),
+                  style: TextStyle(color: Colors.blue, fontSize: 12),
+                ),
+              ),
+            ),
+          ),
       ],
     );
   }

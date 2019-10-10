@@ -104,6 +104,13 @@
   "Station Offline Reason 2": "2. 确保口袋网盘已配置的Wi-Fi工作正常并能够访问互联网。",
   "Station Offline Reason 3": "3. 您可以尝试重新配置口袋网盘的Wi-Fi以解决Wi-Fi变化导致的问题。",
   "Station Offline Reason 4": "4. 您可以尝试断开口袋网盘电源5秒以上，再重新启动设备。",
+  "Help of WiFi": "帮助",
+  "WiFi Connection Help Title": "无法配置Wi-Fi？",
+  "WiFi Connection Help Text 1": "我们目前还不支持以下这些路由器配置",
+  "WiFi Connection Help Text 2": "1. 隐藏的 Wi-Fi 名称（SSID）",
+  "WiFi Connection Help Text 3": "2. 没有设置 Wi-Fi 密码",
+  "WiFi Connection Help Text 4": "3. 加密安全设置为 企业级WPA/WPA2（Enterprise）",
+  "WiFi Connection Help Text 5": "如果重试后仍无法正常配置Wi-Fi，请联系我们的客服工作人员。",
 
   "==== login/configDevice.dart ====": "",
   "Set WiFi Error": "设置Wi-Fi失败，请确认Wi-Fi密码是否正确",
