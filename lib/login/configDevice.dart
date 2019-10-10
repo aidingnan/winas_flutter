@@ -197,6 +197,7 @@ class _ConfigDeviceState extends State<ConfigDevice> {
         throw 'Neither success or error with code';
       }
     } catch (e) {
+      debugLog(e);
       this.loadingInstance.close();
       setState(() {
         status = Status.bleFailed;
