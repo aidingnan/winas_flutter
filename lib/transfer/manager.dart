@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:uuid/uuid.dart';
 import 'package:async/async.dart';
+import 'package:photo_manager/photo_manager.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:synchronized/synchronized.dart' as synchronized;
 
@@ -225,14 +226,23 @@ class TransferManager {
     await Directory(_instance._transDir()).create(recursive: true);
     await Directory(_instance._downloadDir()).create(recursive: true);
 
+    if (Platform.isAndroid) {
+      Directory public = await getExternalStorageDirectory();
+      _instance._publicRoot = public.path;
+    }
+
     try {
       transferList = await _instance._load();
       // reload transferItem
       for (TransferItem item in transferList) {
         if (item.transType == TransType.download) {
           // TransType.download
-          item.reload(
-              () => _instance._cleanDir(item.filePath).catchError(debug));
+          if (Platform.isAndroid) {
+            item.reload(() => {});
+          } else {
+            item.reload(
+                () => _instance._cleanDir(item.filePath).catchError(debug));
+          }
         } else {
           // TransType.shared or isIOS, need to update to the correct filePath
           final pathList = item.filePath.split('/');
@@ -262,6 +272,16 @@ class TransferManager {
 
   String _downloadDir() {
     return _rootDir + '/download/' + userUUID + '/';
+  }
+
+  String _publicRoot;
+
+  String _publicDownload() {
+    if (Platform.isAndroid) {
+      return _publicRoot + '/Download/PocketDrive/';
+    } else {
+      return _rootDir + '/download/' + userUUID + '/';
+    }
   }
 
   Future<List<TransferItem>> _load() async {
@@ -443,7 +463,7 @@ class TransferManager {
   }
 
   // call state.apis.download
-  Future<void> downloadFile(TransferItem item) async {
+  Future<void> downloadIOSFile(TransferItem item) async {
     Entry entry = item.entry;
 
     // use unique transferItem uuid
@@ -481,6 +501,54 @@ class TransferManager {
     }
   }
 
+  // call state.apis.download
+  Future<void> downloadAndroidFile(TransferItem item) async {
+    CancelToken cancelToken = CancelToken();
+    item.start(cancelToken, () => {});
+
+    Entry entry = item.entry;
+
+    String entryDir = _publicDownload();
+
+    final result = await PhotoManager.requestPermission();
+
+    if (!result) return;
+
+    final list = await Directory(entryDir).list().toList();
+    print(list.map((d) => d.path));
+    // TODO: auto rename
+
+    String entryPath = entryDir + entry.name;
+    // String transPath = entryDir + entry.name + '.download';
+    item.setFilePath(entryPath);
+
+    final ep = 'drives/${entry.pdrv}/dirs/${entry.pdir}/entries/${entry.uuid}';
+    final qs = {'name': entry.name, 'hash': entry.hash};
+    try {
+      await _save();
+      // mkdir
+      await Directory(entryDir).create(recursive: true);
+      // download
+      await state.apis.download(ep, qs, entryPath, cancelToken: cancelToken,
+          onProgress: (int a, int b) {
+        item.update(a);
+      });
+      // rename
+      // await File(transPath).rename(entryPath);
+      item.finish();
+      await _save();
+
+      schedule();
+    } catch (error) {
+      debug(error);
+      // DioErrorType.CANCEL is not error
+      if (error is DioError && (error?.type != DioErrorType.CANCEL)) {
+        item.fail(error);
+      }
+      schedule();
+    }
+  }
+
   static List<TransferItem> taskQueue = [];
   final taskLimit = 2;
 
@@ -490,7 +558,6 @@ class TransferManager {
   }
 
   void schedule() {
-    // print('schedule, ${taskQueue.length}');
     // remove finished
     taskQueue.removeWhere((t) => !['working', 'init'].contains(t.status));
 
@@ -510,7 +577,12 @@ class TransferManager {
         // TransferItem.run()
         switch (t.transType) {
           case TransType.download:
-            downloadFile(t);
+            if (Platform.isAndroid) {
+              downloadAndroidFile(t);
+            } else {
+              downloadIOSFile(t);
+            }
+
             break;
           case TransType.upload:
             uploadFile(t);
