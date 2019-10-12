@@ -62,7 +62,7 @@ class _DeleteDialogState extends State<DeleteDialog> {
         });
 
         await state.apis.req('deleteDirOrFile', {
-          'formdata': FormData.from(formdata),
+          'formdata': FormData.fromMap(formdata),
           'dirUUID': list[0].pdir,
           'driveUUID': list[0].pdrv,
         });

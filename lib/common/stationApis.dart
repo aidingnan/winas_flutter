@@ -223,10 +223,9 @@ class Apis {
   Future<bool> testLAN() async {
     bool isLAN = false;
     try {
-      final res = await dio.get(
-        'http://${this.lanIp}:3001/winasd/info',
-        options: Options(connectTimeout: 1000, receiveTimeout: 0),
-      );
+      final res = await dio
+          .get('http://${this.lanIp}:3001/winasd/info')
+          .timeout(Duration(seconds: 1));
       isLAN = res.data['device']['sn'] == this.deviceSN;
     } catch (error) {
       // print('testLAN error: $error');
@@ -268,7 +267,7 @@ class Apis {
       case 'updateBackupAttr':
         r = writeDir(
           'drives/${args['driveUUID']}/dirs/${args['dirUUID']}/entries',
-          FormData.from({
+          FormData.fromMap({
             args['bname']: jsonEncode(args['props']),
           }),
         );
@@ -288,7 +287,7 @@ class Apis {
       case 'mkdir':
         r = writeDir(
           'drives/${args['driveUUID']}/dirs/${args['dirUUID']}/entries',
-          FormData.from({
+          FormData.fromMap({
             args['dirname']: jsonEncode({'op': 'mkdir'}),
           }),
         );
@@ -301,7 +300,7 @@ class Apis {
       case 'rename':
         r = writeDir(
           'drives/${args['driveUUID']}/dirs/${args['dirUUID']}/entries',
-          FormData.from({
+          FormData.fromMap({
             '${args['oldName']}|${args['newName']}':
                 jsonEncode({'op': 'rename'}),
           }),
@@ -395,7 +394,7 @@ class Apis {
       {Function onProgress, CancelToken cancelToken}) async {
     return writeDir(
         'drives/${args['driveUUID']}/dirs/${args['dirUUID']}/entries',
-        FormData.from({
+        FormData.fromMap({
           args['fileName']: args['file'],
         }),
         cancelToken: cancelToken,

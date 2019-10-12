@@ -142,10 +142,9 @@ class Request {
   Future<bool> testLAN(String ip, String deviceSN) async {
     bool isLAN = false;
     try {
-      final res = await dio.get(
-        'http://$ip:3001/winasd/info',
-        options: Options(connectTimeout: 1000),
-      );
+      final res = await dio
+          .get('http://$ip:3001/winasd/info')
+          .timeout(Duration(seconds: 1));
       isLAN = res.data['device']['sn'] == deviceSN;
     } catch (error) {
       print('testLAN error: $error');
@@ -156,19 +155,17 @@ class Request {
 
   /// get winasd/info
   Future winasdInfo(String ip) async {
-    final res = await dio.get(
-      'http://$ip:3001/winasd/info',
-      options: Options(connectTimeout: 10000),
-    );
+    final res = await dio
+        .get('http://$ip:3001/winasd/info')
+        .timeout(Duration(seconds: 10));
     return res.data;
   }
 
   /// get winasd/time
   Future<bool> timeDate(String ip) async {
-    final res = await dio.get(
-      'http://$ip:3001/winasd/timedate',
-      options: Options(connectTimeout: 10000),
-    );
+    final res = await dio
+        .get('http://$ip:3001/winasd/timedate')
+        .timeout(Duration(seconds: 10));
     // print('timeDate res $res');
     return res.data['System clock synchronized'] == 'yes';
   }
@@ -178,8 +175,7 @@ class Request {
     final res = await dio.post(
       'http://$ip:3001/winasd/bind',
       data: {'encrypted': encrypted},
-      options: Options(connectTimeout: 10000),
-    );
+    ).timeout(Duration(seconds: 10));
     print('deviceBind res $res');
     return res.data;
   }
@@ -195,8 +191,7 @@ class Request {
         'authToken': authToken,
         'clean': cleanVolume,
       },
-      options: Options(connectTimeout: 10000),
-    );
+    ).timeout(Duration(seconds: 10));
     print('unbindDevice res $res');
     return res.data;
   }

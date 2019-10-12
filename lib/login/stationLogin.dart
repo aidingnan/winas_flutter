@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter/material.dart';
 
@@ -28,8 +27,7 @@ stationLogin(BuildContext context, Request request, Station currentDevice,
   final boot = await request.req(
     'localBoot',
     {'deviceSN': deviceSN},
-    Options(connectTimeout: 10000),
-  );
+  ).timeout(Duration(seconds: 10));
 
   final state = boot.data['state'];
   if (state != 'STARTED' && shouldShowDialog) {
@@ -60,7 +58,7 @@ stationLogin(BuildContext context, Request request, Station currentDevice,
 
   List results = await Future.wait([
     request.req(
-        'localUsers', {'deviceSN': deviceSN}, Options(connectTimeout: 10000)),
+        'localUsers', {'deviceSN': deviceSN}).timeout(Duration(seconds: 10)),
     request.req('localToken', {'deviceSN': deviceSN}),
     request.req('localDrives', {'deviceSN': deviceSN}),
     request.testLAN(lanIp, deviceSN),

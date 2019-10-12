@@ -135,7 +135,13 @@ void isolateUpload(SendPort sendPort) {
       'driveUUID': dir.pdrv,
       'dirUUID': dir.uuid,
       'fileName': fileName,
-      'file': UploadFileInfo(file, jsonEncode(formDataOptions)),
+      "files": [
+        MultipartFile(
+          Stream.fromFuture(file.readAsBytes()),
+          stat.size,
+          filename: jsonEncode(formDataOptions),
+        ),
+      ]
     };
 
     apis.upload(

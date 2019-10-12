@@ -369,7 +369,12 @@ class TransferManager {
       'driveUUID': targetDir.pdrv,
       'dirUUID': targetDir.uuid,
       'fileName': fileName,
-      'file': UploadFileInfo(file, jsonEncode(formDataOptions)),
+      "files": [
+        await MultipartFile.fromFile(
+          filePath,
+          filename: jsonEncode(formDataOptions),
+        ),
+      ]
     };
 
     await state.apis
