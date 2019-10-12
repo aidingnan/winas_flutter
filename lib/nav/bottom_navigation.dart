@@ -263,7 +263,8 @@ class _BottomNavigationState extends State<BottomNavigation>
     );
 
     if (value == true) {
-      backupWorker.start();
+      bool isMobile = await store.state.apis.isMobile();
+      backupWorker.start(isMobile);
     } else {
       backupWorker.abort();
     }
@@ -278,7 +279,8 @@ class _BottomNavigationState extends State<BottomNavigation>
     final stationConfig = state.config.getStationConfigs(state.apis.deviceSN);
 
     // init backupWorker
-    backupWorker = BackupWorker(
+    backupWorker = BackupWorker.getInstance();
+    backupWorker.init(
       state.apis,
       stationConfig?.cellularBackup == true,
     );
@@ -313,7 +315,8 @@ class _BottomNavigationState extends State<BottomNavigation>
       // start autoBackup
       if (s.state.config.getStationConfigs(s.state.apis.deviceSN)?.autoBackup ==
           true) {
-        backupWorker.start();
+        bool isMobile = await state.apis.isMobile();
+        backupWorker.start(isMobile);
       }
     };
   }

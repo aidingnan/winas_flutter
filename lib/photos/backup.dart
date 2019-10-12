@@ -610,7 +610,27 @@ class Worker {
 /// manager of photo backup
 class BackupWorker {
   Apis apis;
-  BackupWorker(this.apis, this.backupViaCellular);
+
+  // keep singleton
+  static BackupWorker _instance;
+
+  static BackupWorker getInstance() {
+    if (_instance == null) {
+      _instance = BackupWorker._();
+    }
+    return _instance;
+  }
+
+  void init(Apis apis, bool backupViaCellular) {
+    this.apis = apis;
+    this.backupViaCellular = backupViaCellular;
+    if (status != Status.idle) {
+      this.abort();
+    }
+  }
+
+  BackupWorker._();
+
   StreamSubscription<ConnectivityResult> sub;
   Worker worker;
   Status status = Status.idle;
@@ -622,7 +642,6 @@ class BackupWorker {
 
   monitorStart() {
     sub = Connectivity().onConnectivityChanged.listen((ConnectivityResult res) {
-      print('Network Changed to $res in backup');
       if (res == ConnectivityResult.wifi) {
         isMobile = false;
       } else if (res == ConnectivityResult.mobile) {
@@ -635,7 +654,7 @@ class BackupWorker {
       if (status == Status.running && isMobile && backupViaCellular != true) {
         this.paused();
       } else if (status == Status.paused && !isMobile) {
-        this.start();
+        this.start(isMobile);
       }
     });
   }
@@ -648,9 +667,8 @@ class BackupWorker {
     }
   }
 
-  void start() async {
+  void start(bool isMobile) {
     if (status == Status.running) return;
-    isMobile = await apis.isMobile();
     if (isMobile && backupViaCellular != true) {
       this.paused();
     } else {
@@ -688,7 +706,7 @@ class BackupWorker {
     } else {
       // restart
       this.abort();
-      this.start();
+      this.start(isMobile);
     }
   }
 

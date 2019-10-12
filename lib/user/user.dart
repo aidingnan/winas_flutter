@@ -235,7 +235,7 @@ class _AccountInfoState extends State<AccountInfo> {
                                 children: <Widget>[
                                   Container(
                                     padding: EdgeInsets.all(8),
-                                    child: Text(logs),
+                                    child: SelectableText(logs),
                                   )
                                 ],
                               ),
