@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'dart:async';
 import 'dart:convert';
 import 'package:dio/dio.dart';
@@ -349,37 +350,58 @@ class TransferManager {
     return photosDir;
   }
 
-  /// upload file in Isolate
-  Future<void> _uploadAsync(Entry targetDir, String filePath, String hash,
-      CancelToken cancelToken, Function onProgress) async {
-    final fileName = filePath.split('/').last;
+  /// TODO: upload file in Isolate
+  Future<void> _uploadAsync(
+      Entry targetDir,
+      String filePath,
+      List<FilePart> parts,
+      CancelToken cancelToken,
+      Function onProgress) async {
+    /// file stat
     File file = File(filePath);
     final FileStat stat = await file.stat();
 
-    final formDataOptions = {
-      'op': 'newfile',
-      'size': stat.size,
-      'sha256': hash,
-      'bctime': stat.modified.millisecondsSinceEpoch,
-      'bmtime': stat.modified.millisecondsSinceEpoch,
-      'policy': ['rename', 'rename'],
-    };
+    /// file name
+    final fileName = filePath.split('/').last;
 
-    final args = {
-      'driveUUID': targetDir.pdrv,
-      'dirUUID': targetDir.uuid,
-      'fileName': fileName,
-      "file": [
-        MultipartFile(
-          Stream.fromFuture(file.readAsBytes()),
-          stat.size,
-          filename: jsonEncode(formDataOptions),
-        )
-      ],
-    };
+    for (int i = 0; i < parts.length; i++) {
+      final part = parts[i];
+      final size = part.end - part.start + 1;
+      Map<String, Object> formDataOptions;
+      if (i == 0) {
+        formDataOptions = {
+          'op': 'newfile',
+          'size': size,
+          'sha256': part.sha,
+          'bctime': stat.modified.millisecondsSinceEpoch,
+          'bmtime': stat.modified.millisecondsSinceEpoch,
+          'policy': ['rename', 'rename'],
+        };
+      } else {
+        formDataOptions = {
+          'op': 'append',
+          'size': size,
+          'sha256': part.sha,
+          'hash': part.target,
+        };
+      }
 
-    await state.apis
-        .uploadAsync(args, cancelToken: cancelToken, onProgress: onProgress);
+      final args = {
+        'driveUUID': targetDir.pdrv,
+        'dirUUID': targetDir.uuid,
+        'fileName': fileName,
+        "file": [
+          MultipartFile(
+            file.openRead(part.start, max(part.end, 0)),
+            size,
+            filename: jsonEncode(formDataOptions),
+          )
+        ],
+      };
+
+      await state.apis
+          .uploadAsync(args, cancelToken: cancelToken, onProgress: onProgress);
+    }
   }
 
   // call _uploadAsync, need clean files in trans
@@ -411,11 +433,10 @@ class TransferManager {
       // update targetDir
       item.targetDir = targetDir;
 
-      // hash
-      final hash = await hashViaIsolate(filePath);
+      final parts = await hashViaIsolate(filePath);
 
       // upload async
-      await _uploadAsync(targetDir, filePath, hash[0], cancelToken,
+      await _uploadAsync(targetDir, filePath, parts, cancelToken,
           (int a, int b) => item.update(a));
 
       // delete cache in trans
@@ -447,11 +468,10 @@ class TransferManager {
       // get target dir
       Entry targetDir = item.targetDir;
 
-      // hash
-      final hash = await hashViaIsolate(filePath);
+      final parts = await hashViaIsolate(filePath);
 
       // upload async
-      await _uploadAsync(targetDir, filePath, hash[0], cancelToken,
+      await _uploadAsync(targetDir, filePath, parts, cancelToken,
           (int a, int b) => item.update(a));
 
       item.finish();

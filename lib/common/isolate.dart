@@ -166,13 +166,12 @@ void isolateUpload(SendPort sendPort) {
 }
 
 /// hash file in Isolate
-Future<List<String>> hashViaIsolate(String filePath,
+Future<List<FilePart>> hashViaIsolate(String filePath,
     {CancelIsolate cancelIsolate}) async {
   File file = File(filePath);
   final stat = await file.stat();
 
   List<FilePart> parts = spliceFile(stat.size, 1073741824);
-  List<String> hashs = [];
   for (int i = 0; i < parts.length; i++) {
     final part = parts[i];
     final response = ReceivePort();
@@ -188,9 +187,9 @@ Future<List<String>> hashViaIsolate(String filePath,
     // send filePath and sendPort(to get answer) to isolateHash
     sendPort.send([filePath, part.start, part.end, answer.sendPort]);
     final res = await answer.first as String;
-    hashs.add(res);
+    part.sha = res;
   }
-  return hashs;
+  return calcFingerprint(parts);
 }
 
 /// upload file in Isolate
@@ -340,6 +339,7 @@ List<FilePart> calcFingerprint(List<FilePart> parts) {
   /// parts' length > 1
   for (int i = 1; i < parts.length; i++) {
     parts[i].fingerprint = combineHash(parts[i - 1].fingerprint, parts[i].sha);
+    parts[i].target = parts[i - 1].fingerprint;
   }
   return parts;
 }

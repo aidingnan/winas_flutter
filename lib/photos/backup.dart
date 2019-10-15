@@ -328,7 +328,7 @@ class Worker {
       // TODO: handle large file
       final hashs = await hashViaIsolate(filePath, cancelIsolate: cancelHash)
           .timeout(Duration(minutes: 60));
-      hash = hashs[0];
+      hash = hashs.last.fingerprint;
       if (hash == null) throw 'hash error';
       await prefs.setString(id, hash);
     }
