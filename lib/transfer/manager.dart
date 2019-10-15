@@ -369,12 +369,13 @@ class TransferManager {
       'driveUUID': targetDir.pdrv,
       'dirUUID': targetDir.uuid,
       'fileName': fileName,
-      "files": [
-        await MultipartFile.fromFile(
-          filePath,
+      "file": [
+        MultipartFile(
+          Stream.fromFuture(file.readAsBytes()),
+          stat.size,
           filename: jsonEncode(formDataOptions),
-        ),
-      ]
+        )
+      ],
     };
 
     await state.apis
@@ -414,7 +415,7 @@ class TransferManager {
       final hash = await hashViaIsolate(filePath);
 
       // upload async
-      await _uploadAsync(targetDir, filePath, hash, cancelToken,
+      await _uploadAsync(targetDir, filePath, hash[0], cancelToken,
           (int a, int b) => item.update(a));
 
       // delete cache in trans
@@ -450,7 +451,7 @@ class TransferManager {
       final hash = await hashViaIsolate(filePath);
 
       // upload async
-      await _uploadAsync(targetDir, filePath, hash, cancelToken,
+      await _uploadAsync(targetDir, filePath, hash[0], cancelToken,
           (int a, int b) => item.update(a));
 
       item.finish();

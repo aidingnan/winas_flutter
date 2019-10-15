@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:isolate';
@@ -66,9 +67,11 @@ void isolateHash(SendPort sendPort) {
   // listen message from caller
   port.listen((message) {
     final filePath = message[0] as String;
-    final answerSend = message[1] as SendPort;
+    final start = message[1] as int;
+    final end = message[2] as int;
+    final answerSend = message[3] as SendPort;
     File file = File(filePath);
-    final stream = file.openRead();
+    final stream = file.openRead(start, max(end, 0));
     final ds = DigestSink();
 
     final s = sha256.startChunkedConversion(ds);
@@ -135,13 +138,13 @@ void isolateUpload(SendPort sendPort) {
       'driveUUID': dir.pdrv,
       'dirUUID': dir.uuid,
       'fileName': fileName,
-      "files": [
+      "file": [
         MultipartFile(
           Stream.fromFuture(file.readAsBytes()),
           stat.size,
           filename: jsonEncode(formDataOptions),
         ),
-      ]
+      ],
     };
 
     apis.upload(
@@ -163,22 +166,31 @@ void isolateUpload(SendPort sendPort) {
 }
 
 /// hash file in Isolate
-Future<String> hashViaIsolate(String filePath,
+Future<List<String>> hashViaIsolate(String filePath,
     {CancelIsolate cancelIsolate}) async {
-  final response = ReceivePort();
-  final work = await Isolate.spawn(isolateHash, response.sendPort);
+  File file = File(filePath);
+  final stat = await file.stat();
 
-  if (cancelIsolate != null) {
-    cancelIsolate.setTarget(work);
+  List<FilePart> parts = spliceFile(stat.size, 1073741824);
+  List<String> hashs = [];
+  for (int i = 0; i < parts.length; i++) {
+    final part = parts[i];
+    final response = ReceivePort();
+    final work = await Isolate.spawn(isolateHash, response.sendPort);
+
+    if (cancelIsolate != null) {
+      cancelIsolate.setTarget(work);
+    }
+    // sendPort from isolateHash
+    final sendPort = await response.first as SendPort;
+    final answer = ReceivePort();
+
+    // send filePath and sendPort(to get answer) to isolateHash
+    sendPort.send([filePath, part.start, part.end, answer.sendPort]);
+    final res = await answer.first as String;
+    hashs.add(res);
   }
-  // sendPort from isolateHash
-  final sendPort = await response.first as SendPort;
-  final answer = ReceivePort();
-
-  // send filePath and sendPort(to get answer) to isolateHash
-  sendPort.send([filePath, answer.sendPort]);
-  final res = await answer.first as String;
-  return res;
+  return hashs;
 }
 
 /// upload file in Isolate
@@ -193,12 +205,12 @@ Future<void> uploadViaIsolate(Apis apis, Entry targetDir, String filePath,
     cancelIsolate.setTarget(work);
   }
 
-  // sendPort from isolateHash
+  // sendPort from isolateUpload
   final sendPort = await response.first as SendPort;
   final answer = ReceivePort();
   final progressRes = ReceivePort();
 
-  // send filePath and sendPort(to get answer) to isolateHash
+  // send filePath and sendPort(to get answer) to isolateUpload
   // Object in params need to convert to String
   // final entryJson = message[0] as String;
   // final filePath = message[1] as String;
@@ -249,4 +261,85 @@ Future<void> uploadViaIsolate(Apis apis, Entry targetDir, String filePath,
   timeList.length = 0;
 
   if (error != null) throw error;
+}
+
+class FilePart {
+  int start;
+  int end;
+
+  /// current part's sha256
+  String sha;
+
+  /// fingerprint of full previous part
+  String fingerprint;
+
+  /// previous part's fingerprint
+  String target;
+
+  FilePart(this.start, this.end);
+
+  @override
+  String toString() {
+    Map<String, dynamic> m = {
+      'start': start,
+      'end': end,
+    };
+    return jsonEncode(m);
+  }
+
+  String toJson() => toString();
+}
+
+/// splice file by given size
+List<FilePart> spliceFile(int size, int perSize) {
+  List<FilePart> parts = [];
+
+  /* empty file */
+  if (size == 0) {
+    parts.add(FilePart(0, -1));
+    return parts;
+  }
+
+  int position = 0;
+  while (position < size) {
+    if (position + perSize >= size) {
+      parts.add(FilePart(position, size - 1));
+      break;
+    } else {
+      parts.add(FilePart(position, position + perSize - 1));
+      position += perSize;
+    }
+  }
+  return parts;
+}
+
+/// combine two sha256 value
+String combineHash(String h1, String h2) {
+  List<int> b1 = utf8.encode(h1);
+  List<int> b2 = utf8.encode(h2);
+  final ds = DigestSink();
+
+  final s = sha256.startChunkedConversion(ds);
+  s.add(b1);
+  s.add(b2);
+  s.close();
+  return ds.value.toString();
+}
+
+List<FilePart> calcFingerprint(List<FilePart> parts) {
+  /// parts' length = 0
+  if (parts.length == 0) return parts;
+
+  parts[0].fingerprint = parts[0].sha;
+
+  /// parts' length == 1
+  if (parts.length == 1) {
+    return parts;
+  }
+
+  /// parts' length > 1
+  for (int i = 1; i < parts.length; i++) {
+    parts[i].fingerprint = combineHash(parts[i - 1].fingerprint, parts[i].sha);
+  }
+  return parts;
 }
