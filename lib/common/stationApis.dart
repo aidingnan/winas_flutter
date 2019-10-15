@@ -392,13 +392,11 @@ class Apis {
 
   Future uploadAsync(Map<String, dynamic> args,
       {Function onProgress, CancelToken cancelToken}) async {
+    final formdata = FormData()
+      ..files.add(MapEntry(args['fileName'], args['file']));
     return writeDir(
-        'drives/${args['driveUUID']}/dirs/${args['dirUUID']}/entries',
-        FormData.fromMap({
-          args['fileName']: args['file'],
-        }),
-        cancelToken: cancelToken,
-        onProgress: onProgress);
+        'drives/${args['driveUUID']}/dirs/${args['dirUUID']}/entries', formdata,
+        cancelToken: cancelToken, onProgress: onProgress);
   }
 
   upload(Map<String, dynamic> args, callback,

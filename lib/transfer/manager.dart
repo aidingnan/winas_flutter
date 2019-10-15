@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 import 'dart:async';
 import 'dart:convert';
 import 'package:dio/dio.dart';
@@ -390,13 +389,11 @@ class TransferManager {
         'driveUUID': targetDir.pdrv,
         'dirUUID': targetDir.uuid,
         'fileName': fileName,
-        "file": [
-          MultipartFile(
-            file.openRead(part.start, max(part.end, 0)),
-            size,
-            filename: jsonEncode(formDataOptions),
-          )
-        ],
+        'file': MultipartFile(
+          file.openRead(part.start, part.end + 1),
+          size,
+          filename: jsonEncode(formDataOptions),
+        ),
       };
 
       await state.apis

@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:isolate';
@@ -71,7 +70,7 @@ void isolateHash(SendPort sendPort) {
     final end = message[2] as int;
     final answerSend = message[3] as SendPort;
     File file = File(filePath);
-    final stream = file.openRead(start, max(end, 0));
+    final stream = file.openRead(start, end + 1);
     final ds = DigestSink();
 
     final s = sha256.startChunkedConversion(ds);
@@ -138,13 +137,11 @@ void isolateUpload(SendPort sendPort) {
       'driveUUID': dir.pdrv,
       'dirUUID': dir.uuid,
       'fileName': fileName,
-      "file": [
-        MultipartFile(
-          Stream.fromFuture(file.readAsBytes()),
-          stat.size,
-          filename: jsonEncode(formDataOptions),
-        ),
-      ],
+      "file": MultipartFile(
+        Stream.fromFuture(file.readAsBytes()),
+        stat.size,
+        filename: jsonEncode(formDataOptions),
+      ),
     };
 
     apis.upload(
