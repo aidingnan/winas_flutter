@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -419,6 +420,28 @@ class _TransferState extends State<Transfer> {
                             controller: myScrollController,
                             physics: AlwaysScrollableScrollPhysics(),
                             slivers: <Widget>[
+                              if (Platform.isAndroid &&
+                                  list.any(
+                                    (t) => t.transType == TransType.download,
+                                  ))
+                                SliverToBoxAdapter(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(4),
+                                    child: Text(
+                                      i18n(
+                                        'Download Path',
+                                        {
+                                          'path': TransferManager.getInstance()
+                                              .publicDownload()
+                                        },
+                                      ),
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               SliverFixedExtentList(
                                 itemExtent: 72,
                                 delegate: SliverChildBuilderDelegate(

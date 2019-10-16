@@ -276,7 +276,7 @@ class TransferManager {
 
   String _publicRoot;
 
-  String _publicDownload() {
+  String publicDownload() {
     if (Platform.isAndroid) {
       return _publicRoot + '/Download/PocketDrive/';
     } else {
@@ -530,18 +530,34 @@ class TransferManager {
 
     Entry entry = item.entry;
 
-    String entryDir = _publicDownload();
+    String entryDir = publicDownload();
 
     final result = await PhotoManager.requestPermission();
 
     if (!result) return;
 
     final list = await Directory(entryDir).list().toList();
-    print(list.map((d) => d.path));
-    // TODO: auto rename
+    final List<String> names = list.map((d) => d.path.split('/').last).toList();
+    String newName = entry.name;
+    int i = 1;
+    final parts = newName.split('.');
+    final ext = parts.length == 1 ? null : parts.last;
+    String pureName = entry.name;
+    if (ext != null) {
+      parts.removeLast();
+      pureName = parts.join('.');
+    }
+    while (names.contains(newName) || names.contains('$newName.download')) {
+      if (ext == null) {
+        newName = '$pureName($i)';
+      } else {
+        newName = '$pureName($i).$ext';
+      }
+      i += 1;
+    }
 
-    String entryPath = entryDir + entry.name;
-    // String transPath = entryDir + entry.name + '.download';
+    String entryPath = entryDir + newName;
+    String transPath = entryDir + newName + '.download';
     item.setFilePath(entryPath);
 
     final ep = 'drives/${entry.pdrv}/dirs/${entry.pdir}/entries/${entry.uuid}';
@@ -551,12 +567,12 @@ class TransferManager {
       // mkdir
       await Directory(entryDir).create(recursive: true);
       // download
-      await state.apis.download(ep, qs, entryPath, cancelToken: cancelToken,
+      await state.apis.download(ep, qs, transPath, cancelToken: cancelToken,
           onProgress: (int a, int b) {
         item.update(a);
       });
       // rename
-      // await File(transPath).rename(entryPath);
+      await File(transPath).rename(entryPath);
       item.finish();
       await _save();
 

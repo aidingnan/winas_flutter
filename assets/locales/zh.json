@@ -447,6 +447,7 @@
   "Pause All Transfer Tasks": "全部暂停",
   "Delete All Transfer Tasks": "全部清除",
   "No Transfer Tasks": "当前无传输任务",
+  "Download Path": "下载路径：{path}",
 
   "==== transfer/manager.dart ====": "",
   "Folder Name For Shared Files From Other App": "来自手机的文件",

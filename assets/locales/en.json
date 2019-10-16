@@ -447,6 +447,7 @@
   "Pause All Transfer Tasks": "Pause all",
   "Delete All Transfer Tasks": "Clear all",
   "No Transfer Tasks": "No transfer tasks",
+  "Download Path": "Download Path: {path}",
 
   "==== transfer/manager.dart ====": "",
   "Folder Name For Shared Files From Other App": "Files from mobile phone",
