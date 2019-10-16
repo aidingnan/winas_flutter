@@ -184,6 +184,7 @@ Future<List<FilePart>> hashViaIsolate(String filePath,
     // send filePath and sendPort(to get answer) to isolateHash
     sendPort.send([filePath, part.start, part.end, answer.sendPort]);
     final res = await answer.first as String;
+    if (res == null) throw 'hash error';
     part.sha = res;
   }
   return calcFingerprint(parts);

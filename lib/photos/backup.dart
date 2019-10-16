@@ -325,10 +325,13 @@ class Worker {
       cancelHash = CancelIsolate();
       File file = await entity.originFile.timeout(Duration(seconds: 60));
       String filePath = file.path;
-      // TODO: handle large file
-      final hashs = await hashViaIsolate(filePath, cancelIsolate: cancelHash)
+      int size = (await file.stat()).size;
+
+      /// TODO: handle large file in backup
+      if (size > 1073741824) throw 'too large file in backup photos';
+      final parts = await hashViaIsolate(filePath, cancelIsolate: cancelHash)
           .timeout(Duration(minutes: 60));
-      hash = hashs.last.fingerprint;
+      hash = parts.last.fingerprint;
       if (hash == null) throw 'hash error';
       await prefs.setString(id, hash);
     }

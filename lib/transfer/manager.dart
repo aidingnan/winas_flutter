@@ -349,7 +349,6 @@ class TransferManager {
     return photosDir;
   }
 
-  /// TODO: upload file in Isolate
   Future<void> _uploadAsync(
       Entry targetDir,
       String filePath,
