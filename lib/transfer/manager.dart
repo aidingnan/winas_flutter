@@ -395,8 +395,12 @@ class TransferManager {
         ),
       };
 
-      await state.apis
-          .uploadAsync(args, cancelToken: cancelToken, onProgress: onProgress);
+      await state.apis.uploadAsync(
+        args,
+        cancelToken: cancelToken,
+        onProgress: (int a, int b) =>
+            onProgress(a + part.start, b + part.start),
+      );
     }
   }
 
