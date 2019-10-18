@@ -539,8 +539,9 @@ class TransferManager {
     final result = await PhotoManager.requestPermission();
 
     if (!result) return;
-
-    final list = await Directory(entryDir).list().toList();
+    Directory downloadDir = Directory(entryDir);
+    await downloadDir.create(recursive: true);
+    final list = await downloadDir.list().toList();
     final List<String> names = list.map((d) => d.path.split('/').last).toList();
     String newName = entry.name;
     int i = 1;

@@ -11,6 +11,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 
+import './photo.dart';
 import './delete.dart';
 import './rename.dart';
 import './search.dart';
@@ -476,7 +477,9 @@ class _FilesState extends State<Files> {
     } else {
       try {
         if (share) {
-          await ShareExtend.share(entryPath, "file");
+          final type =
+              photoMagic.indexOf(entry?.metadata?.type) > -1 ? 'image' : 'file';
+          await ShareExtend.share(entryPath, type);
         } else {
           await OpenFile.open(entryPath);
         }
