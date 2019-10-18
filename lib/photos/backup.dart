@@ -450,12 +450,15 @@ class Worker {
       {'uuid': rootDir.pdrv},
     );
     final client = res.data['client'];
+
     final props = {
       'op': 'backup',
       'client': {
         'status': 'Idle',
         'lastBackupTime': now,
         'id': client['id'],
+        'idList': client['idList'],
+        'didList': client['didList'],
         'disabled': false,
         'type': client['type'],
       }
