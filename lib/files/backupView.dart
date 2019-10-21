@@ -326,16 +326,16 @@ class _BackupViewState extends State<BackupView> {
                     }),
                   )
                 : null,
-            actions: alt
-                ? null
-                : <Widget>[
-                    Builder(builder: (ctx) {
-                      return IconButton(
-                        icon: Icon(Icons.more_horiz),
-                        onPressed: () => showBottom(ctx, store),
-                      );
-                    })
-                  ],
+            // actions: alt
+            //     ? null
+            //     : <Widget>[
+            //         Builder(builder: (ctx) {
+            //           return IconButton(
+            //             icon: Icon(Icons.more_horiz),
+            //             onPressed: () => showBottom(ctx, store),
+            //           );
+            //         })
+            //       ],
           ),
           body: loading
               ? Center(child: CircularProgressIndicator())
