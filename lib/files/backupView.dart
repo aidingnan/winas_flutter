@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 import './file.dart';
+import './deleteBackupDrive.dart';
+import './renameDriveDialog.dart';
+
 import '../redux/redux.dart';
 import '../common/utils.dart';
 import '../icons/winas_icons.dart';
@@ -21,11 +24,45 @@ class _BackupViewState extends State<BackupView> {
   bool loading = true;
 
   String error;
+
+  /// manage mode
+  bool alt = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   void dispose() {
     myScrollController?.dispose();
     drives = [];
     super.dispose();
+  }
+
+  void renameDrive(Drive drive, Store<AppState> store) {
+    print('renameDrive, $drive');
+    showDialog(
+      context: this.context,
+      builder: (BuildContext context) => RenameDriveDialog(
+        drive: drive,
+      ),
+    ).then((success) => refresh(store));
+  }
+
+  Future<void> deleteDrive(Drive drive, Store<AppState> store) async {
+    print('deleteDrive, $drive');
+    bool success = await showDialog(
+      context: this.context,
+      builder: (BuildContext context) => DeleteDriveDialog(drive: drive),
+    );
+
+    if (success == true) {
+      await refresh(store);
+      showSnackBar(this.context, i18n('Delete Success'));
+    } else if (success == false) {
+      showSnackBar(this.context, i18n('Delete Failed'));
+    }
   }
 
   Future updateDirSize(AppState state, Drive drive) async {
@@ -77,8 +114,39 @@ class _BackupViewState extends State<BackupView> {
     }
   }
 
+  void showBottom(BuildContext ctx, Store<AppState> store) {
+    showModalBottomSheet(
+      context: this.context,
+      builder: (BuildContext c) {
+        return SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Material(
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pop(c);
+                    setState(() {
+                      alt = true;
+                    });
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.all(16),
+                    child: Text(i18n('Manage Backup Drive')),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   /// list og backup drive
-  Widget renderList() {
+  Widget renderList(Store<AppState> store) {
     return CustomScrollView(
       controller: myScrollController,
       physics: AlwaysScrollableScrollPhysics(),
@@ -100,10 +168,11 @@ class _BackupViewState extends State<BackupView> {
                               i18n('Backup Device'),
                               style: TextStyle(color: Colors.black54),
                             ),
-                            Text(
-                              i18n('Backup Size'),
-                              style: TextStyle(color: Colors.black54),
-                            ),
+                            if (!alt)
+                              Text(
+                                i18n('Backup Size'),
+                                style: TextStyle(color: Colors.black54),
+                              ),
                           ],
                         ),
                       )
@@ -146,22 +215,24 @@ class _BackupViewState extends State<BackupView> {
 
             return Material(
               child: InkWell(
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return Files(
-                        node: Node(
-                          name: drive.label,
-                          driveUUID: drive.uuid,
-                          dirUUID: drive.uuid,
-                          tag: 'dir',
-                          location: 'backup',
+                onTap: alt
+                    ? null
+                    : () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return Files(
+                                node: Node(
+                                  name: drive.label,
+                                  driveUUID: drive.uuid,
+                                  dirUUID: drive.uuid,
+                                  tag: 'dir',
+                                  location: 'backup',
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                      );
-                    },
-                  ),
-                ),
                 child: Container(
                   constraints: BoxConstraints.expand(),
                   padding: EdgeInsets.fromLTRB(16, 12, 16, 12),
@@ -178,15 +249,47 @@ class _BackupViewState extends State<BackupView> {
                         child: Icon(icon, color: Colors.white),
                       ),
                       Container(width: 16),
-                      Text(drive.label, style: TextStyle(fontSize: 16)),
-                      Expanded(flex: 1, child: Container()),
-                      Text(
-                        drive.fileTotalSize == '0 B'
-                            ? i18n('No Backup Size')
-                            : drive.fileTotalSize,
-                        style: TextStyle(color: Colors.black54),
+                      Container(
+                        constraints: BoxConstraints(
+                            maxWidth: MediaQuery.of(context).size.width - 216),
+                        child: Text(
+                          drive.label,
+                          style: TextStyle(fontSize: 16),
+                          textAlign: TextAlign.start,
+                          overflow: TextOverflow.fade,
+                          softWrap: false,
+                          maxLines: 1,
+                        ),
                       ),
-                      Icon(Icons.chevron_right),
+
+                      // edit backup drive name
+                      if (alt)
+                        IconButton(
+                          iconSize: 18.0,
+                          padding: EdgeInsets.all(6),
+                          icon: Icon(Icons.edit),
+                          onPressed: () => renameDrive(drive, store),
+                        ),
+
+                      Expanded(flex: 1, child: Container()),
+
+                      // bakcup size
+                      if (!alt)
+                        Text(
+                          drive.fileTotalSize == '0 B'
+                              ? i18n('No Backup Size')
+                              : drive.fileTotalSize,
+                          style: TextStyle(color: Colors.black54),
+                        ),
+
+                      // delete backup drive
+                      if (alt)
+                        IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () => deleteDrive(drive, store),
+                        )
+                      else
+                        Icon(Icons.chevron_right),
                     ],
                   ),
                 ),
@@ -212,9 +315,27 @@ class _BackupViewState extends State<BackupView> {
             backgroundColor: Colors.white,
             iconTheme: IconThemeData(color: Colors.black38),
             title: Text(
-              i18n('Backup Drive'),
+              alt ? i18n('Manage Backup Drive') : i18n('Backup Drive'),
               style: TextStyle(color: Colors.black87),
             ),
+            leading: alt
+                ? IconButton(
+                    icon: Icon(Icons.close, color: Colors.black38),
+                    onPressed: () => setState(() {
+                      alt = false;
+                    }),
+                  )
+                : null,
+            actions: alt
+                ? null
+                : <Widget>[
+                    Builder(builder: (ctx) {
+                      return IconButton(
+                        icon: Icon(Icons.more_horiz),
+                        onPressed: () => showBottom(ctx, store),
+                      );
+                    })
+                  ],
           ),
           body: loading
               ? Center(child: CircularProgressIndicator())
@@ -273,7 +394,7 @@ class _BackupViewState extends State<BackupView> {
                             ),
                           ],
                         )
-                      : renderList(),
+                      : renderList(store),
         );
       },
     );

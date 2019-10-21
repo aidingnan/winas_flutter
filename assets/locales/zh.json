@@ -333,6 +333,7 @@
   "Backup Size": "已备容量",
   "No Backup Size": "未备份",
   "No Backup Drive": "您尚未创建备份文件",
+  "Manage Backup Drive": "管理",
 
   "==== device/info.dart ====": "",
   "Unknown Status in Info": "未知",

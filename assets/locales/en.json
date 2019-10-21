@@ -333,6 +333,7 @@
   "Backup Size": "Size",
   "No Backup Size": "No backup",
   "No Backup Drive": "You haven't create any backup yet",
+  "Manage Backup Drive": "Manage",
 
   "==== device/info.dart ====": "",
   "Unknown Status in Info": "Unknown status",
