@@ -42,7 +42,7 @@ class TransferItem {
   CancelToken cancelToken;
   Function callback;
 
-  /// status of TransferItem: init, working, paused, finished, failed;
+  /// status of TransferItem: init, working, paused, finished, failed, clean;
   String status = 'init';
 
   TransferItem({this.entry, this.transType, this.filePath, this.targetDir})
@@ -141,6 +141,7 @@ class TransferItem {
 
   void clean() {
     this.pause();
+    this.status = 'clean';
     if (this.callback is Function) {
       this.callback();
     }
@@ -583,9 +584,9 @@ class TransferManager {
 
       schedule();
     } catch (error) {
-      debug(error);
       // DioErrorType.CANCEL is not error
-      if (error is DioError && (error?.type != DioErrorType.CANCEL)) {
+      if (error is! DioError || (error?.type != DioErrorType.CANCEL)) {
+        debug(error);
         item.fail(error);
       }
       schedule();

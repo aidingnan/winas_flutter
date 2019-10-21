@@ -93,6 +93,7 @@ class _TransferState extends State<Transfer> {
           ],
         );
       case 'paused':
+      case 'clean':
         return Stack(
           children: <Widget>[
             Positioned.fill(
@@ -200,6 +201,9 @@ class _TransferState extends State<Transfer> {
             } else if (item.status == 'failed') {
               // resume task
               resumeTask(items, item, state);
+            } else if (item.status == 'clean') {
+              // double tap, ignore
+              print('tap clean item, do nothing');
             }
           },
           child: Row(
