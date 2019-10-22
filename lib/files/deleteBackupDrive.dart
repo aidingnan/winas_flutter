@@ -1,6 +1,6 @@
-import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+
 import '../redux/redux.dart';
 import '../common/utils.dart';
 
@@ -28,13 +28,9 @@ class _DeleteDialogState extends State<DeleteDriveDialog> {
     });
 
     try {
-      // Map<String, dynamic> formdata = Map();
-
-      // await state.apis.req('deleteDirOrFile', {
-      //   'formdata': FormData.fromMap(formdata),
-      //   'dirUUID': 'list[0].pdir',
-      //   'driveUUID': 'list[0].pdrv',
-      // });
+      await state.apis.req('deleteDrive', {
+        'uuid': widget.drive.uuid,
+      });
     } catch (error) {
       debug(error);
       setState(() {

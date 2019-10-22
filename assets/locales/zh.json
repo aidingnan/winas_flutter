@@ -208,6 +208,10 @@
   "Confirm to Cancel Selected Xcopy Tasks": "确定取消选择的任务吗？",
   "Confirm to Cancel All Xcopy Tasks": "确定清除所有任务吗？",
 
+  "==== nav/deleteBackupDrive.dart ====": "",
+  "Delete Backup Drive Title": "删除备份",
+  "Confirm to Delete Backup Drive": "该操作将永久删除该备份下的全部内容，确定继续吗？",
+
   "==== nav/bottom_navigation.dart ====": "",
   "Public Drive": "共享空间",
   "Backup Drive": "备份空间",

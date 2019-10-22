@@ -208,6 +208,10 @@
   "Confirm to Cancel Selected Xcopy Tasks": "Confirm to clear selected tasks?",
   "Confirm to Cancel All Xcopy Tasks": "Confirm to clear all tasks?",
 
+  "==== nav/deleteBackupDrive.dart ====": "",
+  "Delete Backup Drive Title": "Delete Backup",
+  "Confirm to Delete Backup Drive": "This operation will permanently delete all the contents under this backup. Are you sure to continue?",
+
   "==== nav/bottom_navigation.dart ====": "",
   "Public Drive": "Public",
   "Backup Drive": "Backups",

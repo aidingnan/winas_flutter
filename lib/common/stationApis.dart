@@ -247,6 +247,7 @@ class Apis {
         );
         break;
 
+      // handle drives
       case 'drives':
         r = tget('drives', null);
         break;
@@ -259,9 +260,12 @@ class Apis {
         r = tpost('drives', args);
         break;
 
-      // backup
       case 'updateDrive':
         r = tpatch('drives/${args['uuid']}', args['props']);
+        break;
+
+      case 'deleteDrive':
+        r = tdel('drives/${args['uuid']}', null);
         break;
 
       case 'updateBackupAttr':
