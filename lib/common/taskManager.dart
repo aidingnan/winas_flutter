@@ -40,7 +40,7 @@ void getThumbCallback(TaskProps props, Function callback) {
 class Task {
   Status status = Status.pending;
 
-  final Function onFinished;
+  Function onFinished;
   Task(this.onFinished);
 
   run() {
@@ -48,19 +48,24 @@ class Task {
   }
 
   abort() {
+    if (this.isFinished) return;
     status = Status.finished;
     this.onFinished('Abort', null);
+    this.onFinished = null;
   }
 
   error(error) {
+    if (this.isFinished) return;
     status = Status.finished;
     this.onFinished(error, null);
+    this.onFinished = null;
   }
 
   finish(value) {
     if (this.isFinished) return;
     status = Status.finished;
     this.onFinished(null, value);
+    this.onFinished = null;
   }
 
   bool get isPending => status == Status.pending;
@@ -93,7 +98,8 @@ class ThumbTask extends Task {
   /// only abort pending task
   @override
   abort() {
-    if (this.isFinished || this.isRunning) return;
+    // fix memory leak
+    // if (this.isFinished || this.isRunning) return;
     super.abort();
   }
 }

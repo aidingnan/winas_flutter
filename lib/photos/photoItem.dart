@@ -137,7 +137,7 @@ class _PhotoItemState extends State<PhotoItem> {
                                       ? Colors.teal
                                       : Colors.black12,
                                   borderRadius: BorderRadius.all(
-                                    const Radius.circular(24),
+                                    Radius.circular(24),
                                   ),
                                 ),
                               ),

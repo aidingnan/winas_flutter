@@ -551,8 +551,8 @@ class Worker {
         try {
           await uploadSingle(entity, remoteDirs, rootDir);
         } catch (e) {
-          print('backup failed: ${entity.id}');
-          print(e);
+          debug('backup failed: ${entity.id}');
+          debug(e);
           String id = entity.id;
           int mtime = getMtime(entity);
 
@@ -599,8 +599,8 @@ class Worker {
     ignored = 0;
     total = 0;
     this.startAsync().catchError((e) {
-      print('backup failed, retry ${retry * retry} minutes later');
-      print(e);
+      debug('backup failed, retry ${retry * retry} minutes later');
+      debug(e);
       retryLater();
     });
   }
