@@ -263,13 +263,13 @@ class _BackupViewState extends State<BackupView> {
                       ),
 
                       // edit backup drive name
-                      if (alt)
-                        IconButton(
-                          iconSize: 18.0,
-                          padding: EdgeInsets.all(6),
-                          icon: Icon(Icons.edit),
-                          onPressed: () => renameDrive(drive, store),
-                        ),
+                      // if (alt)
+                      //   IconButton(
+                      //     iconSize: 18.0,
+                      //     padding: EdgeInsets.all(6),
+                      //     icon: Icon(Icons.edit),
+                      //     onPressed: () => renameDrive(drive, store),
+                      //   ),
 
                       Expanded(flex: 1, child: Container()),
 

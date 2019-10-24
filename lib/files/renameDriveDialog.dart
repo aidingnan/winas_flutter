@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
@@ -24,7 +23,7 @@ class _RenameDialogState extends State<RenameDriveDialog> {
     setState(() {
       loading = true;
     });
-    final drive = widget.drive;
+    // final drive = widget.drive;
     try {
       // await state.apis.req('rename', {
       //   'oldName': entry.name,

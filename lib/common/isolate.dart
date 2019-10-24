@@ -137,9 +137,8 @@ void isolateUpload(SendPort sendPort) {
       'driveUUID': dir.pdrv,
       'dirUUID': dir.uuid,
       'fileName': fileName,
-      "file": MultipartFile(
-        Stream.fromFuture(file.readAsBytes()),
-        stat.size,
+      "file": MultipartFile.fromFileSync(
+        filePath,
         filename: jsonEncode(formDataOptions),
       ),
     };
@@ -234,15 +233,17 @@ Future<void> uploadViaIsolate(Apis apis, Entry targetDir, String filePath,
   List<int> timeList = [];
 
   progressRes.listen((res) {
-    // print('progressRes.listen res ${res[0]}, ${res[1]}');
+    // print('progressRes.listen res ${res[0] / 1024}, ${res[1] / 1024}');
     int uploaded = res[0];
     int now = DateTime.now().millisecondsSinceEpoch;
     uploadedList.insert(0, uploaded);
     timeList.insert(0, now);
     final deltaSize = uploadedList.first - uploadedList.last;
 
-    // add 40 to avoid show a mistake large speed
-    final deltaTime = timeList.first - timeList.last + 40;
+    // add 1000 to avoid show a mistake large speed
+    int deltaTime = timeList.first - timeList.last;
+    if (deltaTime < 1000) deltaTime = 1000;
+
     final speed = deltaSize / deltaTime * 1000;
     updateSpeed(speed);
     if (deltaTime > 4 * 1000 || uploadedList.length > 256) {

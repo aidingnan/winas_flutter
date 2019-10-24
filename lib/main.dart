@@ -18,6 +18,7 @@ import './login/stationList.dart';
 import './nav/bottom_navigation.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   Directory root = await getApplicationDocumentsDirectory();
   String _rootDir = root.path;
 

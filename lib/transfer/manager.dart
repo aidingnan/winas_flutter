@@ -106,8 +106,9 @@ class TransferItem {
 
     final deltaSize = this.deltaSizeList.first - this.deltaSizeList.last;
 
-    // add 40 to avoid show a mistake large speed
-    final deltaTime = this.deltaTimeList.first - this.deltaTimeList.last + 40;
+    // add 1000 to avoid show a mistake large speed
+    int deltaTime = this.deltaTimeList.first - this.deltaTimeList.last;
+    if (deltaTime < 1000) deltaTime = 1000;
 
     final speed = deltaSize / deltaTime * 1000;
     this.speed = '${prettySize(speed)}/s';
