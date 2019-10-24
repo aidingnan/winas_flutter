@@ -27,7 +27,7 @@ class NavigationIconView {
   NavigationIconView({
     Widget icon,
     Widget activeIcon,
-    Function view,
+    Widget view,
     String title,
     String nav,
     Color color,
@@ -39,7 +39,7 @@ class NavigationIconView {
           backgroundColor: color,
         );
 
-  final Function view;
+  final Widget view;
   final BottomNavigationBarItem item;
 }
 
@@ -109,6 +109,8 @@ class _BottomNavigationState extends State<BottomNavigation>
 
   /// only refresh token at first just once (in `../files/file.dart`)
   Justonce justonce = Justonce();
+
+  List<NavigationIconView> _navigationViews;
 
   Future<void> refreshAndSaveToken(Store<AppState> store) async {
     String clientId = await getClientId();
@@ -319,6 +321,46 @@ class _BottomNavigationState extends State<BottomNavigation>
         backupWorker.start(isMobile);
       }
     };
+
+    _navigationViews = <NavigationIconView>[
+      NavigationIconView(
+        icon: Icon(Icons.folder_open),
+        activeIcon: Icon(Icons.folder),
+        title: i18n('My Drive'),
+        nav: 'files',
+        view: Files(
+          node: Node(tag: 'home', location: 'home'),
+          fileNavViews: fileNavViews,
+          justonce: justonce,
+        ),
+        color: Colors.teal,
+      ),
+      NavigationIconView(
+        activeIcon: Icon(Icons.photo_library),
+        icon: Icon(OMIcons.photoLibrary),
+        title: i18n('Album'),
+        nav: 'photos',
+        view: Photos(backupWorker: backupWorker, toggleBackup: toggleBackup),
+        color: Colors.indigo,
+      ),
+      NavigationIconView(
+        activeIcon: Icon(Icons.router),
+        icon: Icon(OMIcons.router),
+        title: i18n('Device'),
+        nav: 'device',
+        view: MyStation(),
+        color: Colors.deepPurple,
+      ),
+      NavigationIconView(
+        activeIcon: Icon(Icons.person),
+        icon: Icon(Icons.person_outline),
+        title: i18n('Me'),
+        nav: 'user',
+        view:
+            AccountInfo(backupWorker: backupWorker, toggleBackup: toggleBackup),
+        color: Colors.deepOrange,
+      ),
+    ];
   }
 
   @override
@@ -381,47 +423,6 @@ class _BottomNavigationState extends State<BottomNavigation>
         },
       );
 
-  List<NavigationIconView> get _navigationViews => <NavigationIconView>[
-        NavigationIconView(
-          icon: Icon(Icons.folder_open),
-          activeIcon: Icon(Icons.folder),
-          title: i18n('My Drive'),
-          nav: 'files',
-          view: () => Files(
-            node: Node(tag: 'home', location: 'home'),
-            fileNavViews: fileNavViews,
-            justonce: justonce,
-          ),
-          color: Colors.teal,
-        ),
-        NavigationIconView(
-          activeIcon: Icon(Icons.photo_library),
-          icon: Icon(OMIcons.photoLibrary),
-          title: i18n('Album'),
-          nav: 'photos',
-          view: () =>
-              Photos(backupWorker: backupWorker, toggleBackup: toggleBackup),
-          color: Colors.indigo,
-        ),
-        NavigationIconView(
-          activeIcon: Icon(Icons.router),
-          icon: Icon(OMIcons.router),
-          title: i18n('Device'),
-          nav: 'device',
-          view: () => MyStation(),
-          color: Colors.deepPurple,
-        ),
-        NavigationIconView(
-          activeIcon: Icon(Icons.person),
-          icon: Icon(Icons.person_outline),
-          title: i18n('Me'),
-          nav: 'user',
-          view: () => AccountInfo(
-              backupWorker: backupWorker, toggleBackup: toggleBackup),
-          color: Colors.deepOrange,
-        ),
-      ];
-
   @override
   Widget build(BuildContext context) {
     // set SystemUiStyle to dark
@@ -436,7 +437,7 @@ class _BottomNavigationState extends State<BottomNavigation>
       builder: (ctx, state) {
         // Future.delayed(Duration.zero, () => checkTokenState(ctx, state));
         return Scaffold(
-          body: Center(child: _navigationViews[_currentIndex].view()),
+          body: Center(child: _navigationViews[_currentIndex].view),
           bottomNavigationBar: _botNavBar,
         );
       },
