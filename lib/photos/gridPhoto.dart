@@ -463,6 +463,7 @@ class _GridPhotoState extends State<GridPhoto>
     stream.addListener(listener);
     completer.future.then((_) {
       stream.removeListener(listener);
+      imageProvider.evict().catchError(print);
     });
     return completer.future;
   }
@@ -472,11 +473,18 @@ class _GridPhotoState extends State<GridPhoto>
     if (thumbData == null) {
       thumbData = await cm.getThumbData(widget.photo, state);
     }
+    if (!this.mounted) {
+      thumbData = null;
+      return;
+    }
     if (imageData == null || info == null) {
       info = await _getImage(thumbData);
     }
     if (thumbData != null && this.mounted) {
       setState(() {});
+    } else {
+      info = null;
+      thumbData = null;
     }
   }
 
@@ -489,10 +497,16 @@ class _GridPhotoState extends State<GridPhoto>
     }
 
     // imageData = await cm.getLargePhoto(widget.photo, state);
-
+    if (!this.mounted) {
+      imageData = null;
+      return;
+    }
     info = await _getImage(imageData);
     if (imageData != null && this.mounted) {
       setState(() {});
+    } else {
+      info = null;
+      imageData = null;
     }
   }
 
