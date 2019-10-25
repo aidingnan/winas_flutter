@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:redux/redux.dart';
+import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 import '../common/utils.dart';
 import '../common/request.dart';
 import '../common/stationApis.dart';
+import '../common/placeHolderImage.dart';
 
 /// User account data
 class Account {
@@ -515,12 +517,29 @@ class Album {
   int count = 0;
   List<Drive> drives;
 
-  // thumbData
-  Uint8List cover;
+  // thumb
+  Image cover = Image.memory(
+    placeHolderImage,
+    fit: BoxFit.cover,
+    gaplessPlayback: true,
+  );
+
   Album(this.name, this.places, this.types, this.count, this.drives);
 
-  void setCover(Uint8List thumbData) {
-    this.cover = thumbData;
+  void setCover(Image thumb) {
+    if (cover != null) {
+      cover.image.evict().catchError(print);
+    }
+    cover = thumb;
+  }
+
+  void clean() {
+    cover.image.evict().catchError(print);
+    cover = Image.memory(
+      placeHolderImage,
+      fit: BoxFit.cover,
+      gaplessPlayback: true,
+    );
   }
 }
 

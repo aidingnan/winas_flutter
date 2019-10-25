@@ -11,7 +11,6 @@ import '../common/cache.dart';
 import '../common/utils.dart';
 import '../common/eventBus.dart';
 import '../icons/winas_icons.dart';
-import '../common/placeHolderImage.dart';
 
 const mediaTypes =
     'HEIC.JPEG.PNG.JPG.GIF.BMP.RAW.RM.RMVB.WMV.AVI.MP4.3GP.MKV.MOV.FLV.MPEG';
@@ -53,7 +52,11 @@ class _PhotosState extends State<Photos> {
     final preThumbData = cachedThumbs['${album.name + album.places}'];
 
     if (preThumbData != null) {
-      album.setCover(preThumbData);
+      album.setCover(Image.memory(
+        preThumbData,
+        fit: BoxFit.cover,
+        gaplessPlayback: true,
+      ));
     }
 
     // fix bug of call this after logout
@@ -78,7 +81,11 @@ class _PhotosState extends State<Photos> {
     cachedThumbs['${album.name + album.places}'] = thumbData;
 
     if (this.mounted && thumbData != null) {
-      album.setCover(thumbData);
+      album.setCover(Image.memory(
+        thumbData,
+        fit: BoxFit.cover,
+        gaplessPlayback: true,
+      ));
       setState(() {});
     }
   }
@@ -245,6 +252,7 @@ class _PhotosState extends State<Photos> {
   void dispose() {
     backupEventListener?.cancel();
     myScrollController?.dispose();
+    albumList.forEach((a) => a.clean());
     super.dispose();
   }
 
@@ -268,11 +276,7 @@ class _PhotosState extends State<Photos> {
                   flex: 1,
                   child: Container(
                     constraints: BoxConstraints.expand(),
-                    child: Image.memory(
-                      album.cover ?? placeHolderImage,
-                      fit: BoxFit.cover,
-                      gaplessPlayback: true,
-                    ),
+                    child: album.cover,
                   ),
                 ),
                 Container(
