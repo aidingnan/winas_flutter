@@ -609,7 +609,7 @@ void debug(dynamic text, {String userId, String deviceName}) {
   String log = (text ?? '').toString();
   DateTime time = DateTime.now();
   if (text is DioError && text?.response?.data != null) {
-    log += '\ntext.response.data: ${text.response.data}';
+    log += '\nerror message: ${text.response.data['message']}';
   }
   final str = '#### $time ####\n$trace\n$log\n';
   print(str);
@@ -626,7 +626,7 @@ void debug(dynamic text, {String userId, String deviceName}) {
         trace,
         log
       ].join(';');
-      FlutterUmplus.event('DEBUG_LOG', label: debugStr);
+      FlutterUmplus.event('DEBUG_LOG', label: debugStr.substring(0, 250));
     });
   }
 }
@@ -647,14 +647,14 @@ Future<void> loginLog(String accountId, String deviceSN) async {
   FlutterUmplus.event('LOGIN_LOG', label: str);
 }
 
-Future<void> infoLog(String userId, String type, String data) async {
+Future<void> infoLog(String userId, String type, String count) async {
   // check AppConfig.umeng
   if (AppConfig.umeng == false) return;
 
   final data = await getMachineId();
   DateTime time = DateTime.now();
   String machineId = data['machineId'];
-  String str = ['$time', machineId, userId, type, data].join(';');
+  String str = ['$time', machineId, userId, type, count].join(';');
   print('INFO_LOG: $str');
   FlutterUmplus.event('INFO_LOG', label: str);
 }

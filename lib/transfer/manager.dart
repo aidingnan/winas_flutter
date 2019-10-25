@@ -450,9 +450,9 @@ class TransferManager {
 
       schedule();
     } catch (error) {
-      debug(error);
       // DioErrorType.CANCEL is not error
       if (error is! DioError || (error?.type != DioErrorType.CANCEL)) {
+        debug(error);
         item.fail(error);
       }
       schedule();
@@ -484,6 +484,7 @@ class TransferManager {
       // DioErrorType.CANCEL is not error
       if (error is! DioError || (error?.type != DioErrorType.CANCEL)) {
         debug(error);
+
         item.fail(error);
       }
       schedule();
@@ -520,9 +521,9 @@ class TransferManager {
 
       schedule();
     } catch (error) {
-      debug(error);
       // DioErrorType.CANCEL is not error
       if (error is DioError && (error?.type != DioErrorType.CANCEL)) {
+        debug(error);
         item.fail(error);
       }
       schedule();
