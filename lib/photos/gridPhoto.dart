@@ -6,6 +6,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import '../redux/redux.dart';
 import '../common/utils.dart';
 import '../common/cache.dart';
+import '../common/placeHolderImage.dart';
 
 const double _kMinFlingVelocity = 800.0;
 
@@ -43,6 +44,8 @@ class _GridPhotoState extends State<GridPhoto>
   double detailTop = double.negativeInfinity;
   Uint8List imageData;
   Uint8List thumbData;
+  Image _imageThumb;
+  Image _imageRaw;
   @override
   void initState() {
     super.initState();
@@ -57,8 +60,20 @@ class _GridPhotoState extends State<GridPhoto>
     // prevent memory leak
     info = null;
     playerWidget = null;
+
+    /// manual clean iamge cache
     imageData = null;
     thumbData = null;
+
+    if (_imageThumb != null) {
+      _imageThumb.image.evict().catchError(print);
+      _imageThumb = null;
+    }
+    if (_imageRaw != null) {
+      _imageRaw.image.evict().catchError(print);
+      _imageRaw = null;
+    }
+
     super.dispose();
   }
 
@@ -566,6 +581,16 @@ class _GridPhotoState extends State<GridPhoto>
       onDispose: (store) => {},
       converter: (store) => store.state,
       builder: (context, state) {
+        _imageThumb = Image.memory(
+          thumbData ?? placeHolderImage,
+          fit: BoxFit.contain,
+          gaplessPlayback: true,
+        );
+        _imageRaw = Image.memory(
+          imageData ?? thumbData ?? placeHolderImage,
+          fit: BoxFit.contain,
+          gaplessPlayback: true,
+        );
         return Container(
           color: widget.showTitle
               ? Color.fromARGB((opacity * 255).round(), 255, 255, 255)
@@ -588,11 +613,7 @@ class _GridPhotoState extends State<GridPhoto>
                                 transform: Matrix4.identity()
                                   ..translate(_offset.dx, _offset.dy)
                                   ..scale(_scale),
-                                child: Image.memory(
-                                  thumbData,
-                                  fit: BoxFit.contain,
-                                  gaplessPlayback: true,
-                                ),
+                                child: _imageThumb,
                               ),
                             ),
                           ),
@@ -623,11 +644,7 @@ class _GridPhotoState extends State<GridPhoto>
                                 transform: Matrix4.identity()
                                   ..translate(_offset.dx, _offset.dy)
                                   ..scale(_scale),
-                                child: Image.memory(
-                                  imageData ?? thumbData,
-                                  fit: BoxFit.contain,
-                                  gaplessPlayback: true,
-                                ),
+                                child: _imageRaw,
                               ),
                             ),
                           ),

@@ -32,6 +32,10 @@ class _PhotoItemState extends State<PhotoItem> {
     if (data != null && this.mounted) {
       setState(() {
         thumbData = data;
+        _image = Image.memory(
+          thumbData,
+          fit: BoxFit.cover,
+        );
       });
       return;
     } else {
@@ -45,6 +49,10 @@ class _PhotoItemState extends State<PhotoItem> {
       if (error == null && value is Uint8List && this.mounted) {
         setState(() {
           thumbData = value;
+          _image = Image.memory(
+            thumbData,
+            fit: BoxFit.cover,
+          );
         });
       } else {
         thumbData = null;
@@ -61,11 +69,18 @@ class _PhotoItemState extends State<PhotoItem> {
     }
   }
 
+  Image _image = Image.memory(
+    placeHolderImage,
+    fit: BoxFit.cover,
+  );
+
   @override
   void dispose() {
     task?.abort();
     task = null;
     thumbData = null;
+    _image.image.evict().catchError(print);
+    _image = null;
     super.dispose();
   }
 
@@ -86,10 +101,7 @@ class _PhotoItemState extends State<PhotoItem> {
                 children: <Widget>[
                   // thumbnails
                   Positioned.fill(
-                    child: Image.memory(
-                      thumbData ?? placeHolderImage,
-                      fit: BoxFit.cover,
-                    ),
+                    child: _image,
                   ),
                   // video duration
                   Positioned(

@@ -419,7 +419,16 @@ class _FileRowState extends State<FileRow> {
     );
   }
 
+  Image _image;
+
   Widget renderGrid(BuildContext ctx, Uint8List _thumbData) {
+    if (_thumbData != null) {
+      _image = Image.memory(
+        _thumbData,
+        fit: BoxFit.contain,
+      );
+    }
+
     return type == 'file'
         ? Column(
             children: [
@@ -430,10 +439,7 @@ class _FileRowState extends State<FileRow> {
                     // show thumb
                     : Hero(
                         tag: entry.uuid,
-                        child: Image.memory(
-                          _thumbData,
-                          fit: BoxFit.contain,
-                        ),
+                        child: _image,
                       ),
               ),
               renderRowInGrid(ctx),
@@ -525,6 +531,10 @@ class _FileRowState extends State<FileRow> {
     _task?.abort();
     _task = null;
     _thumbData = null;
+    if (_image is Image) {
+      _image.image.evict().catchError(print);
+      _image = null;
+    }
     super.dispose();
   }
 
