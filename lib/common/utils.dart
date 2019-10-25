@@ -626,7 +626,7 @@ void debug(dynamic text, {String userId, String deviceName}) {
         trace,
         log
       ].join(';');
-      FlutterUmplus.event('DEBUG_LOG', label: debugStr.substring(0, 250));
+      FlutterUmplus.event('DEBUG_LOG', label: debugStr);
     });
   }
 }
