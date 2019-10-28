@@ -314,9 +314,21 @@ class _BackupViewState extends State<BackupView> {
             brightness: Brightness.light,
             backgroundColor: Colors.white,
             iconTheme: IconThemeData(color: Colors.black38),
-            title: Text(
-              alt ? i18n('Manage Backup Drive') : i18n('Backup Drive'),
-              style: TextStyle(color: Colors.black87),
+            title: WillPopScope(
+              onWillPop: () {
+                // capture return action to exit manage-view
+                if (alt) {
+                  setState(() {
+                    alt = false;
+                  });
+                  return Future.value(false);
+                }
+                return Future.value(true);
+              },
+              child: Text(
+                alt ? i18n('Manage Backup Drive') : i18n('Backup Drive'),
+                style: TextStyle(color: Colors.black87),
+              ),
             ),
             leading: alt
                 ? IconButton(

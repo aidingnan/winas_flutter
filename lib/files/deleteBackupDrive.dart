@@ -58,7 +58,7 @@ class _DeleteDialogState extends State<DeleteDriveDialog> {
               FlatButton(
                 textColor: Theme.of(context).primaryColor,
                 child: Text(i18n('Cancel')),
-                onPressed: () => close(),
+                onPressed: loading ? null : () => close(),
               ),
               FlatButton(
                 textColor: Theme.of(context).primaryColor,
