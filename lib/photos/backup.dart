@@ -328,7 +328,11 @@ class Worker {
       int size = (await file.stat()).size;
 
       /// TODO: handle large file in backup
-      if (size > 1073741824) throw 'too large file in backup photos';
+      if (size > 1073741824) {
+        // throw 'too large file in backup photos';
+        return null;
+      }
+
       final parts = await hashViaIsolate(filePath, cancelIsolate: cancelHash)
           .timeout(Duration(minutes: 60));
       hash = parts.last.fingerprint;
@@ -358,6 +362,12 @@ class Worker {
 
     // debug('before hash: $id, ${getNow() - time}');
     String hash = await getHash('$id+$mtime', entity);
+
+    if (hash == null) {
+      finished += 1;
+      ignored += 1;
+      return;
+    }
 
     // debug('after hash, ${getNow() - time}');
     final photoEntry = PhotoEntry(id, hash, mtime);

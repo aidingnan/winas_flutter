@@ -276,6 +276,14 @@ class FilePart {
 
   FilePart(this.start, this.end);
 
+  FilePart.fromMap(Map m) {
+    this.start = m['start'];
+    this.end = m['end'];
+    this.sha = m['sha'];
+    this.fingerprint = m['fingerprint'];
+    this.target = m['target'];
+  }
+
   @override
   String toString() {
     Map<String, dynamic> m = {
