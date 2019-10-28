@@ -14,6 +14,7 @@ import '../files/delete.dart';
 import '../transfer/manager.dart';
 
 const videoTypes = 'RM.RMVB.WMV.AVI.MP4.3GP.MKV.MOV.FLV.MPEG';
+List<String> photoMagic = ['JPEG', 'GIF', 'PNG', 'BMP'];
 
 class PageViewer extends StatefulWidget {
   const PageViewer(
@@ -89,7 +90,9 @@ class _PageViewerState extends State<PageViewer> {
       showSnackBar(ctx, i18n('Download Failed'));
     } else {
       try {
-        ShareExtend.share(entryPath, "file");
+        final type =
+            photoMagic.indexOf(entry?.metadata?.type) > -1 ? 'image' : 'file';
+        ShareExtend.share(entryPath, type);
       } catch (error) {
         debug(error);
         showSnackBar(ctx, i18n('No Available App to Open This File'));

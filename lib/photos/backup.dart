@@ -330,6 +330,7 @@ class Worker {
       /// TODO: handle large file in backup
       if (size > 1073741824) {
         // throw 'too large file in backup photos';
+        print('large file in backup $filePath, $size');
         return null;
       }
 
