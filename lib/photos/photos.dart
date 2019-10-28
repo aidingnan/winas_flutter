@@ -345,7 +345,7 @@ class _PhotosState extends State<Photos> {
                     ),
                     if (worker.hasError)
                       IconButton(
-                        icon: Icon(Icons.error, color: Colors.redAccent),
+                        icon: Icon(Icons.error, color: Colors.white),
                         onPressed: () async {
                           await showDialog(
                             context: this.context,
@@ -353,12 +353,6 @@ class _PhotosState extends State<Photos> {
                               title: Text(i18n('Backup Failed Title')),
                               content: Text('${worker.error}'),
                               actions: <Widget>[
-                                FlatButton(
-                                    textColor: Theme.of(context).primaryColor,
-                                    child: Text(i18n('Cancel')),
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    }),
                                 FlatButton(
                                     textColor: Theme.of(context).primaryColor,
                                     child: Text(i18n('OK')),

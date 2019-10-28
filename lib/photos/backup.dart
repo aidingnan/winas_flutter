@@ -332,7 +332,7 @@ class Worker {
 
       /// TODO: handle large file in backup
       if (size > 1073741824) {
-        throw ('hash error: $filePath, $size');
+        throw ('hash error: $filePath, size: $size');
       }
 
       final parts = await hashViaIsolate(filePath, cancelIsolate: cancelHash)
