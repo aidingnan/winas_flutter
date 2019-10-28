@@ -46,7 +46,7 @@ class _FilesState extends State<Files> {
   final Node node;
   Node currentNode;
   bool loading = true;
-  Error _error;
+  dynamic _error;
   List<Entry> entries = [];
   List<Entry> dirs = [];
   List<Entry> files = [];

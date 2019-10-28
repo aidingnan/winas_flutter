@@ -343,6 +343,33 @@ class _PhotosState extends State<Photos> {
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
+                    if (worker.hasError)
+                      IconButton(
+                        icon: Icon(Icons.error, color: Colors.redAccent),
+                        onPressed: () async {
+                          await showDialog(
+                            context: this.context,
+                            builder: (BuildContext context) => AlertDialog(
+                              title: Text(i18n('Backup Failed Title')),
+                              content: Text('${worker.error}'),
+                              actions: <Widget>[
+                                FlatButton(
+                                    textColor: Theme.of(context).primaryColor,
+                                    child: Text(i18n('Cancel')),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    }),
+                                FlatButton(
+                                    textColor: Theme.of(context).primaryColor,
+                                    child: Text(i18n('OK')),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    })
+                              ],
+                            ),
+                          );
+                        },
+                      ),
                     Container(width: 16),
                     Expanded(
                       child: Container(

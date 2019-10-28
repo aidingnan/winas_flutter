@@ -618,7 +618,7 @@ void debug(dynamic text, {String userId, String deviceName}) {
   // upload to umeng
   if (AppConfig.umeng != false) {
     getMachineId().then((data) {
-      final debugStr = [
+      String debugStr = [
         data['machineId'],
         '$time',
         userId ?? 'Na',
@@ -626,6 +626,7 @@ void debug(dynamic text, {String userId, String deviceName}) {
         trace,
         log
       ].join(';');
+      if (debugStr.length > 256) debugStr = debugStr.substring(0, 256);
       FlutterUmplus.event('DEBUG_LOG', label: debugStr);
     });
   }

@@ -69,6 +69,9 @@ class Worker {
   CancelIsolate cancelHash;
   Status status = Status.idle;
 
+  /// latest error
+  dynamic latestError;
+
   /// retry times
   int retry = 0;
 
@@ -329,9 +332,7 @@ class Worker {
 
       /// TODO: handle large file in backup
       if (size > 1073741824) {
-        // throw 'too large file in backup photos';
-        print('large file in backup $filePath, $size');
-        return null;
+        throw ('hash error: $filePath, $size');
       }
 
       final parts = await hashViaIsolate(filePath, cancelIsolate: cancelHash)
@@ -556,14 +557,20 @@ class Worker {
     if (assetList.length == uploadList.length) {
       infoLog(apis.userUUID, 'PhotoCount', total.toString());
     }
+    dynamic error;
     // upload photo one by one
     for (AssetEntity entity in uploadList) {
       if (status == Status.running) {
         try {
           await uploadSingle(entity, remoteDirs, rootDir);
         } catch (e) {
-          debug('backup failed: ${entity.id}');
-          debug(e);
+          if (error == null) {
+            debug('backup failed: ${entity.id} ${e.toString()}');
+            error = e;
+          } else {
+            print('backup failed: ${entity.id} ${e.toString()}');
+          }
+
           String id = entity.id;
           int mtime = getMtime(entity);
 
@@ -585,8 +592,8 @@ class Worker {
       total = 0;
     } else {
       print('not all upload success');
-      status = Status.failed;
-      throw 'backup failed';
+      if (error != null) throw error;
+      throw 'backup failed, finished != total';
     }
   }
 
@@ -609,9 +616,11 @@ class Worker {
     finished = 0;
     ignored = 0;
     total = 0;
+    latestError = null;
     this.startAsync().catchError((e) {
-      debug('backup failed, retry ${retry * retry} minutes later');
-      debug(e);
+      status = Status.failed;
+      latestError = e;
+      debug('backup failed, ${e.toString()}');
       retryLater();
     });
   }
@@ -744,4 +753,8 @@ class BackupWorker {
       : isDiffing
           ? '${(worker.finished / (worker.total + 1) * 100).floor()}%'
           : '${worker.finished} / ${worker.total}   ${worker.speed ?? ''}';
+
+  bool get hasError => isFailed && error != null;
+
+  String get error => worker?.latestError?.toString();
 }

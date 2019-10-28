@@ -426,6 +426,7 @@
   "Backup Finished": "备份已经完成",
   "Backup Paused in Mobile Data Traffic": "当前在使用移动数据流量，备份已暂停",
   "Backup Failed": "备份未完成，稍后将自动重试",
+  "Backup Failed Title": "备份未完成",
   "Backup Preparing": "正在计算需要备份的内容",
   "Backup Working": "备份中",
   "Backup Disabled": "已关闭",

@@ -426,6 +426,7 @@
   "Backup Finished": "Backup complete",
   "Backup Paused in Mobile Data Traffic": "Backup paused because you're using cellular data",
   "Backup Failed": "Backup not complete",
+  "Backup Failed Title": "Backup not complete",
   "Backup Preparing": "Preparing",
   "Backup Working": "Backing up",
   "Backup Disabled": "Disabled",
