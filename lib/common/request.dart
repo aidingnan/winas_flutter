@@ -453,6 +453,7 @@ class Request {
       data: Stream.fromIterable(imageData.map((e) => [e])),
       options: Options(
         contentType: 'application/octet-stream',
+        responseType: ResponseType.json,
         headers: {
           HttpHeaders.contentTypeHeader: 'application/octet-stream',
           HttpHeaders.authorizationHeader: token,
