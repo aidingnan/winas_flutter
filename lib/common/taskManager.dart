@@ -137,6 +137,7 @@ class TaskManager {
     // remove finished
     thumbTaskQueue.removeWhere((t) => t.isFinished);
 
+    print('thumbTaskQueue length ${thumbTaskQueue.length}');
     // calc number of task left to run
     int freeNum =
         thumbTaskLimit - thumbTaskQueue.where((t) => t.isRunning).length;

@@ -448,6 +448,9 @@ class Worker {
       await file.delete();
     }
 
+    // trigger generating thumbnails
+    apis.thumbTrigger(hash);
+
     // send Backup Event
     eventBus.fire(BackupEvent(rootDir.pdrv));
 

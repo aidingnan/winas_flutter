@@ -358,6 +358,21 @@ class Apis {
     return r;
   }
 
+  void thumbTrigger(String hash, {int height = 200, int width = 200}) {
+    final ep = 'media/$hash';
+    final qs = {
+      'alt': 'thumbnail',
+      'autoOrient': 'true',
+      'modifier': 'caret',
+      'width': width,
+      'height': height,
+    };
+    tget(ep, qs)
+        .timeout(Duration(seconds: 2))
+        .then((_) => {})
+        .catchError((_) => {});
+  }
+
   Future download(String ep, Map<String, dynamic> qs, String downloadPath,
       {Function onProgress, CancelToken cancelToken}) async {
     // download via cloud pipe
