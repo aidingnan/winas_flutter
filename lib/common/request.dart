@@ -452,6 +452,7 @@ class Request {
       '$cloudAddress/user/avatar',
       data: Stream.fromIterable(imageData.map((e) => [e])),
       options: Options(
+        contentType: 'application/octet-stream',
         headers: {
           HttpHeaders.contentTypeHeader: 'application/octet-stream',
           HttpHeaders.authorizationHeader: token,
