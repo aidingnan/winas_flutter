@@ -526,7 +526,7 @@ class _FilesState extends State<Files> {
   }
 
   /// select New Image/Video/File/Folder
-  Future<void> showUploadSheet(context, state) async {
+  Future<void> showUploadSheet(ctx, state) async {
     showModalBottomSheet(
       context: this.context,
       builder: (BuildContext c) {
@@ -542,6 +542,7 @@ class _FilesState extends State<Files> {
                     Navigator.pop(this.context);
 
                     List<File> files;
+                    LoadingInstance loadingInstance;
                     try {
                       if (Platform.isIOS) {
                         List<Asset> resultList =
@@ -552,12 +553,11 @@ class _FilesState extends State<Files> {
                         if (resultList == null || resultList.length == 0)
                           return;
                         files = [];
-                        final loadingInstance = showLoading(this.context);
+                        loadingInstance = showLoading(this.context);
                         final cm = await CacheManager.getInstance();
                         for (int i = 0; i < resultList.length; i++) {
                           String filePath = await resultList[i].filePath;
                           File file = File(filePath);
-
                           // create a new dir in trans dir
                           String dirPath = await cm.transChildDir();
                           String fileName = filePath.split('/').last;
@@ -580,7 +580,14 @@ class _FilesState extends State<Files> {
                         if (files is! List || files.length == 0) return;
                       }
                     } catch (e) {
-                      if (e is! NoImagesSelectedException) {
+                      print('pick image error $e');
+                      loadingInstance?.close();
+                      if (e is AssetFailedToDownloadException) {
+                        showSnackBar(
+                          this.context,
+                          i18n('Failed to Download Raw Image Text'),
+                        );
+                      } else if (e is! NoImagesSelectedException) {
                         debug(e);
                         showSnackBar(
                           this.context,

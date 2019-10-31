@@ -136,7 +136,7 @@ class MyApp extends StatelessWidget {
       store: store,
       child: MaterialApp(
         title: 'Pocket Drive',
-        debugShowCheckedModeBanner: false,
+        debugShowCheckedModeBanner: true,
         theme: ThemeData(
           primaryColor: Colors.teal,
           accentColor: Colors.redAccent,

@@ -256,6 +256,7 @@
   "No Storage Permission Warning": "Storage access permissions disabled, please enable in settings.",
   "Goto Open Storage Permission": "Go to 'Settings' to enable storage access permissions",
   "Pick Image Failed Text": "Failed to pick image, make sure you have allowed app to access storage.",
+  "Failed to Download Raw Image Text": "Failed to download the raw image from iCloud, please connect to Wi-Fi and retry.",
   "Pick Video Failed Text": "Failed to pick video make sure you have allowed app to access storage.",
   "Pick File Failed Text": "Failed to pick file make sure you have allowed app to access storage.",
   "Upload Photo": "Upload photo",

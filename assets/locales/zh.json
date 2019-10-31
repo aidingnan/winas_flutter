@@ -256,6 +256,7 @@
   "No Storage Permission Warning": "未获取存储权限，操作失败。请在设置中开启相应权限后重试。",
   "Goto Open Storage Permission": "去“设置”打开存储权限",
   "Pick Image Failed Text": "获取图片失败，请确认是否给予了应用“存储权限”",
+  "Failed to Download Raw Image Text": "从iCloud下载原图失败，请在Wi-Fi环境下重试",
   "Pick Video Failed Text": "获取视频失败，请确认是否给予了应用“存储权限”",
   "Pick File Failed Text": "获取文件失败，请确认是否给予了应用“存储权限”",
   "Upload Photo": "上传图片",
