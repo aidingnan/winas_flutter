@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:redux/redux.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:intl/intl_standalone.dart';
 import 'package:redux_persist/redux_persist.dart';
@@ -19,6 +20,11 @@ import './nav/bottom_navigation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  /// temporarily fix issue https://github.com/flutter/flutter/issues/42420
+  SystemChannels.skia
+      .invokeMethod<void>('Skia.setResourceCacheMaxBytes', 200 << 20);
+
   Directory root = await getApplicationDocumentsDirectory();
   String _rootDir = root.path;
 
