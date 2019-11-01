@@ -94,7 +94,7 @@ class Request {
   /// get with token
   tget(String ep, args) {
     assert(token != null);
-    dio.options.headers['Authorization'] = token;
+    dio.options.headers['authorization'] = token;
     dio.options.headers['cookie'] = cookie;
     return dio.get('$cloudAddress/$ep', queryParameters: args);
   }
@@ -102,8 +102,8 @@ class Request {
   /// post with token
   tpost(String ep, args) {
     assert(token != null);
-    dio.options.headers['Authorization'] = token;
-    dio.options.headers['Content-Type'] = 'application/json';
+    dio.options.headers['authorization'] = token;
+    dio.options.headers['content-type'] = 'application/json';
     dio.options.headers['cookie'] = cookie;
     return dio.post('$cloudAddress/$ep', data: args);
   }
@@ -111,7 +111,7 @@ class Request {
   /// patch with token
   tpatch(String ep, args) {
     assert(token != null);
-    dio.options.headers['Authorization'] = token;
+    dio.options.headers['authorization'] = token;
     dio.options.headers['cookie'] = cookie;
     return dio.patch('$cloudAddress/$ep', data: args);
   }
@@ -119,7 +119,7 @@ class Request {
   /// patch with token
   tdel(String ep, args) {
     assert(token != null);
-    dio.options.headers['Authorization'] = token;
+    dio.options.headers['authorization'] = token;
     dio.options.headers['cookie'] = cookie;
     return dio.delete('$cloudAddress/$ep', queryParameters: args);
   }
@@ -128,8 +128,8 @@ class Request {
   command(deviceSN, data, [Options options]) {
     assert(token != null);
     assert(cookie != null);
-    dio.options.headers['Authorization'] = token;
-    dio.options.headers['Content-Type'] = 'application/json';
+    dio.options.headers['authorization'] = token;
+    dio.options.headers['content-type'] = 'application/json';
     dio.options.headers['cookie'] = cookie;
     return dio.post(
       '$cloudAddress/station/$deviceSN/json',

@@ -108,7 +108,7 @@ class Apis {
   tget(String ep, Map<String, dynamic> args) {
     assert(token != null);
     if (isCloud ?? true) return command('GET', ep, args);
-    dio.options.headers['Authorization'] = 'JWT $lanToken';
+    dio.options.headers['authorization'] = 'JWT $lanToken';
     return dio.get('$lanAdrress/$ep', queryParameters: args);
   }
 
@@ -119,7 +119,7 @@ class Apis {
     if (isCloud ?? true)
       return command('POST', ep, args,
           cancelToken: cancelToken, onProgress: onProgress);
-    dio.options.headers['Authorization'] = 'JWT $lanToken';
+    dio.options.headers['authorization'] = 'JWT $lanToken';
     return dio.post('$lanAdrress/$ep',
         data: args, cancelToken: cancelToken, onSendProgress: onProgress);
   }
@@ -128,7 +128,7 @@ class Apis {
   tpatch(String ep, dynamic args) {
     assert(token != null);
     if (isCloud ?? true) return command('PATCH', ep, args);
-    dio.options.headers['Authorization'] = 'JWT $lanToken';
+    dio.options.headers['authorization'] = 'JWT $lanToken';
     return dio.patch('$lanAdrress/$ep', data: args);
   }
 
@@ -137,7 +137,7 @@ class Apis {
     assert(token != null);
     if (isCloud ?? true)
       return command('DELETE', ep, args, cancelToken: cancelToken);
-    dio.options.headers['Authorization'] = 'JWT $lanToken';
+    dio.options.headers['authorization'] = 'JWT $lanToken';
     return dio.delete('$lanAdrress/$ep',
         queryParameters: args, cancelToken: cancelToken);
   }
@@ -150,7 +150,7 @@ class Apis {
     assert(cookie != null);
     bool isFormData = data is FormData;
     bool isGet = verb == 'GET';
-    dio.options.headers['Authorization'] = token;
+    dio.options.headers['authorization'] = token;
     dio.options.headers['cookie'] = cookie;
 
     final url = '$cloudAddress/station/$deviceSN/json';
@@ -385,7 +385,7 @@ class Apis {
           'params': qs,
         })
       };
-      dio.options.headers['Authorization'] = token;
+      dio.options.headers['authorization'] = token;
       dio.options.headers['cookie'] = cookie;
       await dio.download(
         url,
@@ -397,7 +397,7 @@ class Apis {
       );
     } else {
       // download via lan
-      dio.options.headers['Authorization'] = 'JWT $lanToken';
+      dio.options.headers['authorization'] = 'JWT $lanToken';
       await dio.download(
         '$lanAdrress/$ep',
         downloadPath,
