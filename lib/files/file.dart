@@ -528,7 +528,7 @@ class _FilesState extends State<Files> {
   /// select New Image/Video/File/Folder
   Future<void> showUploadSheet(ctx, state) async {
     showModalBottomSheet(
-      context: this.context,
+      context: ctx,
       builder: (BuildContext c) {
         return SafeArea(
           child: Container(
@@ -539,7 +539,7 @@ class _FilesState extends State<Files> {
                 navButton(
                   () async {
                     // close showModalBottomSheet
-                    Navigator.pop(this.context);
+                    Navigator.pop(ctx);
 
                     List<File> files;
                     LoadingInstance loadingInstance;
@@ -553,7 +553,7 @@ class _FilesState extends State<Files> {
                         if (resultList == null || resultList.length == 0)
                           return;
                         files = [];
-                        loadingInstance = showLoading(this.context);
+                        loadingInstance = showLoading(ctx);
                         final cm = await CacheManager.getInstance();
                         for (int i = 0; i < resultList.length; i++) {
                           String filePath = await resultList[i].filePath;
@@ -584,13 +584,13 @@ class _FilesState extends State<Files> {
                       loadingInstance?.close();
                       if (e is AssetFailedToDownloadException) {
                         showSnackBar(
-                          this.context,
+                          ctx,
                           i18n('Failed to Download Raw Image Text'),
                         );
                       } else if (e is! NoImagesSelectedException) {
                         debug(e);
                         showSnackBar(
-                          this.context,
+                          ctx,
                           i18n('Pick Image Failed Text'),
                         );
                       }
@@ -605,7 +605,7 @@ class _FilesState extends State<Files> {
                 navButton(
                   () async {
                     // close showModalBottomSheet
-                    Navigator.pop(this.context);
+                    Navigator.pop(ctx);
 
                     List<File> files;
                     try {
@@ -637,7 +637,7 @@ class _FilesState extends State<Files> {
                     } catch (e) {
                       debug(e);
                       showSnackBar(
-                        this.context,
+                        ctx,
                         i18n('Pick Video Failed Text'),
                       );
                       return;
@@ -652,14 +652,14 @@ class _FilesState extends State<Files> {
                 navButton(
                   () async {
                     // close showModalBottomSheet
-                    Navigator.pop(this.context);
+                    Navigator.pop(ctx);
                     List<File> files;
                     try {
                       files = await FilePicker.getMultiFile(type: FileType.ANY);
                       if (files is! List || files.length == 0) return;
                     } catch (e) {
                       debug(e);
-                      showSnackBar(this.context, i18n('Pick File Failed Text'));
+                      showSnackBar(ctx, i18n('Pick File Failed Text'));
                       return;
                     }
                     upload(files, state);
@@ -671,11 +671,10 @@ class _FilesState extends State<Files> {
                 navButton(
                   () async {
                     // close showModalBottomSheet
-                    Navigator.pop(this.context);
+                    Navigator.pop(ctx);
                     bool success = await showDialog(
-                      context: context,
-                      builder: (BuildContext context) =>
-                          NewFolder(node: currentNode),
+                      context: ctx,
+                      builder: (_) => NewFolder(node: currentNode),
                     );
                     if (success == true) {
                       refresh(state);
@@ -728,10 +727,12 @@ class _FilesState extends State<Files> {
               },
             )
           // Button to add new Image/Video/File/Folder
-          : IconButton(
-              icon: Icon(Icons.add_circle_outline),
-              onPressed: () => showUploadSheet(context, state),
-            ),
+          : Builder(builder: (ctx) {
+              return IconButton(
+                icon: Icon(Icons.add_circle_outline),
+                onPressed: () => showUploadSheet(ctx, state),
+              );
+            }),
       // Button to toggle gridView
       StoreConnector<AppState, VoidCallback>(
         converter: (store) {
