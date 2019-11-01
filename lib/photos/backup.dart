@@ -330,7 +330,6 @@ class Worker {
       String filePath = file.path;
       int size = (await file.stat()).size;
 
-      /// TODO: handle large file in backup
       if (size > 1073741824) {
         throw ('hash error: $filePath, size: $size');
       }
