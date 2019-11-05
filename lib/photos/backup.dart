@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:async';
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:photo_manager/photo_manager.dart';
@@ -10,7 +11,6 @@ import '../common/utils.dart';
 import '../common/isolate.dart';
 import '../common/eventBus.dart';
 import '../common/appConfig.dart';
-
 import '../common/stationApis.dart';
 
 /// `idle`: init state
@@ -63,8 +63,8 @@ class Worker {
   String machineId;
   String deviceName;
   String deviceId;
-  CancelToken cancelToken;
 
+  CancelToken cancelToken;
   CancelIsolate cancelUpload;
   CancelIsolate cancelHash;
   Status status = Status.idle;
@@ -86,12 +86,39 @@ class Worker {
   /// already backuped items' count
   int ignored = 0;
 
+  bool uploading = false;
+
   bool get isAborted => status == Status.aborted;
 
   String speed = '';
 
   void updateSpeed(speedValue) {
     this.speed = '${prettySize(speedValue)}/s';
+  }
+
+  List<int> deltaSizeList = [];
+  List<int> deltaTimeList = [];
+
+  void onLargeFileProgress(int size, int total) {
+    int now = DateTime.now().millisecondsSinceEpoch;
+
+    this.deltaSizeList.insert(0, size);
+    this.deltaTimeList.insert(0, now);
+
+    final deltaSize = this.deltaSizeList.first - this.deltaSizeList.last;
+
+    // add 1000 to avoid show a mistake large speed
+    int deltaTime = this.deltaTimeList.first - this.deltaTimeList.last;
+    if (deltaTime < 1000) deltaTime = 1000;
+
+    final speed = deltaSize / deltaTime * 1000;
+    this.speed = '${prettySize(speed)}/s';
+
+    // get average value of up to last 4 seconds or 256 update-data
+    if (deltaTime > 4 * 1000 || this.deltaSizeList.length > 256) {
+      this.deltaSizeList.removeLast();
+      this.deltaTimeList.removeLast();
+    }
   }
 
   /// get all local photos and videos
@@ -318,31 +345,6 @@ class Worker {
     return newRemoteList;
   }
 
-  /// get Hash from hashViaIsolate or shared_preferences
-  ///
-  /// use AssetEntity.id + createTime as the photo's identity
-  Future<String> getHash(String id, AssetEntity entity) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String hash = prefs.getString(id);
-    if (hash == null) {
-      cancelHash = CancelIsolate();
-      File file = await entity.originFile.timeout(Duration(seconds: 60));
-      String filePath = file.path;
-      int size = (await file.stat()).size;
-
-      if (size > 1073741824) {
-        throw ('hash error: $filePath, size: $size');
-      }
-
-      final parts = await hashViaIsolate(filePath, cancelIsolate: cancelHash)
-          .timeout(Duration(minutes: 60));
-      hash = parts.last.fingerprint;
-      if (hash == null) throw 'hash error';
-      await prefs.setString(id, hash);
-    }
-    return hash;
-  }
-
   /// remove cached Hash in shared_preferences
   ///
   /// use AssetEntity.id + createTime as the photo's identity
@@ -354,48 +356,67 @@ class Worker {
   int getMtime(AssetEntity entity) =>
       (entity.createDtSecond ?? entity.modifiedDateSecond ?? 0) * 1000;
 
-  Future<void> uploadSingle(
-      AssetEntity entity, List<RemoteList> remoteDirs, Entry rootDir) async {
-    // final time = getNow();
+  Future<void> _uploadLargeFileAsync(
+      Entry targetDir,
+      String filePath,
+      List<FilePart> parts,
+      CancelToken cancelToken,
+      Function onProgress) async {
+    /// file stat
+    File file = File(filePath);
+    final FileStat stat = await file.stat();
 
-    String id = entity.id;
-    int mtime = getMtime(entity);
+    /// file name
+    final fileName = filePath.split('/').last;
 
-    // debug('before hash: $id, ${getNow() - time}');
-    String hash = await getHash('$id+$mtime', entity);
+    for (int i = 0; i < parts.length; i++) {
+      final part = parts[i];
+      final size = part.end - part.start + 1;
+      print('upload part $i, $size, time: ${new DateTime.now()}');
+      Map<String, Object> formDataOptions;
+      if (i == 0) {
+        formDataOptions = {
+          'op': 'newfile',
+          'size': size,
+          'sha256': part.sha,
+          'bctime': stat.modified.millisecondsSinceEpoch,
+          'bmtime': stat.modified.millisecondsSinceEpoch,
+          'policy': ['rename', 'rename'],
+        };
+      } else {
+        formDataOptions = {
+          'op': 'append',
+          'size': size,
+          'sha256': part.sha,
+          'hash': part.target,
+        };
+      }
 
-    if (hash == null) {
-      finished += 1;
-      ignored += 1;
-      return;
+      final args = {
+        'driveUUID': targetDir.pdrv,
+        'dirUUID': targetDir.uuid,
+        'fileName': fileName,
+        'file': MultipartFile(
+          file.openRead(part.start, part.end + 1),
+          size,
+          filename: jsonEncode(formDataOptions),
+        ),
+      };
+
+      await apis.uploadAsync(
+        args,
+        cancelToken: cancelToken,
+        onProgress: (int a, int b) =>
+            onProgress(a + part.start, b + part.start),
+      );
     }
+  }
 
-    // debug('after hash, ${getNow() - time}');
-    final photoEntry = PhotoEntry(id, hash, mtime);
-
-    final remoteList = await getTargetList(remoteDirs, photoEntry, rootDir);
-
-    // already backuped, continue next
-    if (remoteList == null) {
-      finished += 1;
-      ignored += 1;
-      // debug('backup ignore: $id, ${getNow() - time}');
-      return;
-    }
-    final targetDir = remoteList.entry;
-    // debug('before upload: $id, ${getNow() - time}');
-    // update cancelIsolate
-    cancelUpload = CancelIsolate();
-
-    // upload photo
-    File file = await entity.originFile.timeout(Duration(seconds: 60));
-
-    AssetType type = entity.type;
-
-    String filePath = file.path;
+  String getName(
+      String filePath, int mtime, AssetType type, RemoteList remoteList) {
     String fileName = filePath.split('/').last;
 
-    String extension = fileName.contains('.') ? fileName.split('.').last : '';
+    String ext = fileName.contains('.') ? fileName.split('.').last : '';
     if (Platform.isIOS) {
       // tofix mtime == 0 or null bug
       DateTime time = (mtime == 0 || mtime == null)
@@ -404,9 +425,9 @@ class Worker {
       String prefix = type == AssetType.image
           ? 'IMG'
           : type == AssetType.video ? 'VID' : 'File';
-      fileName = extension == ''
+      fileName = ext == ''
           ? '${prefix}_${getTimeString(time)}'
-          : '${prefix}_${getTimeString(time)}.$extension';
+          : '${prefix}_${getTimeString(time)}.$ext';
     }
 
     // autorename, compare fileName with names in remoteList
@@ -421,12 +442,63 @@ class Worker {
       } else {
         pureName = fileName;
       }
-      newName =
-          extension == '' ? '${pureName}_$i' : '${pureName}_$i.$extension';
+      newName = ext == '' ? '${pureName}_$i' : '${pureName}_$i.$ext';
       i += 1;
     }
+    return newName;
+  }
 
-    fileName = newName;
+  Future<void> uploadSingle(
+      AssetEntity entity, List<RemoteList> remoteDirs, Entry rootDir) async {
+    // final time = getNow();
+
+    String id = entity.id;
+    int mtime = getMtime(entity);
+
+    /// get Hash from hashViaIsolate or shared_preferences
+    ///
+    /// use AssetEntity.id + createTime as the photo's identity
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String hash = prefs.getString('$id+$mtime');
+    int size;
+    File file;
+    List<FilePart> parts;
+
+    if (hash == null) {
+      cancelHash = CancelIsolate();
+      file = await entity.originFile.timeout(Duration(seconds: 60));
+      size = (await file.stat()).size;
+
+      parts = await hashViaIsolate(file.path, cancelIsolate: cancelHash)
+          .timeout(Duration(minutes: 60));
+      print('${file.path} $parts, time: ${new DateTime.now()}');
+      hash = parts.last.fingerprint;
+      if (hash == null) throw 'hash error';
+      await prefs.setString('$id+$mtime', hash);
+    }
+
+    print('hash ${file?.path} $hash');
+
+    final photoEntry = PhotoEntry(id, hash, mtime);
+
+    final remoteList = await getTargetList(remoteDirs, photoEntry, rootDir);
+
+    // already backuped, continue next
+    if (remoteList == null) {
+      finished += 1;
+      ignored += 1;
+      return;
+    }
+
+    // upload photo
+    if (file == null || size == null) {
+      file = await entity.originFile.timeout(Duration(seconds: 60));
+      size = (await file.stat()).size;
+    }
+
+    // get filePath and name
+    String filePath = file.path;
+    String fileName = getName(filePath, mtime, entity.type, remoteList);
 
     remoteList.add(Entry(name: fileName, hash: hash));
 
@@ -434,13 +506,33 @@ class Worker {
       return;
     }
 
-    // debug files which createTime == 0
-    if (mtime == 0 || mtime == null) {
-      debug('createTime is 0, $id, $fileName');
-    }
+    // upload via _uploadLargeFileAsync or _uploadViaIsolate
+    final targetDir = remoteList.entry;
+    if (size > 1073741824) {
+      // get fileParts
+      cancelHash = CancelIsolate();
+      print('before hash large file $size, time: ${new DateTime.now()}');
+      parts ??= await hashViaIsolate(file.path, cancelIsolate: cancelHash)
+          .timeout(Duration(minutes: 60));
 
-    await uploadViaIsolate(apis, targetDir, filePath, hash, mtime, fileName,
-        cancelIsolate: cancelUpload, updateSpeed: updateSpeed);
+      // for calculate speed
+      this.deltaSizeList = [];
+      this.deltaTimeList = [];
+
+      cancelToken = CancelToken();
+      print('before _uploadLargeFileAsync time: ${new DateTime.now()}');
+      print(parts);
+
+      uploading = true;
+      await _uploadLargeFileAsync(
+          targetDir, filePath, parts, cancelToken, onLargeFileProgress);
+    } else {
+      cancelUpload = CancelIsolate();
+
+      uploading = true;
+      await uploadViaIsolate(apis, targetDir, filePath, hash, mtime, fileName,
+          cancelIsolate: cancelUpload, updateSpeed: updateSpeed);
+    }
 
     // delete tmp file, only in iOS
     if (Platform.isIOS) {
@@ -453,7 +545,6 @@ class Worker {
     // send Backup Event
     eventBus.fire(BackupEvent(rootDir.pdrv));
 
-    // debug('backup success: $id in ${DateTime.now().millisecondsSinceEpoch - time} ms');
     finished += 1;
   }
 
@@ -535,7 +626,6 @@ class Worker {
             continue;
           }
 
-          // debug('after hash, ${getNow() - time}');
           final photoEntry = PhotoEntry(id, hash, mtime);
 
           final targetList =
@@ -591,6 +681,7 @@ class Worker {
       status = Status.finished;
       finished = 0;
       ignored = 0;
+      uploading = false;
       total = 0;
     } else {
       print('not all upload success');
@@ -603,6 +694,7 @@ class Worker {
     try {
       cancelUpload?.cancel();
       cancelHash?.cancel();
+      cancelToken?.cancel();
     } catch (e) {
       debug(e);
     }
@@ -611,6 +703,7 @@ class Worker {
 
     finished = 0;
     ignored = 0;
+    uploading = false;
     retry = 0;
   }
 
@@ -618,6 +711,7 @@ class Worker {
     finished = 0;
     ignored = 0;
     total = 0;
+    uploading = false;
     latestError = null;
     this.startAsync().catchError((e) {
       status = Status.failed;
@@ -706,7 +800,6 @@ class BackupWorker {
       monitorStart();
       worker = Worker(apis);
       worker.start();
-      // debug('backup started');
     }
   }
 
@@ -715,7 +808,6 @@ class BackupWorker {
     worker = null;
     monitorCancel();
     status = Status.aborted;
-    // debug('backup aborted');
   }
 
   /// pause backup
@@ -748,7 +840,7 @@ class BackupWorker {
   bool get isPaused => status == Status.paused;
   bool get isAborted => status == Status.aborted;
 
-  bool get isDiffing => isRunning && worker?.ignored == worker?.finished;
+  bool get isDiffing => isRunning && !worker.uploading;
 
   String get progress => worker == null
       ? ''

@@ -449,6 +449,7 @@
   "Retry Transfer Task": "Retry",
   "Transfer Task Paused": "Paused",
   "Transfer Task Waiting": "Waiting",
+  "Transfer Task Preparing": "Checking",
   "Transfer Tasks": "Transfer tasks",
   "Start All Transfer Tasks": "Start all",
   "Pause All Transfer Tasks": "Pause all",

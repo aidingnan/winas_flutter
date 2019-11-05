@@ -272,7 +272,9 @@ class _TransferState extends State<Transfer> {
                       Expanded(flex: 1, child: Container()),
                       Text(
                         item.status == 'working'
-                            ? item.speed
+                            ? item.speed == ''
+                                ? i18n('Transfer Task Preparing')
+                                : item.speed
                             : item.status == 'paused'
                                 ? i18n('Transfer Task Paused')
                                 : item.status == 'init'

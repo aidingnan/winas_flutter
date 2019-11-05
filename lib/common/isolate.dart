@@ -289,6 +289,9 @@ class FilePart {
     Map<String, dynamic> m = {
       'start': start,
       'end': end,
+      'sha': sha,
+      'fingerprint': fingerprint,
+      'target': target,
     };
     return jsonEncode(m);
   }
@@ -319,13 +322,26 @@ List<FilePart> spliceFile(int size, int perSize) {
   return parts;
 }
 
+/// implementation of Buffer.from(hexString, 'hex')
+/// Buffer.from('64ab', 'hex') => <Buffer 64 ab>
+/// bufferFrom('64ab') => [100, 171] or [0x64, 0xab]
+List<int> bufferFrom(String str) {
+  List<int> bufferList = [];
+  for (int i = 0; i < str.length; i += 2) {
+    final data = int.parse(str.substring(i, i + 2), radix: 16);
+    bufferList.add(data);
+  }
+  return bufferList;
+}
+
 /// combine two sha256 value
 String combineHash(String h1, String h2) {
-  List<int> b1 = utf8.encode(h1);
-  List<int> b2 = utf8.encode(h2);
-  final ds = DigestSink();
+  List<int> b1 = bufferFrom(h1);
+  List<int> b2 = bufferFrom(h2);
 
+  final ds = DigestSink();
   final s = sha256.startChunkedConversion(ds);
+
   s.add(b1);
   s.add(b2);
   s.close();
