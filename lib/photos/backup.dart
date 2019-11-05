@@ -372,7 +372,6 @@ class Worker {
     for (int i = 0; i < parts.length; i++) {
       final part = parts[i];
       final size = part.end - part.start + 1;
-      print('upload part $i, $size, time: ${new DateTime.now()}');
       Map<String, Object> formDataOptions;
       if (i == 0) {
         formDataOptions = {
@@ -471,13 +470,11 @@ class Worker {
 
       parts = await hashViaIsolate(file.path, cancelIsolate: cancelHash)
           .timeout(Duration(minutes: 60));
-      print('${file.path} $parts, time: ${new DateTime.now()}');
+
       hash = parts.last.fingerprint;
       if (hash == null) throw 'hash error';
       await prefs.setString('$id+$mtime', hash);
     }
-
-    print('hash ${file?.path} $hash');
 
     final photoEntry = PhotoEntry(id, hash, mtime);
 
@@ -511,7 +508,6 @@ class Worker {
     if (size > 1073741824) {
       // get fileParts
       cancelHash = CancelIsolate();
-      print('before hash large file $size, time: ${new DateTime.now()}');
       parts ??= await hashViaIsolate(file.path, cancelIsolate: cancelHash)
           .timeout(Duration(minutes: 60));
 
@@ -520,8 +516,6 @@ class Worker {
       this.deltaTimeList = [];
 
       cancelToken = CancelToken();
-      print('before _uploadLargeFileAsync time: ${new DateTime.now()}');
-      print(parts);
 
       uploading = true;
       await _uploadLargeFileAsync(
