@@ -391,6 +391,10 @@ class Worker {
         };
       }
 
+      if (parts.length > 1) {
+        formDataOptions['fingerprint'] = parts.last.fingerprint;
+      }
+
       final args = {
         'driveUUID': targetDir.pdrv,
         'dirUUID': targetDir.uuid,
