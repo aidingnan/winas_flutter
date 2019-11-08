@@ -268,7 +268,8 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
 
                                     try {
                                       device = scanResult.device;
-                                      await device.connect();
+                                      await device.connect(
+                                          timeout: Duration(seconds: 20));
                                     } catch (e) {
                                       debug(e);
 
@@ -281,7 +282,8 @@ class _ScanBleDeviceState extends State<ScanBleDevice> {
                                     }
 
                                     try {
-                                      await reqAuth(device);
+                                      await reqAuth(device)
+                                          .timeout(Duration(seconds: 20));
                                     } catch (e) {
                                       debug(e);
 
