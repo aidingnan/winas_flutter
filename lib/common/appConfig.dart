@@ -1,11 +1,14 @@
 import 'dart:io';
 import 'package:uuid/uuid.dart';
+import 'package:device_info/device_info.dart';
 import 'package:path_provider/path_provider.dart';
 
 class AppConfig {
   static bool isDev = false;
 
   static bool umeng = true;
+
+  static int crossAxisCount = 2;
 
   /// cloud address
   static String get cloudAddress => AppConfig.isDev
@@ -19,6 +22,17 @@ class AppConfig {
     bool devFileExists = await devFile.exists();
     AppConfig.isDev = devFileExists == true;
     return devFileExists == true;
+  }
+
+  static Future<bool> checkiPad() async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    IosDeviceInfo info = await deviceInfo.iosInfo;
+    if (info.name.toLowerCase().contains("ipad")) {
+      AppConfig.crossAxisCount = 4;
+      return true;
+    }
+    AppConfig.crossAxisCount = 2;
+    return false;
   }
 
   /// delete or create `ApplicationDocumentsDirectory/dev`

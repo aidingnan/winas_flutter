@@ -26,6 +26,7 @@ import '../common/utils.dart';
 import '../common/intent.dart';
 import '../common/eventBus.dart';
 import '../transfer/manager.dart';
+import '../common/appConfig.dart';
 import '../transfer/transfer.dart';
 import '../icons/winas_icons.dart';
 import '../login/stationLogin.dart';
@@ -1072,7 +1073,7 @@ class _FilesState extends State<Files> {
   Widget dirGrid(state) {
     return SliverGrid(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
+        crossAxisCount: AppConfig.crossAxisCount,
         mainAxisSpacing: 8.0,
         crossAxisSpacing: 8.0,
         childAspectRatio: 4.0,
@@ -1119,7 +1120,7 @@ class _FilesState extends State<Files> {
   Widget fileGrid(state) {
     return SliverGrid(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
+        crossAxisCount: AppConfig.crossAxisCount,
         mainAxisSpacing: 8.0,
         crossAxisSpacing: 8.0,
         childAspectRatio: 1.0,

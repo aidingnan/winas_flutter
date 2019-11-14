@@ -10,6 +10,7 @@ import '../redux/redux.dart';
 import '../common/cache.dart';
 import '../common/utils.dart';
 import '../common/eventBus.dart';
+import '../common/appConfig.dart';
 import '../icons/winas_icons.dart';
 
 const mediaTypes =
@@ -420,7 +421,7 @@ class _PhotosState extends State<Photos> {
         padding: EdgeInsets.all(16),
         sliver: SliverGrid(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
+            crossAxisCount: AppConfig.crossAxisCount,
             mainAxisSpacing: 16.0,
             crossAxisSpacing: 16.0,
             childAspectRatio: 0.8,
@@ -454,7 +455,7 @@ class _PhotosState extends State<Photos> {
         padding: EdgeInsets.all(16),
         sliver: SliverGrid(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
+            crossAxisCount: AppConfig.crossAxisCount,
             mainAxisSpacing: 16.0,
             crossAxisSpacing: 16.0,
             childAspectRatio: 0.8,

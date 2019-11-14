@@ -63,6 +63,15 @@ void main() async {
     print('checkDev failed $e');
   }
 
+  // check if is iPad
+  try {
+    if (Platform.isIOS) {
+      await AppConfig.checkiPad();
+    }
+  } catch (e) {
+    print('check iPad failed $e');
+  }
+
   // get deviceUUID
   final deviceUUID = await AppConfig.getDeviceUUID();
   print('deviceUUID: $deviceUUID');

@@ -7,6 +7,7 @@ import './fileRow.dart';
 import './xcopyDialog.dart';
 import '../redux/redux.dart';
 import '../common/utils.dart';
+import '../common/appConfig.dart';
 import '../common/renderIcon.dart';
 import '../icons/winas_icons.dart';
 
@@ -420,7 +421,7 @@ class _SearchState extends State<Search> {
                   )
                 : SliverGrid(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
+                      crossAxisCount: AppConfig.crossAxisCount,
                       mainAxisSpacing: 8.0,
                       crossAxisSpacing: 8.0,
                       childAspectRatio: 1.0,

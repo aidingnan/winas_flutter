@@ -388,7 +388,8 @@ Widget actionButton(String title, Function action, Widget rightItem) {
           ),
         ),
         child: Container(
-          height: 64,
+          // ipad: 96, phone: 64
+          height: AppConfig.crossAxisCount == 4 ? 96 : 64,
           padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
           child: Row(
             children: <Widget>[

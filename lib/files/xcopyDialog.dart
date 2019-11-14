@@ -6,6 +6,7 @@ import './fileRow.dart';
 import './newFolder.dart';
 import '../redux/redux.dart';
 import '../common/utils.dart';
+import '../common/appConfig.dart';
 import '../common/renderIcon.dart';
 
 void newXCopyView(BuildContext mainCtx, BuildContext snackBarCtx,
@@ -378,7 +379,8 @@ class _XCopyViewState extends State<_XCopyView> {
                                             SliverGridDelegateWithFixedCrossAxisCount(
                                           crossAxisSpacing: 16.0,
                                           mainAxisSpacing: 16.0,
-                                          crossAxisCount: 2,
+                                          crossAxisCount:
+                                              AppConfig.crossAxisCount,
                                           childAspectRatio: 1.0,
                                         ),
                                         itemCount: entries.length,
