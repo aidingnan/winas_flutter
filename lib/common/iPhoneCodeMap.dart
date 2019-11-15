@@ -1,4 +1,5 @@
 /// see https://www.theiphonewiki.com/wiki/List_of_iPhones
+/// TODO: support iPad
 const Map<String, String> iPhoneCodeMap = {
   'iPhone1,1': 'iPhone',
   'iPhone1,2': 'iPhone 3G',
