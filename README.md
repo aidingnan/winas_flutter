@@ -35,6 +35,84 @@ flutter run --release
 
 之后再到`https://appstoreconnect.apple.com`添加新版本，写描述，提交审核
 
+### 项目逻辑
+
++ API管理
+
+  - 应用使用的API主要分两套，即云API和口袋网盘API，分别封装在`lib/common/request.dart`和`lib/common/stationApis.dart`
+
+  - 云API都是直接访问'https://aws-cn.aidingnan.com/c/v1'
+
+  - 在同一局域网，客户端会直接通过ip访问口袋网盘，否则就通过云的`pipe`访问口袋网盘。其中`stationApis.dart`中的`command`方法是实现该功能的适配器
+
+  - `lib/common/stationApi.dart`中的注册了对网络变化的监控，当手机网络状态变化时会自动触发设备是否在局域网内的判定
+
+  - 所有的API请求都是使用`dio`库实现的
+
++ redux 主要代码在`lib/redux`
+
+  - 项目使用redux管理整个应用的状态，使用的库是`flutter_redux`, 使用`redux_persist`实现状态的持久化
+
++ 登录逻辑 主要代码在`lib/login`
+
+  - 目前支持使用帐户密码和微信(由`fluwx`实现)来登录云帐户，登录后获取访问云api的token，同时获取已绑定的设备列表
+
+  - 登录用户选择的特定口袋网盘，主要是通过云获取口袋网盘的局域网用的token，同时通过调用3001端口的`winasd/info` api 判断设备是否在局域网内
+
+  - 在局域网内则使用ip直接访问，在外网环境则走云的pipe通道访问
+
++ 文件的上传、下载 主要代码在 `lib/transfer`
+
+  - 上传下载的操作的管理由`lib/transfer/manager.dart`实现
+
+  - 下载文件就是简单的`get`操作
+
+  - 上传文件使用`formdata`格式，需要预先将文件按1G为单位切片，计算每段文件的sha256值和文件整体的fingerprint，由`lib/common/isolate`组件实现
+
++ 全局底部导航栏 主要代码 `lib/nav`
+
+  - `lib/nav/bottom_navigation.dart`是文件页面全局底部导航栏组件，然后分别可以导航至`云盘`、`相簿`、`设备`、`我的`四个页面
+
+  - `lib/nav/taskFab.dart`中实现了移动、复制任务的显示和管理
+
++ 云盘页面 主要代码在 `lib/files`
+
+  - `lib/files/file.dart`为入口文件
+
+  - 实现了主要的文件操作，包括选择、列表/网格模式切换、上传、删除、重命名、移动、复制、预览文件、查看属性等
+
++ 相簿页面 主要代码在 `lib/photos`
+
+  - `lib/photos/photos.dart`为入口文件
+
+  - `lib/photos/backup.dart`实现了对手机相簿的整体备份，其中使用`photo_manager`库实现获取手机的全部照片
+
+  - 照片备份是按照设备为备份单位，备份的文件按年月来归档，目录结构类似于 `Nexus 6P/照片/2019-01`
+
+  - 相簿主要分为三类，全部照片、全部设备、按设备来源的照片
+
+  - 照片缩略图通过`lib/common/taskManager.dart`以队列的形式下载
+
++ 设备页面 主要代码在 `lib/device`
+
+  - `lib/device/myStation.dart`为入口文件
+
+  - 包括添加新设备和切换设备、设备名称和状态的显示、网络详情、设备信息、系统管理等
+
++ 我的页面 主要代码在 `lib/user`
+
+  - `lib/user/user.dart`为入口文件
+
+  - 包括个人信息的显示、修改头像、帐户与安全、设置、缓存管理、关于等
+
++ 图标
+
+  本项目主要使用Flutter自带的图标，其他自定义的图标通过`lib/icons/winas_icons.dart`引入, 由 [fluttericon](http://fluttericon.com/) 自动生成
+
++ 多语言
+
+  使用`i18n`库来实现，在locales/下写好en-US、zh-CN的两个json文件，使用i18n.__('somekey')的形式获取对应的文本
+
 ### 项目结构
 
 + android
@@ -164,3 +242,13 @@ flutter run --release
   - icons 图标文件，自动生成的，详见 fluttericon.com
 
   - other 其他文件，实际项目中未用到
+
+### 相关资料
+
++ [Flutter 官方文档](https://flutter.dev/docs)
+
++ [Flutter 中文教程](https://book.flutterchina.club/)
+
++ [Dart Packages CN镜像](https://pub.flutter-io.cn/)
+
++ [Flutter issues](https://github.com/flutter/flutter/issues)
