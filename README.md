@@ -111,7 +111,9 @@ flutter run --release
 
 + 多语言
 
-  使用`i18n`库来实现，在locales/下写好en-US、zh-CN的两个json文件，使用i18n.__('somekey')的形式获取对应的文本
+  - 使用`flutter_i18n`库来实现，在`assets/locales/`下写好`en.json`、`zh.json`的两个json文件
+
+  - 经过`utils.dart`中的i18n方法封装后使用`i18n('somekey')`的形式获取对应的文本
 
 ### 项目结构
 
