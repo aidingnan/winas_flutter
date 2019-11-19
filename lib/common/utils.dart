@@ -426,7 +426,8 @@ Future<Map<String, String>> getMachineId() async {
   String model;
   if (Platform.isIOS) {
     IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-    deviceName = iPhoneModel(iosInfo.utsname.machine);
+    final isiPad = iosInfo.name.toLowerCase().contains("ipad");
+    deviceName = isiPad ? iosInfo.name : iPhoneModel(iosInfo.utsname.machine);
     machineId = iosInfo.identifierForVendor;
     model = deviceName + ', Version ' + iosInfo.systemVersion;
   } else {
