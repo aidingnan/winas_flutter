@@ -23,8 +23,12 @@ flutter run
 
 证书文件在 `/home/lxw/app_keystore/winas_flutter_keystore.jks`
 
-```
+```bash
+# 有手机连着的时候，打包apk，并在手机上启动
 flutter run --release
+
+# 仅打包apk
+flutter build apk --target-platform android-arm64
 ```
 
 打包后的安装包文件在 `build/app/outputs/apk/release/app-release.apk`，改名后（如KouDaiWangPan-1.8.8.apk）即可发布

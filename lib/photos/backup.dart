@@ -655,10 +655,10 @@ class Worker {
           await uploadSingle(entity, remoteDirs, rootDir);
         } catch (e) {
           if (error == null) {
-            debug('backup failed: ${entity.id} ${e.toString()}');
+            debug('backup failed ${e.toString()}');
             error = e;
           } else {
-            print('backup failed: ${entity.id} ${e.toString()}');
+            print('backup failed ${e.toString()}');
           }
 
           String id = entity.id;
